@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sulongfei.jump.mapper.IntegralMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.Integral">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="remote_club_id" jdbcType="BIGINT" property="remoteClubId"/>
+        <result column="integral" jdbcType="INTEGER" property="integral"/>
+        <collection column="user_id" property="user" ofType="SecurityUser" select="getUserByUserId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, remote_club_id, integral
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from integral
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from integral
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.sulongfei.jump.model.Integral">
+    insert into integral (id, user_id, remote_club_id, 
+      integral)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, 
+      #{integral,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.Integral">
+        insert into integral
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="remoteClubId != null">
+                remote_club_id,
+            </if>
+            <if test="integral != null">
+                integral,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="remoteClubId != null">
+                #{remoteClubId,jdbcType=BIGINT},
+            </if>
+            <if test="integral != null">
+                #{integral,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.Integral">
+        update integral
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="remoteClubId != null">
+                remote_club_id = #{remoteClubId,jdbcType=BIGINT},
+            </if>
+            <if test="integral != null">
+                integral = #{integral,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.Integral">
+    update integral
+    set user_id = #{userId,jdbcType=BIGINT},
+      remote_club_id = #{remoteClubId,jdbcType=BIGINT},
+      integral = #{integral,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <resultMap id="RankListMap" type="com.sulongfei.jump.model.Integral" extends="BaseResultMap">
+        <collection column="user_id" property="user" ofType="SecurityUser" select="com.sulongfei.jump.mapper.SecurityUserMapper.selectByPrimaryKey"/>
+    </resultMap>
+
+    <select id="selectByUserIdClubId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from integral
+        where user_id = #{userId,jdbcType=BIGINT} and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+    </select>
+
+    <select id="rankListTop" resultMap="RankListMap">
+      SELECT
+	  i.integral,i.user_id
+      FROM	integral i
+      WHERE	i.remote_club_id = #{remoteClubId,jdbcType=BIGINT} AND i.integral &gt; #{entryIntegral,jdbcType=INTEGER}
+      ORDER BY	integral DESC
+	  LIMIT 0 , #{entryNum,jdbcType=INTEGER}
+    </select>
+</mapper>
