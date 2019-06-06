@@ -7,8 +7,6 @@ import com.sulongfei.jump.mapper.SecurityUserMapper;
 import com.sulongfei.jump.model.SecurityUser;
 import com.sulongfei.jump.response.Response;
 import com.sulongfei.jump.service.LoginService;
-import com.sulongfei.jump.service.RedisService;
-import com.sulongfei.jump.service.RestService;
 import com.sulongfei.jump.utils.StrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

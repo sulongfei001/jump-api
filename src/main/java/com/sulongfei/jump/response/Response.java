@@ -1,6 +1,8 @@
 package com.sulongfei.jump.response;
 
 import com.sulongfei.jump.constants.ResponseStatus;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +14,7 @@ import java.util.List;
  * @param <T>
  * @author siguiyang
  */
+@ApiModel(value = "返回对象")
 @Data
 public class Response<T> implements Serializable {
 
@@ -19,23 +22,24 @@ public class Response<T> implements Serializable {
     /**
      * 数据响应吗
      */
+    @ApiModelProperty(value = "响应码")
     private int code = ResponseStatus.Code.SUCCESS;
     /**
      * 响应消息
      */
+    @ApiModelProperty(value = "响应消息")
     private String msg = ResponseStatus.SUCCESS_MSG;
     /**
      * 响应时间
      */
+    @ApiModelProperty(value = "响应时间")
     private long timestamp = System.currentTimeMillis();
     /**
      * 响应数据
      */
+    @ApiModelProperty(value = "响应数据对象")
     private T data;
-    /**
-     * 分页总数
-     */
-    private long total;
+
 
     public Response() {
     }
@@ -47,13 +51,6 @@ public class Response<T> implements Serializable {
 
     public Response(T data) {
         this.data = data;
-    }
-
-    public static <T> Response<List<T>> toResponse(List<T> data, long total) {
-        Response<List<T>> response = new Response<>();
-        response.setTotal(total);
-        response.setData(data);
-        return response;
     }
 
 }

@@ -13,11 +13,6 @@ import java.sql.Timestamp;
 @Data
 public class Model implements Serializable {
     private static final long serialVersionUID = 4400997987429664604L;
-
-    /**
-     * 数据库主键
-     */
-    private Long id;
     /**
      * 数据库记录创建时间
      */

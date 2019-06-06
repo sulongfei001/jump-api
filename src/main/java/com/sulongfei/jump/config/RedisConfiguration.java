@@ -1,6 +1,6 @@
 package com.sulongfei.jump.config;
 
-import com.sulongfei.jump.service.RedisService;
+import com.sulongfei.jump.service.impl.RedisService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

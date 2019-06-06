@@ -30,7 +30,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/error/**")
                 .excludePathPatterns("/swagger-resources/**") // 过滤swagger页面权限控制
-                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/*/*/*/login/**")
         ;
         super.addInterceptors(registry);
     }

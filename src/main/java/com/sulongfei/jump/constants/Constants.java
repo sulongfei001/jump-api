@@ -17,4 +17,20 @@ public interface Constants {
     interface RedisName {
         String LOGIN_SMS_CODE = "login_sms_code:";
     }
+
+    /**
+     * 常用字符串数字常量
+     */
+    interface Common {
+        String ZERO = "0";
+        String ONE = "1";
+        String TWO = "2";
+        String THREE = "3";
+        String FOUR = "4";
+        String FIVE = "5";
+        String SIX = "6";
+        String SEVEN = "7";
+        String EIGHT = "8";
+        String NINE = "9";
+    }
 }

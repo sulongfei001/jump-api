@@ -1,5 +1,6 @@
 package com.sulongfei.jump.config;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -26,24 +27,18 @@ import java.util.List;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-    private static List<Parameter> parameters = new ArrayList<>();
+    private static List<Parameter> parameters;
 
     static {
-        ParameterBuilder builder = new ParameterBuilder();
-        builder.defaultValue("")
-                .description("用户令牌")
-                .modelRef(new ModelRef("String"))
-                .parameterType("query")
-                .name("access_token")
-                .required(true)
-                .defaultValue("")
-                .description("所在门店")
-                .modelRef(new ModelRef("long"))
-                .parameterType("body")
-                .name("remote_club_id")
-                .required(true)
-                .build();
-        parameters.add(builder.build());
+        parameters = new ArrayList<Parameter>() {
+            {
+                add(new ParameterBuilder().name("access_token").description("query带上access_token").modelRef(new ModelRef("String")).parameterType("query").required(true).build());
+                add(new ParameterBuilder().name("remoteClubId").description("门店ID").modelRef(new ModelRef("long")).parameterType("path").required(true).build());
+                add(new ParameterBuilder().name("saleId").description("推广员ID").modelRef(new ModelRef("long")).parameterType("path").required(true).build());
+                add(new ParameterBuilder().name("saleType").description("推广员类型").modelRef(new ModelRef("int")).parameterType("path").required(true).build());
+
+            }
+        };
     }
 
     @Bean
@@ -55,7 +50,7 @@ public class SwaggerConfig {
                 .forCodeGeneration(true)
                 .pathMapping("/")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sulongfei.jump.web.controller"))
+                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(parameters)

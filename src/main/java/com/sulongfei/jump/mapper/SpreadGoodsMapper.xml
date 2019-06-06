@@ -1,82 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sulongfei.jump.mapper.RoomSimpleMapper">
-    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.RoomSimple">
+<mapper namespace="com.sulongfei.jump.mapper.SpreadGoodsMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.SpreadGoods">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="remote_club_id" jdbcType="BIGINT" property="remoteClubId"/>
-        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
-        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="hidden" jdbcType="BIT" property="hidden"/>
         <result column="remote_goods_id" jdbcType="BIGINT" property="remoteGoodsId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
         <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice"/>
         <result column="goods_picture" jdbcType="VARCHAR" property="goodsPicture"/>
         <result column="goods_text" jdbcType="VARCHAR" property="goodsText"/>
-        <result column="ticket_num" jdbcType="INTEGER" property="ticketNum"/>
         <result column="prize_probability" jdbcType="INTEGER" property="prizeProbability"/>
         <result column="premium_proportion" jdbcType="INTEGER" property="premiumProportion"/>
-        <result column="consume_num" jdbcType="INTEGER" property="consumeNum"/>
-        <result column="random_on" jdbcType="BIT" property="randomOn"/>
-        <result column="picture_1" jdbcType="VARCHAR" property="picture1"/>
-        <result column="picture_2" jdbcType="VARCHAR" property="picture2"/>
-        <result column="picture_3" jdbcType="VARCHAR" property="picture3"/>
-        <result column="picture_4" jdbcType="VARCHAR" property="picture4"/>
+        <result column="picture1" jdbcType="VARCHAR" property="picture1"/>
+        <result column="picture2" jdbcType="VARCHAR" property="picture2"/>
+        <result column="picture3" jdbcType="VARCHAR" property="picture3"/>
+        <result column="picture4" jdbcType="VARCHAR" property="picture4"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, remote_club_id, start_time, end_time, create_time, hidden, remote_goods_id, goods_name, 
-    goods_num, goods_price, goods_picture, goods_text, ticket_num, prize_probability, 
-    premium_proportion, consume_num, random_on, picture_1, picture_2, picture_3, picture_4
+    id, remote_club_id, remote_goods_id, goods_name, goods_num, goods_price, goods_picture, 
+    goods_text, prize_probability, premium_proportion, picture1, picture2, picture3, 
+    picture4
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from room_simple
+        from spread_goods
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from room_simple
+    delete from spread_goods
     where id = #{id,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.sulongfei.jump.model.RoomSimple">
-    insert into room_simple (id, remote_club_id, start_time, 
-      end_time, create_time, hidden, 
-      remote_goods_id, goods_name, goods_num, 
-      goods_price, goods_picture, goods_text, 
-      ticket_num, prize_probability, premium_proportion, 
-      consume_num, random_on, picture_1, 
-      picture_2, picture_3, picture_4
-      )
-    values (#{id,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{startTime,jdbcType=TIMESTAMP}, 
-      #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{hidden,jdbcType=BIT}, 
-      #{remoteGoodsId,jdbcType=BIGINT}, #{goodsName,jdbcType=VARCHAR}, #{goodsNum,jdbcType=INTEGER}, 
-      #{goodsPrice,jdbcType=DECIMAL}, #{goodsPicture,jdbcType=VARCHAR}, #{goodsText,jdbcType=VARCHAR}, 
-      #{ticketNum,jdbcType=INTEGER}, #{prizeProbability,jdbcType=INTEGER}, #{premiumProportion,jdbcType=INTEGER}, 
-      #{consumeNum,jdbcType=INTEGER}, #{randomOn,jdbcType=BIT}, #{picture1,jdbcType=VARCHAR}, 
-      #{picture2,jdbcType=VARCHAR}, #{picture3,jdbcType=VARCHAR}, #{picture4,jdbcType=VARCHAR}
-      )
+    <insert id="insert" parameterType="com.sulongfei.jump.model.SpreadGoods">
+    insert into spread_goods (id, remote_club_id, remote_goods_id, 
+      goods_name, goods_num, goods_price, 
+      goods_picture, goods_text, prize_probability, 
+      premium_proportion, picture1, picture2, 
+      picture3, picture4)
+    values (#{id,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{remoteGoodsId,jdbcType=BIGINT}, 
+      #{goodsName,jdbcType=VARCHAR}, #{goodsNum,jdbcType=INTEGER}, #{goodsPrice,jdbcType=DECIMAL}, 
+      #{goodsPicture,jdbcType=VARCHAR}, #{goodsText,jdbcType=VARCHAR}, #{prizeProbability,jdbcType=INTEGER}, 
+      #{premiumProportion,jdbcType=INTEGER}, #{picture1,jdbcType=VARCHAR}, #{picture2,jdbcType=VARCHAR}, 
+      #{picture3,jdbcType=VARCHAR}, #{picture4,jdbcType=VARCHAR})
   </insert>
-    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RoomSimple">
-        insert into room_simple
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SpreadGoods">
+        insert into spread_goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
             </if>
             <if test="remoteClubId != null">
                 remote_club_id,
-            </if>
-            <if test="startTime != null">
-                start_time,
-            </if>
-            <if test="endTime != null">
-                end_time,
-            </if>
-            <if test="createTime != null">
-                create_time,
-            </if>
-            <if test="hidden != null">
-                hidden,
             </if>
             <if test="remoteGoodsId != null">
                 remote_goods_id,
@@ -96,32 +71,23 @@
             <if test="goodsText != null">
                 goods_text,
             </if>
-            <if test="ticketNum != null">
-                ticket_num,
-            </if>
             <if test="prizeProbability != null">
                 prize_probability,
             </if>
             <if test="premiumProportion != null">
                 premium_proportion,
             </if>
-            <if test="consumeNum != null">
-                consume_num,
-            </if>
-            <if test="randomOn != null">
-                random_on,
-            </if>
             <if test="picture1 != null">
-                picture_1,
+                picture1,
             </if>
             <if test="picture2 != null">
-                picture_2,
+                picture2,
             </if>
             <if test="picture3 != null">
-                picture_3,
+                picture3,
             </if>
             <if test="picture4 != null">
-                picture_4,
+                picture4,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -130,18 +96,6 @@
             </if>
             <if test="remoteClubId != null">
                 #{remoteClubId,jdbcType=BIGINT},
-            </if>
-            <if test="startTime != null">
-                #{startTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="endTime != null">
-                #{endTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="hidden != null">
-                #{hidden,jdbcType=BIT},
             </if>
             <if test="remoteGoodsId != null">
                 #{remoteGoodsId,jdbcType=BIGINT},
@@ -161,20 +115,11 @@
             <if test="goodsText != null">
                 #{goodsText,jdbcType=VARCHAR},
             </if>
-            <if test="ticketNum != null">
-                #{ticketNum,jdbcType=INTEGER},
-            </if>
             <if test="prizeProbability != null">
                 #{prizeProbability,jdbcType=INTEGER},
             </if>
             <if test="premiumProportion != null">
                 #{premiumProportion,jdbcType=INTEGER},
-            </if>
-            <if test="consumeNum != null">
-                #{consumeNum,jdbcType=INTEGER},
-            </if>
-            <if test="randomOn != null">
-                #{randomOn,jdbcType=BIT},
             </if>
             <if test="picture1 != null">
                 #{picture1,jdbcType=VARCHAR},
@@ -190,23 +135,11 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.RoomSimple">
-        update room_simple
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.SpreadGoods">
+        update spread_goods
         <set>
             <if test="remoteClubId != null">
                 remote_club_id = #{remoteClubId,jdbcType=BIGINT},
-            </if>
-            <if test="startTime != null">
-                start_time = #{startTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="endTime != null">
-                end_time = #{endTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="hidden != null">
-                hidden = #{hidden,jdbcType=BIT},
             </if>
             <if test="remoteGoodsId != null">
                 remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
@@ -226,72 +159,54 @@
             <if test="goodsText != null">
                 goods_text = #{goodsText,jdbcType=VARCHAR},
             </if>
-            <if test="ticketNum != null">
-                ticket_num = #{ticketNum,jdbcType=INTEGER},
-            </if>
             <if test="prizeProbability != null">
                 prize_probability = #{prizeProbability,jdbcType=INTEGER},
             </if>
             <if test="premiumProportion != null">
                 premium_proportion = #{premiumProportion,jdbcType=INTEGER},
             </if>
-            <if test="consumeNum != null">
-                consume_num = #{consumeNum,jdbcType=INTEGER},
-            </if>
-            <if test="randomOn != null">
-                random_on = #{randomOn,jdbcType=BIT},
-            </if>
             <if test="picture1 != null">
-                picture_1 = #{picture1,jdbcType=VARCHAR},
+                picture1 = #{picture1,jdbcType=VARCHAR},
             </if>
             <if test="picture2 != null">
-                picture_2 = #{picture2,jdbcType=VARCHAR},
+                picture2 = #{picture2,jdbcType=VARCHAR},
             </if>
             <if test="picture3 != null">
-                picture_3 = #{picture3,jdbcType=VARCHAR},
+                picture3 = #{picture3,jdbcType=VARCHAR},
             </if>
             <if test="picture4 != null">
-                picture_4 = #{picture4,jdbcType=VARCHAR},
+                picture4 = #{picture4,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.RoomSimple">
-    update room_simple
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.SpreadGoods">
+    update spread_goods
     set remote_club_id = #{remoteClubId,jdbcType=BIGINT},
-      start_time = #{startTime,jdbcType=TIMESTAMP},
-      end_time = #{endTime,jdbcType=TIMESTAMP},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      hidden = #{hidden,jdbcType=BIT},
       remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
       goods_name = #{goodsName,jdbcType=VARCHAR},
       goods_num = #{goodsNum,jdbcType=INTEGER},
       goods_price = #{goodsPrice,jdbcType=DECIMAL},
       goods_picture = #{goodsPicture,jdbcType=VARCHAR},
       goods_text = #{goodsText,jdbcType=VARCHAR},
-      ticket_num = #{ticketNum,jdbcType=INTEGER},
       prize_probability = #{prizeProbability,jdbcType=INTEGER},
       premium_proportion = #{premiumProportion,jdbcType=INTEGER},
-      consume_num = #{consumeNum,jdbcType=INTEGER},
-      random_on = #{randomOn,jdbcType=BIT},
-      picture_1 = #{picture1,jdbcType=VARCHAR},
-      picture_2 = #{picture2,jdbcType=VARCHAR},
-      picture_3 = #{picture3,jdbcType=VARCHAR},
-      picture_4 = #{picture4,jdbcType=VARCHAR}
+      picture1 = #{picture1,jdbcType=VARCHAR},
+      picture2 = #{picture2,jdbcType=VARCHAR},
+      picture3 = #{picture3,jdbcType=VARCHAR},
+      picture4 = #{picture4,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
     <cache />
-    <select id="selectRoomSimple" resultMap="BaseResultMap">
+    <resultMap id="SpreadGoodsList" type="com.sulongfei.jump.model.SpreadGoods" extends="BaseResultMap">
+        <collection column="remote_goods_id" property="goods" ofType="Goods" select="com.sulongfei.jump.mapper.GoodsMapper.selectByGoodsId"/>
+    </resultMap>
+
+    <select id="selectByClubId" resultMap="SpreadGoodsList">
         select
         <include refid="Base_Column_List"/>
-        from room_simple
-        <where>
-            start_time &lt; now() and now() &lt; end_time and hidden = false
-            <if test="remoteClubId != null">
-                and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
-            </if>
-        </where>
+        from spread_goods
+        where remote_club_id = #{remoteClubId,jdbcType=BIGINT}
     </select>
-
 </mapper>

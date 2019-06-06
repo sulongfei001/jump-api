@@ -3,6 +3,8 @@ package com.sulongfei.jump.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 /**
  * 〈〉
  *
@@ -15,6 +17,7 @@ public class GlobalValueConfig {
     private static Integer smsCodeExpire;
     private static Integer entryIntegral;
     private static Integer entryNum;
+    private static BigDecimal ticketSinglePrice;
 
 
     public static Integer getSmsCodeExpire() {
@@ -42,5 +45,14 @@ public class GlobalValueConfig {
     @Value("${game.entry.num}")
     public void setEntryNum(Integer entryNum) {
         GlobalValueConfig.entryNum = entryNum;
+    }
+
+    public static BigDecimal getTicketSinglePrice() {
+        return ticketSinglePrice;
+    }
+
+    @Value("${ticket.single.price}")
+    public void setTicketSinglePrice(BigDecimal ticketSinglePrice) {
+        GlobalValueConfig.ticketSinglePrice = ticketSinglePrice;
     }
 }

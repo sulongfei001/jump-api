@@ -2,6 +2,7 @@ package com.sulongfei.jump.service;
 
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.SettleDTO;
+import com.sulongfei.jump.dto.RoomSpreadDTO;
 import com.sulongfei.jump.response.Response;
 
 /**
@@ -17,4 +18,8 @@ public interface RoomService {
     Response settleSimpleGame(SettleDTO dto);
 
     Response rankList(BaseDTO dto);
+
+    Response spreadRoomCreate(RoomSpreadDTO dto);
+
+    Response spreadRoomList(BaseDTO dto);
 }

@@ -1,18 +1,19 @@
-package com.sulongfei.jump.response;
+package com.sulongfei.jump.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
-/**
- * 〈〉
- *
- * @Author sulongfei
- * @Date 2019/5/30 14:43
- * @Version 1.0
- */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class GoodsRes {
+public class SpreadGoods extends Model {
+    private Long id;
+
+    private Long remoteClubId;
+
+    private Long remoteGoodsId;
+
     private String goodsName;
 
     private Integer goodsNum;
@@ -23,6 +24,10 @@ public class GoodsRes {
 
     private String goodsText;
 
+    private Integer prizeProbability;
+
+    private Integer premiumProportion;
+
     private String picture1;
 
     private String picture2;
@@ -30,4 +35,7 @@ public class GoodsRes {
     private String picture3;
 
     private String picture4;
+
+    private Goods goods;
+
 }

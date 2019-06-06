@@ -84,9 +84,10 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-
+    <cache/>
     <resultMap id="RankListMap" type="com.sulongfei.jump.model.Integral" extends="BaseResultMap">
-        <collection column="user_id" property="user" ofType="SecurityUser" select="com.sulongfei.jump.mapper.SecurityUserMapper.selectByPrimaryKey"/>
+        <collection column="user_id" property="user" ofType="SecurityUser"
+                    select="com.sulongfei.jump.mapper.SecurityUserMapper.selectByPrimaryKey"/>
     </resultMap>
 
     <select id="selectByUserIdClubId" resultMap="BaseResultMap">

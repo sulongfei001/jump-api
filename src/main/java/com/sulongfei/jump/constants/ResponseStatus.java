@@ -60,15 +60,23 @@ public interface ResponseStatus {
 
     String EMPTY_PHONE_NUMBER = "手机号码为空";
 
-    String EMPTY_CLUD_ID = "门店为空";
+    String EMPTY_CLUB_ID = "门店为空";
 
     String EMPTY_SALE = "推广员为空";
 
     String EMPTY_TICKET = "门票数量异常";
 
+    String EMPTY_ROOM_ID = "房间号为空";
+
+    String EMPTY_SPREAD_GOODS = "推广商品为空";
+
+    String EMPTY_JOIN_NUM = "参与人数为空";
+
     String ERROR_INTEGRAL = "分数异常";
 
     String NO_ENOUGH_TICKET = "没有足够的门票";
+
+    String NO_ENOUGH_GOODS = "剩余库存不足";
 
 
 }

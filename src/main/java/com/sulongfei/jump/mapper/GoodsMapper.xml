@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sulongfei.jump.mapper.GoodsMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.Goods">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="remote_goods_id" jdbcType="BIGINT" property="remoteGoodsId"/>
+        <result column="remote_club_id" jdbcType="BIGINT" property="remoteClubId"/>
+        <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
+        <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice"/>
+        <result column="goods_picture" jdbcType="VARCHAR" property="goodsPicture"/>
+        <result column="goods_text" jdbcType="VARCHAR" property="goodsText"/>
+        <result column="remain_num" jdbcType="INTEGER" property="remainNum"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, remote_goods_id, remote_club_id, goods_name, goods_num, goods_price, goods_picture, 
+    goods_text, remain_num
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from goods
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from goods
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.sulongfei.jump.model.Goods">
+    insert into goods (id, remote_goods_id, remote_club_id, 
+      goods_name, goods_num, goods_price, 
+      goods_picture, goods_text, remain_num
+      )
+    values (#{id,jdbcType=BIGINT}, #{remoteGoodsId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, 
+      #{goodsName,jdbcType=VARCHAR}, #{goodsNum,jdbcType=INTEGER}, #{goodsPrice,jdbcType=DECIMAL}, 
+      #{goodsPicture,jdbcType=VARCHAR}, #{goodsText,jdbcType=VARCHAR}, #{remainNum,jdbcType=INTEGER}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.Goods">
+        insert into goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="remoteGoodsId != null">
+                remote_goods_id,
+            </if>
+            <if test="remoteClubId != null">
+                remote_club_id,
+            </if>
+            <if test="goodsName != null">
+                goods_name,
+            </if>
+            <if test="goodsNum != null">
+                goods_num,
+            </if>
+            <if test="goodsPrice != null">
+                goods_price,
+            </if>
+            <if test="goodsPicture != null">
+                goods_picture,
+            </if>
+            <if test="goodsText != null">
+                goods_text,
+            </if>
+            <if test="remainNum != null">
+                remain_num,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="remoteGoodsId != null">
+                #{remoteGoodsId,jdbcType=BIGINT},
+            </if>
+            <if test="remoteClubId != null">
+                #{remoteClubId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsNum != null">
+                #{goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="goodsPrice != null">
+                #{goodsPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="goodsPicture != null">
+                #{goodsPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsText != null">
+                #{goodsText,jdbcType=VARCHAR},
+            </if>
+            <if test="remainNum != null">
+                #{remainNum,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.Goods">
+        update goods
+        <set>
+            <if test="remoteGoodsId != null">
+                remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
+            </if>
+            <if test="remoteClubId != null">
+                remote_club_id = #{remoteClubId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsName != null">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsNum != null">
+                goods_num = #{goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="goodsPrice != null">
+                goods_price = #{goodsPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="goodsPicture != null">
+                goods_picture = #{goodsPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsText != null">
+                goods_text = #{goodsText,jdbcType=VARCHAR},
+            </if>
+            <if test="remainNum != null">
+                remain_num = #{remainNum,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.Goods">
+    update goods
+    set remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
+      remote_club_id = #{remoteClubId,jdbcType=BIGINT},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      goods_num = #{goodsNum,jdbcType=INTEGER},
+      goods_price = #{goodsPrice,jdbcType=DECIMAL},
+      goods_picture = #{goodsPicture,jdbcType=VARCHAR},
+      goods_text = #{goodsText,jdbcType=VARCHAR},
+      remain_num = #{remainNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <cache/>
+    <select id="selectByGoodsId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from goods where remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT}
+    </select>
+</mapper>

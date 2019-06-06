@@ -1,4 +1,4 @@
-package com.sulongfei.jump.service;
+package com.sulongfei.jump.service.impl;
 
 import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.constants.ResponseStatus;

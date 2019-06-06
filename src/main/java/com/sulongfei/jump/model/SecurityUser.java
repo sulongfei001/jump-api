@@ -4,13 +4,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SecurityUser extends Model {
 
     private static final long serialVersionUID = 4773591935821999048L;
+    private Long id;
 
     private Long memberId;
 
@@ -24,7 +24,7 @@ public class SecurityUser extends Model {
 
     private String nickname;
 
-    private Boolean gender;
+    private Byte gender;
 
     private Long registerClue;
 

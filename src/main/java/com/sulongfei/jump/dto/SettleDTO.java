@@ -1,6 +1,9 @@
 package com.sulongfei.jump.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 〈〉
@@ -9,21 +12,20 @@ import lombok.Data;
  * @Date 2019/5/30 16:34
  * @Version 1.0
  */
+@ApiModel(value = "游戏结算请求数据")
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class SettleDTO extends BaseDTO {
 
+    @ApiModelProperty(value = "房间ID", example = "0")
+    private Long roomSimpleId;
+    @ApiModelProperty(value = "分数", example = "0")
     private Integer integral;
-
-    private Long goodsId;
-
-    private Integer goodsNum;
-
+    @ApiModelProperty(value = "卡券ID", example = "0")
     private Long cardId;
-
+    @ApiModelProperty(value = "卡券数量", example = "0")
     private Integer cardNum;
-
-    private Integer consumeTicket;
-
+    @ApiModelProperty(value = "奖励门票数量", example = "0")
     private Integer getTicket;
 
 }

@@ -12,13 +12,15 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.requestMatchers()
                 .antMatchers("/test/**")
-                .antMatchers("/user/**")
-                .antMatchers("/room/**")
+                .antMatchers("/*/*/*/user/**")
+                .antMatchers("/*/*/*/room/**")
+                .antMatchers("/*/*/*/goods/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/test/**").authenticated()
-                .antMatchers("/user/**").authenticated()
-                .antMatchers("/room/**").authenticated()
+                .antMatchers("/*/*/*/user/**").authenticated()
+                .antMatchers("/*/*/*/room/**").authenticated()
+                .antMatchers("/*/*/*/goods/**").authenticated()
         ;
 
 

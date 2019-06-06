@@ -4,18 +4,25 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * 〈〉
  *
  * @Author sulongfei
- * @Date 2019/5/30 14:41
+ * @Date 2019/5/27 11:55
  * @Version 1.0
  */
-@ApiModel(value = "游戏房间返回对象")
+@ApiModel(value = "推广员商品返回对象")
 @Data
-public class RoomSimpleRes {
+public class SpreadGoodsRes implements Serializable {
+
+    private static final long serialVersionUID = -4003437270082575448L;
+
+    @ApiModelProperty(value = "推广员商品ID")
+    private Long id;
+
     @ApiModelProperty(value = "商品名字")
     private String goodsName;
 
@@ -31,8 +38,8 @@ public class RoomSimpleRes {
     @ApiModelProperty(value = "商品说明")
     private String goodsText;
 
-    @ApiModelProperty(value = "门票个数")
-    private Integer ticketNum;
+    @ApiModelProperty(value = "商品可用库存")
+    private Integer remainNum;
 
     @ApiModelProperty(value = "图片1")
     private String picture1;
@@ -45,4 +52,6 @@ public class RoomSimpleRes {
 
     @ApiModelProperty(value = "图片4")
     private String picture4;
+
+
 }

@@ -1,4 +1,4 @@
-package com.sulongfei.jump.service;
+package com.sulongfei.jump.service.impl;
 
 import com.sulongfei.jump.dto.UserLoginDTO;
 import com.sulongfei.jump.rest.request.RegisterRequest;
