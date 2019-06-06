@@ -12,13 +12,11 @@ public class RoomSpread extends Model {
 
     private Long remoteClubId;
 
-    private String password;
-
     private Long saleId;
 
     private Integer saleType;
 
-    private Timestamp createTime;
+    private String password;
 
     private Long spreadGoodsId;
 
@@ -29,6 +27,10 @@ public class RoomSpread extends Model {
     private Integer partakeNum;
 
     private Long prizeUserId;
+
+    private Timestamp createTime;
+
+    private Timestamp lastUpdateTime;
 
     private SpreadGoods spreadGoods;
 

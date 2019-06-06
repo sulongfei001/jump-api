@@ -15,12 +15,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/*/*/*/user/**")
                 .antMatchers("/*/*/*/room/**")
                 .antMatchers("/*/*/*/goods/**")
+                .antMatchers("/*/*/*/game/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/test/**").authenticated()
                 .antMatchers("/*/*/*/user/**").authenticated()
                 .antMatchers("/*/*/*/room/**").authenticated()
                 .antMatchers("/*/*/*/goods/**").authenticated()
+                .antMatchers("/*/*/*/game/**").authenticated()
         ;
 
 

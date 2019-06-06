@@ -6,9 +6,11 @@ import com.sulongfei.jump.dto.UserLoginDTO;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
 import com.sulongfei.jump.model.SecurityUser;
 import com.sulongfei.jump.response.Response;
+import com.sulongfei.jump.rest.response.RegisterResponse;
+import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.LoginService;
-import com.sulongfei.jump.utils.StrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,15 +40,14 @@ public class LoginServiceImpl implements LoginService {
     public Response generatingSmsCode(UserLoginDTO dto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         SecurityUser user = securityUserMapper.selectByUsername(dto.getPhoneNumber());
-        String SmsCode = StrUtils.randomNumber(6);
-        redisService.set(Constants.RedisName.LOGIN_SMS_CODE + dto.getPhoneNumber(), new BCryptPasswordEncoder().encode("111111"), GlobalValueConfig.getSmsCodeExpire() * 60);
+        // String SmsCode = StrUtils.randomNumber(6);
+        String SmsCode = "111111";
+        redisService.set(Constants.RedisName.LOGIN_SMS_CODE + dto.getPhoneNumber(), new BCryptPasswordEncoder().encode(SmsCode), GlobalValueConfig.getSmsCodeExpire() * 60);
         if (user == null) {
-            dto.setRegisterTime(now);
-            // ResponseEntity<RegisterResponse> result = restService.register(dto);
-
+            ResponseEntity<RestResponse<RegisterResponse>> result = restService.register(dto);
             user = new SecurityUser();
             user.setPhoneNumber(dto.getPhoneNumber());
-            user.setPassword(new BCryptPasswordEncoder().encode("111111"));
+            user.setPassword(new BCryptPasswordEncoder().encode(SmsCode));
             user.setCreateTime(now);
             user.setUpdateTime(now);
             user.setRegisterClue(dto.getRemoteClubId());
@@ -55,11 +56,10 @@ public class LoginServiceImpl implements LoginService {
             user.setLastOperationClub(dto.getRemoteClubId());
             user.setEverydayTicket(false);
             user.setTicketNum(0);
-
-            // user.setMemberId(result.getBody().getMemberId());
-            // user.setIsSaler(result.getBody().getIsSaler() == 1 ? true : false);
-            user.setMemberId(1L);
-            user.setIsSaler(false);
+            if (result.getBody() != null && "200".equals(result.getBody().getErrorCode())) {
+                user.setMemberId(result.getBody().getResult().getMemberId());
+                user.setIsSaler(result.getBody().getResult().getIsSaler() == 1 ? true : false);
+            }
             securityUserMapper.insertSelective(user);
         } else {
             user.setLastOperationTime(now);

@@ -2,6 +2,7 @@ package com.sulongfei.jump.mapper;
 
 import com.sulongfei.jump.model.Record;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,4 +19,6 @@ public interface RecordMapper {
     int updateByPrimaryKeySelective(Record record);
 
     int updateByPrimaryKey(Record record);
+
+    Record randomResult(@Param("remoteClubId") Long remoteClubId, @Param("userId") Long userId);
 }

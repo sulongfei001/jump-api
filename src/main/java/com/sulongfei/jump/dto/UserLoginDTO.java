@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 /**
  * 〈〉
  *
@@ -19,5 +17,5 @@ public class UserLoginDTO extends BaseDTO {
     @ApiModelProperty(value = "手机号码", required = true)
     private String phoneNumber;
     @ApiModelProperty(value = "注册时间", hidden = true)
-    private Timestamp registerTime;
+    private Long registerTime = System.currentTimeMillis();
 }

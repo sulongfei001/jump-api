@@ -6,7 +6,6 @@
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="remote_club_id" jdbcType="BIGINT" property="remoteClubId"/>
         <result column="integral" jdbcType="INTEGER" property="integral"/>
-        <collection column="user_id" property="user" ofType="SecurityUser" select="getUserByUserId"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, user_id, remote_club_id, integral

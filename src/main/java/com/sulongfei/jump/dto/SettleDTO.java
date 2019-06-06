@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
 public class SettleDTO extends BaseDTO {
 
     @ApiModelProperty(value = "房间ID", example = "0")
-    private Long roomSimpleId;
+    private Long roomId;
     @ApiModelProperty(value = "分数", example = "0")
     private Integer integral;
     @ApiModelProperty(value = "卡券ID", example = "0")

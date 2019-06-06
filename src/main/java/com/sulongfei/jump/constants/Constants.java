@@ -22,6 +22,7 @@ public interface Constants {
      * 常用字符串数字常量
      */
     interface Common {
+        String MINUS_ONE = "-1";
         String ZERO = "0";
         String ONE = "1";
         String TWO = "2";
@@ -32,5 +33,12 @@ public interface Constants {
         String SEVEN = "7";
         String EIGHT = "8";
         String NINE = "9";
+    }
+
+    interface RoomType {
+        Integer SIMPLE = 1;
+        Integer SPREAD = 2;
+        Integer CLUB = 3;
+
     }
 }

@@ -2,6 +2,7 @@ package com.sulongfei.jump.mapper;
 
 import com.sulongfei.jump.model.RoomSpread;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,5 +22,5 @@ public interface RoomSpreadMapper {
 
     int updateByPrimaryKey(RoomSpread record);
 
-    List<RoomSpread> selectEffective(Long remoteClubId);
+    List<RoomSpread> selectEffective(@Param("remoteClubId") Long remoteClubId);
 }

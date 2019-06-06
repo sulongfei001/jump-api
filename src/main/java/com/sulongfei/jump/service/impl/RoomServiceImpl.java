@@ -73,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
         SecurityUser user = UserInterceptor.getLocalUser();
         final int DEF_DIV_SCALE = 10;
 
-        RoomSimple room = roomSimpleMapper.selectByPrimaryKey(dto.getRoomSimpleId());
+        RoomSimple room = roomSimpleMapper.selectByPrimaryKey(dto.getRoomId());
         Goods goods = goodsMapper.selectByGoodsId(room.getRemoteGoodsId());
         BigDecimal price = goods.getGoodsPrice();
         BigDecimal premium = BigDecimal.valueOf(room.getPremiumProportion()).divide(BigDecimal.valueOf(100), DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP);
@@ -88,8 +88,8 @@ public class RoomServiceImpl implements RoomService {
             win = true;
             // 发送大奖物品
             if (!StringUtils.isEmpty(room.getRemoteClubId()) && !StringUtils.isEmpty(room.getGoodsNum()) && 0 < room.getGoodsNum()) {
-                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-                ResponseEntity<SendPrdResponse> goodsResult = restService.sendPrd(goodsRequest);
+//                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
+//                ResponseEntity<SendPrdResponse> goodsResult = restService.sendPrd(goodsRequest);
             }
         }
 
@@ -107,7 +107,18 @@ public class RoomServiceImpl implements RoomService {
         user.setTicketNum(user.getTicketNum() + dto.getGetTicket());
         userMapper.updateByPrimaryKeySelective(user);
         // 记录结果
-        Record record = new Record(user.getId(), dto.getRemoteClubId(), room.getTicketNum(), dto.getSaleId(), dto.getSaleType(), now);
+        Record record = new Record(
+                user.getId(),
+                dto.getRemoteClubId(),
+                dto.getRoomId(),
+                Constants.RoomType.SIMPLE,
+                dto.getIntegral(),
+                win,
+                room.getTicketNum(),
+                dto.getGetTicket(),
+                dto.getSaleId(),
+                dto.getSaleType(),
+                now);
         recordMapper.insertSelective(record);
         // 计算分数
         if (dto.getIntegral() > 0) {
@@ -164,10 +175,12 @@ public class RoomServiceImpl implements RoomService {
         roomSpread.setSaleId(dto.getSaleId());
         roomSpread.setSaleType(dto.getSaleType());
         roomSpread.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        roomSpread.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         roomSpread.setSpreadGoodsId(dto.getSpreadGoodsId());
         roomSpread.setTicketNum(dto.getTicketNum());
         roomSpread.setJoinNum(dto.getJoinNum());
         roomSpread.setPartakeNum(Integer.valueOf(Constants.Common.ZERO));
+        roomSpread.setPrizeUserId(Long.valueOf(Constants.Common.MINUS_ONE));
         roomSpreadMapper.insertSelective(roomSpread);
 
         return new Response();
@@ -178,14 +191,23 @@ public class RoomServiceImpl implements RoomService {
         List<RoomSpread> list = roomSpreadMapper.selectEffective(dto.getRemoteClubId());
         List<RoomSpreadRes> data = Lists.newArrayList();
         list.forEach(roomSpread -> {
-            SpreadGoodsRes goodsRes = new SpreadGoodsRes();
-            BeanUtils.copyProperties(roomSpread.getSpreadGoods(), goodsRes);
-            UserRes user = new UserRes();
-            BeanUtils.copyProperties(roomSpread.getUser(),user);
+            SpreadGoodsRes goodsRes = null;
+            if (roomSpread.getSpreadGoods() != null) {
+                goodsRes = new SpreadGoodsRes();
+                BeanUtils.copyProperties(roomSpread.getSpreadGoods(), goodsRes);
+            }
+            UserRes user = null;
+            if (roomSpread.getUser() != null) {
+                user = new UserRes();
+                BeanUtils.copyProperties(roomSpread.getUser(), user);
+            }
             RoomSpreadRes res = new RoomSpreadRes();
             BeanUtils.copyProperties(roomSpread, res);
+            res.setCreateTime(roomSpread.getCreateTime().getTime());
+            res.setLastUpdateTime(roomSpread.getLastUpdateTime().getTime());
             res.setSpreadGoods(goodsRes);
             res.setUser(user);
+            res.setEnded(roomSpread.getPrizeUserId() == Long.valueOf(Constants.Common.MINUS_ONE) ? false : true);
             data.add(res);
         });
         return new Response(data);

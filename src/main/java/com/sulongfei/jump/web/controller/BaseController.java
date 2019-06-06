@@ -22,7 +22,7 @@ public class BaseController {
 
     protected void verifySettleSimpleDTO(SettleDTO dto){
         verifyBaseDTO(dto);
-        Assert.notNull(dto.getRoomSimpleId(), ResponseStatus.EMPTY_ROOM_ID);
+        Assert.notNull(dto.getRoomId(), ResponseStatus.EMPTY_ROOM_ID);
         Assert.notNull(dto.getGetTicket(), ResponseStatus.EMPTY_TICKET);
         Assert.notNull(dto.getIntegral(), ResponseStatus.ERROR_INTEGRAL);
     }

@@ -40,7 +40,7 @@ public class RoomController extends BaseController {
         return roomService.roomSimpleList(dto);
     }
 
-    @ApiOperation(value = "游戏结算", notes = "用于游戏方房间结算分数")
+    @ApiOperation(value = "游戏房间游戏结算", notes = "用于游戏方房间结算分数")
     @PostMapping("/simple/settle")
     public Response<SettleRes> settleSimpleGame(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO baseDTO,

@@ -10,8 +10,10 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class RestResponse {
+public class RestResponse<T> {
     private String errorCode;
 
     private String errMsg;
+
+    private T result;
 }

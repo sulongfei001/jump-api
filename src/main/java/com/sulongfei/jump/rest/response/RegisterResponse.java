@@ -1,7 +1,6 @@
 package com.sulongfei.jump.rest.response;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * 〈〉
@@ -10,9 +9,8 @@ import lombok.EqualsAndHashCode;
  * @Date 2019/5/30 15:41
  * @Version 1.0
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class RegisterResponse extends RestResponse{
+public class RegisterResponse {
     private Integer isSaler;
 
     private Long memberId;

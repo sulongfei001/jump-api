@@ -21,9 +21,9 @@ public class RegisterRequest {
 
     private Long saleId;
 
-    private Timestamp registerTime;
+    private Long registerTime;
 
-    public RegisterRequest(String mobile, Long orgId, Integer saleType, Long saleId, Timestamp registerTime) {
+    public RegisterRequest(String mobile, Long orgId, Integer saleType, Long saleId, Long registerTime) {
         this.mobile = mobile;
         this.orgId = orgId;
         this.saleType = saleType;
