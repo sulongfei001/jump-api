@@ -1,0 +1,9 @@
+version: '2'
+services:
+  jump-api:
+    build: Dockerfile
+    image: jump-api:1.0
+    tty: true
+    ports:
+        - "9004:9004"
+    container_name: "jump-api"
