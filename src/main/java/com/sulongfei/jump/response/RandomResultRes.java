@@ -1,6 +1,6 @@
 package com.sulongfei.jump.response;
 
-import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import lombok.Data;
  * @Date 2019/6/6 17:33
  * @Version 1.0
  */
-@Api(value = "随机游戏结果返回对象")
+@ApiModel(value = "随机游戏结果返回对象")
 @Data
 public class RandomResultRes {
     @ApiModelProperty(value = "随机用户分数")

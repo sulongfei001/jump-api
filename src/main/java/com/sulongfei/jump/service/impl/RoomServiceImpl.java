@@ -12,6 +12,7 @@ import com.sulongfei.jump.mapper.*;
 import com.sulongfei.jump.model.*;
 import com.sulongfei.jump.response.*;
 import com.sulongfei.jump.rest.request.SendPrdRequest;
+import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.rest.response.SendPrdResponse;
 import com.sulongfei.jump.service.RoomService;
 import com.sulongfei.jump.web.interceptor.UserInterceptor;
@@ -53,6 +54,8 @@ public class RoomServiceImpl implements RoomService {
     private SecurityUserMapper userMapper;
     @Autowired
     private IntegralMapper integralMapper;
+    @Autowired
+    private RankPrizeMapper rankPrizeMapper;
 
     @Override
     public Response roomSimpleList(BaseDTO dto) {
@@ -88,15 +91,15 @@ public class RoomServiceImpl implements RoomService {
             win = true;
             // 发送大奖物品
             if (!StringUtils.isEmpty(room.getRemoteClubId()) && !StringUtils.isEmpty(room.getGoodsNum()) && 0 < room.getGoodsNum()) {
-//                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-//                ResponseEntity<SendPrdResponse> goodsResult = restService.sendPrd(goodsRequest);
+                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
+                ResponseEntity<RestResponse<SendPrdResponse>> goodsResult = restService.sendPrd(goodsRequest);
             }
         }
 
         // 发送卡券
         if (!StringUtils.isEmpty(dto.getCardId()) && !StringUtils.isEmpty(dto.getCardNum()) && dto.getCardNum() > 0) {
             SendPrdRequest cardRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), dto.getCardId(), dto.getCardNum(), dto.getSaleId(), dto.getSaleType());
-            ResponseEntity<SendPrdResponse> cardResult = restService.sendPrd(cardRequest);
+            ResponseEntity<RestResponse<SendPrdResponse>> cardResult = restService.sendPrd(cardRequest);
         }
         if (room.getTicketNum() > user.getTicketNum()) {
             throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
@@ -138,7 +141,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Response rankList(BaseDTO dto) {
         List<Integral> integrals = integralMapper.rankListTop(dto.getRemoteClubId(), GlobalValueConfig.getEntryIntegral(), GlobalValueConfig.getEntryNum());
+        List<RankPrize> rankPrizes = rankPrizeMapper.selectByClubId(dto.getRemoteClubId());
         List<IntegralRes> list = Lists.newArrayList();
+        List<PrizeRes> prizeList = Lists.newArrayList();
         integrals.forEach(integral -> {
             IntegralRes integralRes = new IntegralRes();
             UserRes userRes = new UserRes();
@@ -147,10 +152,16 @@ public class RoomServiceImpl implements RoomService {
             integralRes.setUser(userRes);
             list.add(integralRes);
         });
+        rankPrizes.forEach(rankPrize -> {
+            PrizeRes res = new PrizeRes();
+            BeanUtils.copyProperties(rankPrize, res);
+            prizeList.add(res);
+        });
         RankListRes data = new RankListRes();
         UserRes userRes = new UserRes();
         BeanUtils.copyProperties(UserInterceptor.getLocalUser(), userRes);
         data.setList(list);
+        data.setPrizeList(prizeList);
         data.setUser(userRes);
         data.setEntryIntegral(GlobalValueConfig.getEntryIntegral());
         return new Response(data);

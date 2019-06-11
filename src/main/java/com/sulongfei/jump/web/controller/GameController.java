@@ -1,6 +1,7 @@
 package com.sulongfei.jump.web.controller;
 
 import com.sulongfei.jump.dto.BaseDTO;
+import com.sulongfei.jump.response.PrdListRes;
 import com.sulongfei.jump.response.RandomResultRes;
 import com.sulongfei.jump.response.Response;
 import com.sulongfei.jump.service.GameService;
@@ -35,4 +36,14 @@ public class GameController extends BaseController {
         verifyBaseDTO(dto);
         return gameService.randomGameResult(dto);
     }
+
+    @ApiOperation(value = "卡券列表", notes = "获取该用户所有卡券")
+    @PostMapping("/prdlist")
+    public Response<PrdListRes> getPrdList(
+            @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto
+    ) {
+        verifyBaseDTO(dto);
+        return gameService.getPrdList(dto);
+    }
+
 }

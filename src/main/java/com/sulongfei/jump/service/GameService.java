@@ -1,6 +1,7 @@
 package com.sulongfei.jump.service;
 
 import com.sulongfei.jump.dto.BaseDTO;
+import com.sulongfei.jump.response.PrdListRes;
 import com.sulongfei.jump.response.Response;
 
 /**
@@ -12,4 +13,6 @@ import com.sulongfei.jump.response.Response;
  */
 public interface GameService {
     Response randomGameResult(BaseDTO dto);
+
+    Response<PrdListRes> getPrdList(BaseDTO dto);
 }

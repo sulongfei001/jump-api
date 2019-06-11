@@ -23,7 +23,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://139.199.159.105:3306/club_jump?useSSL=false"
+                        connectionURL="jdbc:mysql://212.64.113.76:9000/club_jump?useSSL=false"
                         userId="root"
                         password="Sulongfei1234">
         </jdbcConnection>

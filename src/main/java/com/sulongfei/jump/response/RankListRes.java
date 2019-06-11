@@ -24,4 +24,7 @@ public class RankListRes {
 
     @ApiModelProperty(value = "入榜分数")
     private Integer entryIntegral;
+
+    @ApiModelProperty(value = "排行榜奖励")
+    private List<PrizeRes> prizeList;
 }

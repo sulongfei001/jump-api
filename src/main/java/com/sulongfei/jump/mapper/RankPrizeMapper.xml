@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sulongfei.jump.mapper.RankPrizeMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.RankPrize">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="remote_club_id" property="remoteClubId" jdbcType="BIGINT"/>
+        <result column="sequence" property="sequence" jdbcType="INTEGER"/>
+        <result column="remote_goods_id" property="remoteGoodsId" jdbcType="BIGINT"/>
+        <result column="goods_num" property="goodsNum" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, remote_club_id, sequence, remote_goods_id, goods_num
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from rank_prize
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from rank_prize
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.sulongfei.jump.model.RankPrize">
+    insert into rank_prize (id, remote_club_id, sequence, 
+      remote_goods_id, goods_num)
+    values (#{id,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{sequence,jdbcType=INTEGER}, 
+      #{remoteGoodsId,jdbcType=BIGINT}, #{goodsNum,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RankPrize">
+        insert into rank_prize
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="remoteClubId != null">
+                remote_club_id,
+            </if>
+            <if test="sequence != null">
+                sequence,
+            </if>
+            <if test="remoteGoodsId != null">
+                remote_goods_id,
+            </if>
+            <if test="goodsNum != null">
+                goods_num,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="remoteClubId != null">
+                #{remoteClubId,jdbcType=BIGINT},
+            </if>
+            <if test="sequence != null">
+                #{sequence,jdbcType=INTEGER},
+            </if>
+            <if test="remoteGoodsId != null">
+                #{remoteGoodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsNum != null">
+                #{goodsNum,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.RankPrize">
+        update rank_prize
+        <set>
+            <if test="remoteClubId != null">
+                remote_club_id = #{remoteClubId,jdbcType=BIGINT},
+            </if>
+            <if test="sequence != null">
+                sequence = #{sequence,jdbcType=INTEGER},
+            </if>
+            <if test="remoteGoodsId != null">
+                remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsNum != null">
+                goods_num = #{goodsNum,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.RankPrize">
+    update rank_prize
+    set remote_club_id = #{remoteClubId,jdbcType=BIGINT},
+      sequence = #{sequence,jdbcType=INTEGER},
+      remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
+      goods_num = #{goodsNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="selectByClubId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from rank_prize
+        where remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+        order by sequence
+    </select>
+</mapper>

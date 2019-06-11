@@ -16,6 +16,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/*/*/*/room/**")
                 .antMatchers("/*/*/*/goods/**")
                 .antMatchers("/*/*/*/game/**")
+                .antMatchers("/*/*/*/file/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/test/**").authenticated()
@@ -23,6 +24,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/*/*/*/room/**").authenticated()
                 .antMatchers("/*/*/*/goods/**").authenticated()
                 .antMatchers("/*/*/*/game/**").authenticated()
+                .antMatchers("/*/*/*/file/**").authenticated()
         ;
 
 
