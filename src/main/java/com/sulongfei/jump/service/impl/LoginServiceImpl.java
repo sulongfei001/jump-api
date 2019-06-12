@@ -1,6 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
-import com.sulongfei.jump.config.GlobalValueConfig;
+import com.sulongfei.jump.config.GlobalContext;
 import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.dto.UserLoginDTO;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
@@ -34,6 +34,8 @@ public class LoginServiceImpl implements LoginService {
     private RedisService redisService;
     @Autowired
     private RestService restService;
+    @Autowired
+    private GlobalContext globalContext;
 
     @Override
     @Transactional(readOnly = false)
@@ -42,7 +44,7 @@ public class LoginServiceImpl implements LoginService {
         SecurityUser user = securityUserMapper.selectByUsername(dto.getPhoneNumber());
         // String SmsCode = StrUtils.randomNumber(6);
         String SmsCode = "111111";
-        redisService.set(Constants.RedisName.LOGIN_SMS_CODE + dto.getPhoneNumber(), new BCryptPasswordEncoder().encode(SmsCode), GlobalValueConfig.getSmsCodeExpire() * 60);
+        redisService.set(Constants.RedisName.LOGIN_SMS_CODE + dto.getPhoneNumber(), new BCryptPasswordEncoder().encode(SmsCode), globalContext.getSmsCodeExpire() * 60);
         if (user == null) {
             ResponseEntity<RestResponse<RegisterResponse>> result = restService.register(dto);
             user = new SecurityUser();

@@ -7,16 +7,12 @@ import java.sql.Timestamp;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class Record extends Model {
+public class RecordSpread extends Model {
     private Long id;
 
     private Long userId;
 
-    private Long remoteClubId;
-
     private Long roomId;
-
-    private Integer roomType;
 
     private Integer integral;
 
@@ -32,11 +28,9 @@ public class Record extends Model {
 
     private Timestamp createTime;
 
-    public Record(Long userId, Long remoteClubId, Long roomId, Integer roomType, Integer integral, Boolean isWin, Integer consumeTicket, Integer getTicket, Long saleId, Integer saleType, Timestamp createTime) {
+    public RecordSpread(Long userId, Long roomId, Integer integral, Boolean isWin, Integer consumeTicket, Integer getTicket, Long saleId, Integer saleType, Timestamp createTime) {
         this.userId = userId;
-        this.remoteClubId = remoteClubId;
         this.roomId = roomId;
-        this.roomType = roomType;
         this.integral = integral;
         this.isWin = isWin;
         this.consumeTicket = consumeTicket;

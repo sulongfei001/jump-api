@@ -26,7 +26,9 @@ public class RoomSpread extends Model {
 
     private Integer partakeNum;
 
-    private Long prizeUserId;
+    private Long winRecordId;
+
+    private Byte status;
 
     private Timestamp createTime;
 
@@ -34,5 +36,4 @@ public class RoomSpread extends Model {
 
     private SpreadGoods spreadGoods;
 
-    private SecurityUser user;
 }

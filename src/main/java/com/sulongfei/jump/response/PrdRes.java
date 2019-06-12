@@ -26,10 +26,10 @@ public class PrdRes {
     private Long receivePlace;*/
 
     @ApiModelProperty(value = "获取时间")
-    private Date receiveTime;
+    private Long receiveTime;
 
     @ApiModelProperty(value = "失效时间，没有则是不失效")
-    private Date beginTime;
+    private Long beginTime;
 
     @ApiModelProperty(value = "商品名称")
     private String name;

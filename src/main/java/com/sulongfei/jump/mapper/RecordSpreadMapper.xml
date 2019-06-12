@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sulongfei.jump.mapper.RecordSpreadMapper" >
+  <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.RecordSpread" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="room_id" property="roomId" jdbcType="BIGINT" />
+    <result column="integral" property="integral" jdbcType="INTEGER" />
+    <result column="is_win" property="isWin" jdbcType="BIT" />
+    <result column="consume_ticket" property="consumeTicket" jdbcType="INTEGER" />
+    <result column="get_ticket" property="getTicket" jdbcType="INTEGER" />
+    <result column="sale_id" property="saleId" jdbcType="BIGINT" />
+    <result column="sale_type" property="saleType" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, room_id, integral, is_win, consume_ticket, get_ticket, sale_id, sale_type, 
+    create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from record_spread
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from record_spread
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.sulongfei.jump.model.RecordSpread" >
+    insert into record_spread (id, user_id, room_id, 
+      integral, is_win, consume_ticket, 
+      get_ticket, sale_id, sale_type, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, 
+      #{integral,jdbcType=INTEGER}, #{isWin,jdbcType=BIT}, #{consumeTicket,jdbcType=INTEGER}, 
+      #{getTicket,jdbcType=INTEGER}, #{saleId,jdbcType=BIGINT}, #{saleType,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RecordSpread" >
+    insert into record_spread
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="roomId != null" >
+        room_id,
+      </if>
+      <if test="integral != null" >
+        integral,
+      </if>
+      <if test="isWin != null" >
+        is_win,
+      </if>
+      <if test="consumeTicket != null" >
+        consume_ticket,
+      </if>
+      <if test="getTicket != null" >
+        get_ticket,
+      </if>
+      <if test="saleId != null" >
+        sale_id,
+      </if>
+      <if test="saleType != null" >
+        sale_type,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="roomId != null" >
+        #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="integral != null" >
+        #{integral,jdbcType=INTEGER},
+      </if>
+      <if test="isWin != null" >
+        #{isWin,jdbcType=BIT},
+      </if>
+      <if test="consumeTicket != null" >
+        #{consumeTicket,jdbcType=INTEGER},
+      </if>
+      <if test="getTicket != null" >
+        #{getTicket,jdbcType=INTEGER},
+      </if>
+      <if test="saleId != null" >
+        #{saleId,jdbcType=BIGINT},
+      </if>
+      <if test="saleType != null" >
+        #{saleType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.RecordSpread" >
+    update record_spread
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="roomId != null" >
+        room_id = #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="integral != null" >
+        integral = #{integral,jdbcType=INTEGER},
+      </if>
+      <if test="isWin != null" >
+        is_win = #{isWin,jdbcType=BIT},
+      </if>
+      <if test="consumeTicket != null" >
+        consume_ticket = #{consumeTicket,jdbcType=INTEGER},
+      </if>
+      <if test="getTicket != null" >
+        get_ticket = #{getTicket,jdbcType=INTEGER},
+      </if>
+      <if test="saleId != null" >
+        sale_id = #{saleId,jdbcType=BIGINT},
+      </if>
+      <if test="saleType != null" >
+        sale_type = #{saleType,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.RecordSpread" >
+    update record_spread
+    set user_id = #{userId,jdbcType=BIGINT},
+      room_id = #{roomId,jdbcType=BIGINT},
+      integral = #{integral,jdbcType=INTEGER},
+      is_win = #{isWin,jdbcType=BIT},
+      consume_ticket = #{consumeTicket,jdbcType=INTEGER},
+      get_ticket = #{getTicket,jdbcType=INTEGER},
+      sale_id = #{saleId,jdbcType=BIGINT},
+      sale_type = #{saleType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

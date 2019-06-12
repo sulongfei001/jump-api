@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sulongfei.jump.mapper.RecordMapper">
-    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.Record">
+<mapper namespace="com.sulongfei.jump.mapper.RecordSimpleMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.RecordSimple">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
-        <result column="remote_club_id" property="remoteClubId" jdbcType="BIGINT"/>
         <result column="room_id" property="roomId" jdbcType="BIGINT"/>
-        <result column="room_type" property="roomType" jdbcType="INTEGER"/>
         <result column="integral" property="integral" jdbcType="INTEGER"/>
         <result column="is_win" property="isWin" jdbcType="BIT"/>
         <result column="consume_ticket" property="consumeTicket" jdbcType="INTEGER"/>
@@ -16,33 +14,31 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, user_id, remote_club_id, room_id, room_type, integral, is_win, consume_ticket, 
-    get_ticket, sale_id, sale_type, create_time
+    id, user_id, room_id, integral, is_win, consume_ticket, get_ticket, sale_id, sale_type, 
+    create_time
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
-        from record
+        from record_simple
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from record
+    delete from record_simple
     where id = #{id,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.sulongfei.jump.model.Record">
-    insert into record (id, user_id, remote_club_id, 
-      room_id, room_type, integral, 
-      is_win, consume_ticket, get_ticket, 
-      sale_id, sale_type, create_time
-      )
-    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, 
-      #{roomId,jdbcType=BIGINT}, #{roomType,jdbcType=INTEGER}, #{integral,jdbcType=INTEGER}, 
-      #{isWin,jdbcType=BIT}, #{consumeTicket,jdbcType=INTEGER}, #{getTicket,jdbcType=INTEGER}, 
-      #{saleId,jdbcType=BIGINT}, #{saleType,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
-      )
+    <insert id="insert" parameterType="com.sulongfei.jump.model.RecordSimple">
+    insert into record_simple (id, user_id, room_id, 
+      integral, is_win, consume_ticket, 
+      get_ticket, sale_id, sale_type, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, 
+      #{integral,jdbcType=INTEGER}, #{isWin,jdbcType=BIT}, #{consumeTicket,jdbcType=INTEGER}, 
+      #{getTicket,jdbcType=INTEGER}, #{saleId,jdbcType=BIGINT}, #{saleType,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
   </insert>
-    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.Record">
-        insert into record
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RecordSimple">
+        insert into record_simple
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
@@ -50,14 +46,8 @@
             <if test="userId != null">
                 user_id,
             </if>
-            <if test="remoteClubId != null">
-                remote_club_id,
-            </if>
             <if test="roomId != null">
                 room_id,
-            </if>
-            <if test="roomType != null">
-                room_type,
             </if>
             <if test="integral != null">
                 integral,
@@ -88,14 +78,8 @@
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
             </if>
-            <if test="remoteClubId != null">
-                #{remoteClubId,jdbcType=BIGINT},
-            </if>
             <if test="roomId != null">
                 #{roomId,jdbcType=BIGINT},
-            </if>
-            <if test="roomType != null">
-                #{roomType,jdbcType=INTEGER},
             </if>
             <if test="integral != null">
                 #{integral,jdbcType=INTEGER},
@@ -120,20 +104,14 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.Record">
-        update record
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.RecordSimple">
+        update record_simple
         <set>
             <if test="userId != null">
                 user_id = #{userId,jdbcType=BIGINT},
             </if>
-            <if test="remoteClubId != null">
-                remote_club_id = #{remoteClubId,jdbcType=BIGINT},
-            </if>
             <if test="roomId != null">
                 room_id = #{roomId,jdbcType=BIGINT},
-            </if>
-            <if test="roomType != null">
-                room_type = #{roomType,jdbcType=INTEGER},
             </if>
             <if test="integral != null">
                 integral = #{integral,jdbcType=INTEGER},
@@ -159,12 +137,10 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.Record">
-    update record
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.RecordSimple">
+    update record_simple
     set user_id = #{userId,jdbcType=BIGINT},
-      remote_club_id = #{remoteClubId,jdbcType=BIGINT},
       room_id = #{roomId,jdbcType=BIGINT},
-      room_type = #{roomType,jdbcType=INTEGER},
       integral = #{integral,jdbcType=INTEGER},
       is_win = #{isWin,jdbcType=BIT},
       consume_ticket = #{consumeTicket,jdbcType=INTEGER},
@@ -174,8 +150,6 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
-    <cache/>
 
     <select id="randomResult" resultMap="BaseResultMap">
         SELECT
@@ -188,5 +162,10 @@
         and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
         and user_id != #{userId,jdbcType=BIGINT}
         LIMIT 1
+    </select>
+    <select id="countPrize" resultType="java.lang.Integer">
+        select count(0)
+        from record
+        where room_id = #{roomId,jdbcType=BIGINT} and is_win = true
     </select>
 </mapper>

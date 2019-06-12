@@ -71,6 +71,17 @@ public class RoomController extends BaseController {
         return roomService.spreadRoomList(dto);
     }
 
+    @ApiOperation(value = "推广房间游戏结算", notes = "用于推广方房间结算分数")
+    @PostMapping("/spread/settle")
+    public Response<SettleRes> settleSpreadGame(
+            @ApiParam(value = "基础请求数据", hidden = true) BaseDTO baseDTO,
+            @ApiParam(value = "Json消息体", required = true) @RequestBody SettleDTO dto
+    ) {
+        BeanUtils.copyProperties(baseDTO, dto);
+        verifySettleSimpleDTO(dto);
+        return roomService.settleSpreadGame(dto);
+    }
+
 
     @ApiOperation(value = "本门店排行榜")
     @PostMapping("/rank_list")

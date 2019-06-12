@@ -19,9 +19,9 @@ public class PrdResponse {
 
     private Long receivePlace;
 
-    private Date receiveTime;
+    private Long receiveTime;
 
-    private Date beginTime;
+    private Long beginTime;
 
     private Long useType;
 

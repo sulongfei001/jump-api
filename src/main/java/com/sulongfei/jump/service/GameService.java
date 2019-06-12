@@ -15,4 +15,6 @@ public interface GameService {
     Response randomGameResult(BaseDTO dto);
 
     Response<PrdListRes> getPrdList(BaseDTO dto);
+
+    Response getTicket(BaseDTO dto);
 }

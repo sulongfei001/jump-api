@@ -1,12 +1,13 @@
 package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
+import com.sulongfei.jump.config.GlobalContext;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.exception.JumpException;
-import com.sulongfei.jump.mapper.RecordMapper;
+import com.sulongfei.jump.mapper.RecordSimpleMapper;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
-import com.sulongfei.jump.model.Record;
+import com.sulongfei.jump.model.RecordSimple;
 import com.sulongfei.jump.model.SecurityUser;
 import com.sulongfei.jump.response.*;
 import com.sulongfei.jump.rest.request.PrdRequest;
@@ -39,11 +40,13 @@ public class GameServiceImpl implements GameService {
     @Autowired
     private SecurityUserMapper userMapper;
     @Autowired
-    private RecordMapper recordMapper;
+    private RecordSimpleMapper recordSimpleMapper;
+    @Autowired
+    private GlobalContext globalContext;
 
     @Override
     public Response randomGameResult(BaseDTO dto) {
-        Record record = recordMapper.randomResult(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
+        RecordSimple record = recordSimpleMapper.randomResult(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
         if (record == null) {
             return new Response();
         }
@@ -76,5 +79,18 @@ public class GameServiceImpl implements GameService {
         });
         PrdListRes data = new PrdListRes(exchangeList, exclusiveList);
         return new Response<>(data);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Response getTicket(BaseDTO dto) {
+        SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
+        if (user.getEverydayTicket()) {
+            throw new JumpException(ResponseStatus.GOT_TICKET);
+        }
+        user.setTicketNum(user.getTicketNum() + globalContext.getEverydayTicketNum());
+        user.setEverydayTicket(true);
+        userMapper.updateByPrimaryKey(user);
+        return new Response();
     }
 }

@@ -21,8 +21,8 @@ public class RoomSpreadRes {
     private String password;
     @ApiModelProperty(value = "创建时间")
     private Long createTime;
-    @ApiModelProperty(value = "最后更新时间")
-    private Long lastUpdateTime;
+    @ApiModelProperty(value = "中奖时间")
+    private Long winTime;
     @ApiModelProperty(value = "单次门票消耗")
     private Integer ticketNum;
     @ApiModelProperty(value = "允许参与人数")

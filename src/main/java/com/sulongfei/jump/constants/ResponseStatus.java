@@ -78,5 +78,7 @@ public interface ResponseStatus {
 
     String NO_ENOUGH_GOODS = "剩余库存不足";
 
+    String GOT_TICKET = "今日已领取过门票";
+
 
 }

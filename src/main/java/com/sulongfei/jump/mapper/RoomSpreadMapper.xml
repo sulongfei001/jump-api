@@ -11,13 +11,14 @@
         <result column="ticket_num" jdbcType="INTEGER" property="ticketNum"/>
         <result column="join_num" jdbcType="INTEGER" property="joinNum"/>
         <result column="partake_num" jdbcType="INTEGER" property="partakeNum"/>
-        <result column="prize_user_id" jdbcType="BIGINT" property="prizeUserId"/>
+        <result column="win_record_id" jdbcType="BIGINT" property="winRecordId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, remote_club_id, sale_id, sale_type, password, spread_goods_id, ticket_num, join_num, 
-    partake_num, prize_user_id, create_time, last_update_time
+    partake_num, win_record_id, status, create_time, last_update_time
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -33,13 +34,13 @@
     insert into room_spread (id, remote_club_id, sale_id, 
       sale_type, password, spread_goods_id, 
       ticket_num, join_num, partake_num, 
-      prize_user_id, create_time, last_update_time
-      )
+      win_record_id, status, create_time, 
+      last_update_time)
     values (#{id,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{saleId,jdbcType=BIGINT}, 
       #{saleType,jdbcType=INTEGER}, #{password,jdbcType=VARCHAR}, #{spreadGoodsId,jdbcType=BIGINT}, 
       #{ticketNum,jdbcType=INTEGER}, #{joinNum,jdbcType=INTEGER}, #{partakeNum,jdbcType=INTEGER}, 
-      #{prizeUserId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{lastUpdateTime,jdbcType=TIMESTAMP}
-      )
+      #{winRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{lastUpdateTime,jdbcType=TIMESTAMP})
   </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RoomSpread">
         insert into room_spread
@@ -71,8 +72,11 @@
             <if test="partakeNum != null">
                 partake_num,
             </if>
-            <if test="prizeUserId != null">
-                prize_user_id,
+            <if test="winRecordId != null">
+                win_record_id,
+            </if>
+            <if test="status != null">
+                status,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -109,8 +113,11 @@
             <if test="partakeNum != null">
                 #{partakeNum,jdbcType=INTEGER},
             </if>
-            <if test="prizeUserId != null">
-                #{prizeUserId,jdbcType=BIGINT},
+            <if test="winRecordId != null">
+                #{winRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -147,8 +154,11 @@
             <if test="partakeNum != null">
                 partake_num = #{partakeNum,jdbcType=INTEGER},
             </if>
-            <if test="prizeUserId != null">
-                prize_user_id = #{prizeUserId,jdbcType=BIGINT},
+            <if test="winRecordId != null">
+                win_record_id = #{winRecordId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -169,7 +179,8 @@
       ticket_num = #{ticketNum,jdbcType=INTEGER},
       join_num = #{joinNum,jdbcType=INTEGER},
       partake_num = #{partakeNum,jdbcType=INTEGER},
-      prize_user_id = #{prizeUserId,jdbcType=BIGINT},
+      win_record_id = #{winRecordId,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
@@ -179,15 +190,20 @@
     <resultMap extends="BaseResultMap" id="RoomSpreadResult" type="com.sulongfei.jump.model.RoomSpread">
         <collection column="spread_goods_id" ofType="SpreadGoods" property="spreadGoods"
                     select="com.sulongfei.jump.mapper.SpreadGoodsMapper.selectByPrimaryKey"/>
-        <collection column="prize_user_id" ofType="SecurityUser" property="user"
-                    select="com.sulongfei.jump.mapper.SecurityUserMapper.selectByPrimaryKey"/>
     </resultMap>
 
     <select id="selectEffective" resultMap="RoomSpreadResult">
         select
         <include refid="Base_Column_List"/>
         from room_spread
-        where remote_club_id = #{remoteClubId,jdbcType=BIGINT} and prize_user_id = -1
+        where remote_club_id = #{remoteClubId,jdbcType=BIGINT} and win_record_id = -1
+    </select>
+
+    <select id="checkPassword" resultType="java.lang.Long">
+        select id
+        from room_spread
+        where password = #{password,jdbcType=VARCHAR}
+        limit 1
     </select>
 
 </mapper>
