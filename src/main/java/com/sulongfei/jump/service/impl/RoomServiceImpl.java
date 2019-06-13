@@ -2,7 +2,6 @@ package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
 import com.sulongfei.jump.config.GlobalContext;
-import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.RoomSpreadDTO;
@@ -28,6 +27,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 〈〉
@@ -86,10 +86,11 @@ public class RoomServiceImpl implements RoomService {
         Integer ticketNum = room.getTicketNum();
         Integer consumeNum = room.getConsumeNum();
         Integer userTicketNum = user.getTicketNum();
+        SettleRes res = new SettleRes();
 
-        if (ticketNum > userTicketNum) {
-            throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
-        }
+        if (room == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+
         // 消耗门票
         user.setTicketNum(userTicketNum - ticketNum);
         // 奖励门票
@@ -118,6 +119,7 @@ public class RoomServiceImpl implements RoomService {
             SendPrdRequest cardRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), dto.getCardId(), dto.getCardNum(), dto.getSaleId(), dto.getSaleType());
             ResponseEntity<RestResponse<SendPrdResponse>> cardResult = restService.sendPrd(cardRequest);
         }
+
         // 记录结果
         RecordSimple recordSimple = new RecordSimple(userId, dto.getRoomId(), dto.getIntegral(), win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
         recordSimpleMapper.insertSelective(recordSimple);
@@ -126,14 +128,22 @@ public class RoomServiceImpl implements RoomService {
         if (integral == null) {
             integral = new Integral(userId, dto.getRemoteClubId(), dto.getIntegral());
             integralMapper.insertSelective(integral);
+            Integer currentRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            res.setCurrentRank(currentRank);
         } else {
+            Integer formerRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
             integral.setIntegral(integral.getIntegral() + dto.getIntegral());
             integralMapper.updateByPrimaryKey(integral);
+            Integer laterRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            res.setRankUp(formerRank - laterRank);
         }
         // 房间消耗门票总数
         room.setConsumeNum(consumeNum + ticketNum);
         roomSimpleMapper.updateByPrimaryKey(room);
-        return new Response(new SettleRes(integral.getIntegral(), 3, win));
+
+        res.setCountIntegral(integral.getIntegral());
+        res.setWin(win);
+        return new Response(res);
     }
 
     @Override
@@ -171,9 +181,8 @@ public class RoomServiceImpl implements RoomService {
         // 更改商品剩余库存
         SpreadGoods spreadGoods = spreadGoodsMapper.selectByPrimaryKey(dto.getSpreadGoodsId());
         Goods goods = goodsMapper.selectByGoodsId(spreadGoods.getRemoteGoodsId());
-        if (goods.getRemainNum() < spreadGoods.getGoodsNum()) {
-            throw new JumpException(ResponseStatus.NO_ENOUGH_GOODS);
-        }
+        if (goods.getRemainNum() < spreadGoods.getGoodsNum()) throw new JumpException(ResponseStatus.NO_ENOUGH_GOODS);
+
         goods.setRemainNum(goods.getRemainNum() - spreadGoods.getGoodsNum());
         goodsMapper.updateByPrimaryKey(goods);
         // 随机密码
@@ -191,13 +200,13 @@ public class RoomServiceImpl implements RoomService {
         roomSpread.setSaleId(dto.getSaleId());
         roomSpread.setSaleType(dto.getSaleType());
         roomSpread.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        roomSpread.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         roomSpread.setSpreadGoodsId(dto.getSpreadGoodsId());
         roomSpread.setTicketNum(dto.getTicketNum());
         roomSpread.setJoinNum(dto.getJoinNum());
-        roomSpread.setPartakeNum(Integer.valueOf(Constants.Common.ZERO));
-        roomSpread.setWinRecordId(Long.valueOf(Constants.Common.MINUS_ONE));
-        roomSpread.setStatus(Byte.valueOf(Constants.Common.ZERO));
+        roomSpread.setPartakeNum(0);
+        roomSpread.setWinRecordId((long) -1);
+        roomSpread.setStatus((byte) 0);
+        roomSpread.setWinNum(new Random().nextInt(roomSpread.getJoinNum()) + 1);
         roomSpreadMapper.insertSelective(roomSpread);
 
         return new Response();
@@ -211,14 +220,14 @@ public class RoomServiceImpl implements RoomService {
             RoomSpreadRes res = new RoomSpreadRes();
             BeanUtils.copyProperties(roomSpread, res);
             res.setCreateTime(roomSpread.getCreateTime().getTime());
-            res.setEnded(roomSpread.getStatus() == Byte.valueOf(Constants.Common.ONE));
+            res.setEnded(roomSpread.getStatus() == 1);
 
             if (roomSpread.getSpreadGoods() != null) {
                 SpreadGoodsRes goodsRes = new SpreadGoodsRes();
                 BeanUtils.copyProperties(roomSpread.getSpreadGoods(), goodsRes);
                 res.setSpreadGoods(goodsRes);
             }
-            if (roomSpread.getWinRecordId() != null && roomSpread.getWinRecordId() != Long.valueOf(Constants.Common.MINUS_ONE)) {
+            if (roomSpread.getWinRecordId() != null && roomSpread.getWinRecordId() != -1 && roomSpread.getStatus() == 1) {
                 RecordSpread recordSpread = recordSpreadMapper.selectByPrimaryKey(roomSpread.getWinRecordId());
                 if (recordSpread != null) {
                     SecurityUser securityUser = userMapper.selectByPrimaryKey(recordSpread.getId());
@@ -242,10 +251,12 @@ public class RoomServiceImpl implements RoomService {
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
         Integer ticketNum = roomSpread.getTicketNum();
         Integer userTicketNum = user.getTicketNum();
+        SettleRes res = new SettleRes();
 
-        if (ticketNum > userTicketNum) {
-            throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
-        }
+        if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        if (roomSpread.getStatus() == 1) throw new JumpException(ResponseStatus.ROOM_CLOSED);
+        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+
         // 消耗门票
         user.setTicketNum(userTicketNum - ticketNum);
         // 奖励门票
@@ -253,7 +264,9 @@ public class RoomServiceImpl implements RoomService {
         userMapper.updateByPrimaryKeySelective(user);
 
         Boolean win = false;
-
+        if (roomSpread.getWinRecordId() == -1 && roomSpread.getPartakeNum() == roomSpread.getWinNum() - 1) {
+            win = true;
+        }
 
         // 记录结果
         RecordSpread recordSpread = new RecordSpread(userId, dto.getRoomId(), dto.getIntegral(), win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
@@ -263,15 +276,32 @@ public class RoomServiceImpl implements RoomService {
         if (integral == null) {
             integral = new Integral(userId, dto.getRemoteClubId(), dto.getIntegral());
             integralMapper.insertSelective(integral);
+            Integer currentRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            res.setCurrentRank(currentRank);
         } else {
+            Integer formerRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
             integral.setIntegral(integral.getIntegral() + dto.getIntegral());
             integralMapper.updateByPrimaryKey(integral);
+            Integer laterRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            res.setRankUp(formerRank - laterRank);
         }
         // 参与次数+1
         roomSpread.setPartakeNum(roomSpread.getPartakeNum() == null ? 0 : roomSpread.getPartakeNum() + 1);
-        roomSpread.setLastUpdateTime(now);
-        // roomSpread.setPrizeUserId();
+        roomSpread.setWinRecordId(win ? recordSpread.getId() : -1);
+        roomSpread.setStatus((byte) (roomSpread.getPartakeNum() >= roomSpread.getJoinNum() ? 1 : 0));
         roomSpreadMapper.updateByPrimaryKey(roomSpread);
-        return new Response(new SettleRes(integral.getIntegral(), 3, win));
+
+        res.setCountIntegral(integral.getIntegral());
+        res.setWin(win);
+        return new Response(res);
+    }
+
+    @Override
+    public Response spreadRoomGet(BaseDTO dto, String password) {
+        RoomSpread roomSpread = roomSpreadMapper.selectByPassword(password);
+        if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        RoomSpreadRes res = new RoomSpreadRes();
+        BeanUtils.copyProperties(roomSpread, res);
+        return new Response(res);
     }
 }

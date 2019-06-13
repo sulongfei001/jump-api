@@ -25,4 +25,6 @@ public interface RoomService {
     Response spreadRoomList(BaseDTO dto);
 
     Response settleSpreadGame(SettleDTO dto);
+
+    Response spreadRoomGet(BaseDTO dto, String password);
 }

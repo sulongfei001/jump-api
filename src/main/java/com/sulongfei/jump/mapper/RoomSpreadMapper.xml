@@ -12,13 +12,13 @@
         <result column="join_num" jdbcType="INTEGER" property="joinNum"/>
         <result column="partake_num" jdbcType="INTEGER" property="partakeNum"/>
         <result column="win_record_id" jdbcType="BIGINT" property="winRecordId"/>
+        <result column="win_num" jdbcType="INTEGER" property="winNum"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, remote_club_id, sale_id, sale_type, password, spread_goods_id, ticket_num, join_num, 
-    partake_num, win_record_id, status, create_time, last_update_time
+    partake_num, win_record_id, win_num, status, create_time
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -34,13 +34,13 @@
     insert into room_spread (id, remote_club_id, sale_id, 
       sale_type, password, spread_goods_id, 
       ticket_num, join_num, partake_num, 
-      win_record_id, status, create_time, 
-      last_update_time)
+      win_record_id, win_num, status, 
+      create_time)
     values (#{id,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{saleId,jdbcType=BIGINT}, 
       #{saleType,jdbcType=INTEGER}, #{password,jdbcType=VARCHAR}, #{spreadGoodsId,jdbcType=BIGINT}, 
       #{ticketNum,jdbcType=INTEGER}, #{joinNum,jdbcType=INTEGER}, #{partakeNum,jdbcType=INTEGER}, 
-      #{winRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{lastUpdateTime,jdbcType=TIMESTAMP})
+      #{winRecordId,jdbcType=BIGINT}, #{winNum,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, 
+      #{createTime,jdbcType=TIMESTAMP})
   </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RoomSpread">
         insert into room_spread
@@ -75,14 +75,14 @@
             <if test="winRecordId != null">
                 win_record_id,
             </if>
+            <if test="winNum != null">
+                win_num,
+            </if>
             <if test="status != null">
                 status,
             </if>
             <if test="createTime != null">
                 create_time,
-            </if>
-            <if test="lastUpdateTime != null">
-                last_update_time,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -116,14 +116,14 @@
             <if test="winRecordId != null">
                 #{winRecordId,jdbcType=BIGINT},
             </if>
+            <if test="winNum != null">
+                #{winNum,jdbcType=INTEGER},
+            </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="lastUpdateTime != null">
-                #{lastUpdateTime,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
@@ -157,14 +157,14 @@
             <if test="winRecordId != null">
                 win_record_id = #{winRecordId,jdbcType=BIGINT},
             </if>
+            <if test="winNum != null">
+                win_num = #{winNum,jdbcType=INTEGER},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="lastUpdateTime != null">
-                last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -180,9 +180,9 @@
       join_num = #{joinNum,jdbcType=INTEGER},
       partake_num = #{partakeNum,jdbcType=INTEGER},
       win_record_id = #{winRecordId,jdbcType=BIGINT},
+      win_num = #{winNum,jdbcType=INTEGER},
       status = #{status,jdbcType=TINYINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
@@ -196,7 +196,7 @@
         select
         <include refid="Base_Column_List"/>
         from room_spread
-        where remote_club_id = #{remoteClubId,jdbcType=BIGINT} and win_record_id = -1
+        where remote_club_id = #{remoteClubId,jdbcType=BIGINT} and status = 0
     </select>
 
     <select id="checkPassword" resultType="java.lang.Long">
@@ -205,5 +205,10 @@
         where password = #{password,jdbcType=VARCHAR}
         limit 1
     </select>
-
+    <select id="selectByPassword" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from room_spread
+        where password = #{password,jdbcType=VARCHAR}
+    </select>
 </mapper>

@@ -1,7 +1,9 @@
 package com.sulongfei.jump.service.impl;
 
+import com.sulongfei.jump.mapper.IntegralMapper;
 import com.sulongfei.jump.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class TaskServiceImpl implements TaskService {
 
+    @Autowired
+    private IntegralMapper integralMapper;
+
     @Override
+    @Transactional(readOnly = false)
     public void resetRank() {
-        log.info("重置每周排行榜，定时任务执行");
+        integralMapper.resetRankList();
     }
 }

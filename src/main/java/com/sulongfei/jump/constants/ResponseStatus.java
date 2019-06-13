@@ -74,11 +74,13 @@ public interface ResponseStatus {
 
     String ERROR_INTEGRAL = "分数异常";
 
+    String NO_EXIST_ROOM = "房间不存在";
+
     String NO_ENOUGH_TICKET = "没有足够的门票";
 
     String NO_ENOUGH_GOODS = "剩余库存不足";
 
     String GOT_TICKET = "今日已领取过门票";
 
-
+    String ROOM_CLOSED = "房间已关闭";
 }

@@ -28,11 +28,11 @@ public class RoomSpread extends Model {
 
     private Long winRecordId;
 
+    private Integer winNum;
+
     private Byte status;
 
     private Timestamp createTime;
-
-    private Timestamp lastUpdateTime;
 
     private SpreadGoods spreadGoods;
 

@@ -5,6 +5,7 @@ import com.sulongfei.jump.config.GlobalContext;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.exception.JumpException;
+import com.sulongfei.jump.mapper.IntegralMapper;
 import com.sulongfei.jump.mapper.RecordSimpleMapper;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
 import com.sulongfei.jump.model.RecordSimple;
@@ -43,17 +44,20 @@ public class GameServiceImpl implements GameService {
     private RecordSimpleMapper recordSimpleMapper;
     @Autowired
     private GlobalContext globalContext;
+    @Autowired
+    private IntegralMapper integralMapper;
 
     @Override
     public Response randomGameResult(BaseDTO dto) {
         RecordSimple record = recordSimpleMapper.randomResult(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
-        if (record == null) {
-            return new Response();
-        }
+        if (record == null) return new Response();
         SecurityUser user = userMapper.selectByPrimaryKey(record.getUserId());
+        if (user == null) return new Response();
         UserRes userRes = new UserRes();
         BeanUtils.copyProperties(user, userRes);
-        RandomResultRes data = new RandomResultRes(record.getIntegral(), userRes);
+        Integer ownRank = integralMapper.findRankByUserId(dto.getRemoteClubId(),UserInterceptor.getLocalUser().getId());
+        Integer rivalRank = integralMapper.findRankByUserId(dto.getRemoteClubId(),user.getId());
+        RandomResultRes data = new RandomResultRes(record.getIntegral(), userRes,ownRank,rivalRank);
         return new Response(data);
     }
 

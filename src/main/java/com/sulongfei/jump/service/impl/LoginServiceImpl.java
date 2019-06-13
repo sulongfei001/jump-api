@@ -57,7 +57,7 @@ public class LoginServiceImpl implements LoginService {
             user.setLastOperationTime(now);
             user.setLastOperationClub(dto.getRemoteClubId());
             user.setEverydayTicket(false);
-            user.setTicketNum(0);
+            user.setTicketNum(100);
             if (result.getBody() != null && "200".equals(result.getBody().getErrorCode())) {
                 user.setMemberId(result.getBody().getResult().getMemberId());
                 user.setIsSaler(result.getBody().getResult().getIsSaler() == 1 ? true : false);

@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 @ApiModel(value = "游戏房间返回对象")
 @Data
 public class RoomSimpleRes {
+    @ApiModelProperty(value = "房间ID")
+    private Long id;
+
     @ApiModelProperty(value = "商品名字")
     private String goodsName;
 

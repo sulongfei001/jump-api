@@ -25,4 +25,10 @@ public interface IntegralMapper {
     Integral selectByUserIdClubId(@Param("userId") Long userId, @Param("remoteClubId") Long remoteClubId);
 
     List<Integral> rankListTop(@Param("remoteClubId") Long remoteClubId, @Param("entryIntegral") Integer entryIntegral, @Param("entryNum") Integer entryNum);
+
+    Integer findRankByIntegral(@Param("remoteClubId") Long remoteClubId, @Param("integral") Integer integral);
+
+    void resetRankList();
+
+    Integer findRankByUserId(@Param("remoteClubId") Long remoteClubId, @Param("userId") Long userId);
 }

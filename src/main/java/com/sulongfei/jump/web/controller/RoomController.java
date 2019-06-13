@@ -6,14 +6,12 @@ import com.sulongfei.jump.dto.SettleDTO;
 import com.sulongfei.jump.response.*;
 import com.sulongfei.jump.service.RoomService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -60,6 +58,16 @@ public class RoomController extends BaseController {
         BeanUtils.copyProperties(baseDTO, dto);
         verifySpreadRoomCreateDTO(dto);
         return roomService.spreadRoomCreate(dto);
+    }
+
+    @ApiOperation(value = "根据密码获取推广员房间")
+    @ApiImplicitParam(value = "房间密码", name = "password", paramType = "path", required = true)
+    @PostMapping("/spread/get/{password}")
+    public Response spreadRoomGet(
+            @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
+            @PathVariable String password
+    ) {
+        return roomService.spreadRoomGet(dto, password);
     }
 
     @ApiOperation(value = "推广员房间列表", notes = "正在进行中的房间列表")

@@ -24,5 +24,7 @@ public interface RoomSpreadMapper {
 
     List<RoomSpread> selectEffective(@Param("remoteClubId") Long remoteClubId);
 
-    Long checkPassword(String password);
+    Long checkPassword(@Param("password") String password);
+
+    RoomSpread selectByPassword(@Param("password") String password);
 }

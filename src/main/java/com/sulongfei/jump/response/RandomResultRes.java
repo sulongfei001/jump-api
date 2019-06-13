@@ -20,8 +20,16 @@ public class RandomResultRes {
     @ApiModelProperty(value = "随机用户对象")
     private UserRes user;
 
-    public RandomResultRes(Integer integral, UserRes user) {
+    @ApiModelProperty(value = "本用户排名")
+    private Integer ownRank;
+
+    @ApiModelProperty(value = "对手用户排名")
+    private Integer rivalRank;
+
+    public RandomResultRes(Integer integral, UserRes user, Integer ownRank, Integer rivalRank) {
         this.integral = integral;
         this.user = user;
+        this.ownRank = ownRank;
+        this.rivalRank = rivalRank;
     }
 }

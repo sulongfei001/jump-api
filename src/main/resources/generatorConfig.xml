@@ -86,6 +86,8 @@
                enableDeleteByExample="false"
                enableCountByExample="false"
                enableUpdateByExample="false"
-               enableSelectByExample="false"/>
+               enableSelectByExample="false">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

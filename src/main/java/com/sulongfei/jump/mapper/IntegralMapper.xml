@@ -104,4 +104,46 @@
       ORDER BY	integral DESC
 	  LIMIT 0 , #{entryNum,jdbcType=INTEGER}
     </select>
+
+    <select id="findRankByIntegral" resultType="java.lang.Integer">
+        SELECT
+            t.cid
+        FROM
+            (
+            SELECT
+                @counter := @counter + 1 AS cid,
+                integral , remote_club_id
+            FROM
+                integral,
+                ( SELECT @counter := 0 ) c
+            ORDER BY
+                integral DESC
+            ) t
+        WHERE
+            t.integral = #{integral,jdbcType=INTEGER}
+            and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findRankByUserId" resultType="java.lang.Integer">
+        SELECT
+            t.cid
+        FROM
+            (
+            SELECT
+                @counter := @counter + 1 AS cid,
+                user_id , remote_club_id
+            FROM
+                integral,
+                ( SELECT @counter := 0 ) c
+            ORDER BY
+                integral DESC
+            ) t
+        WHERE
+            t.user_id = #{userId,jdbcType=INTEGER}
+            and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+    </select>
+
+    <update id="resetRankList">
+        update integral set integral = 0
+    </update>
 </mapper>

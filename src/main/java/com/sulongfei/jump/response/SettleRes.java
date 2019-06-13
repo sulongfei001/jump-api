@@ -16,14 +16,10 @@ import lombok.Data;
 public class SettleRes {
     @ApiModelProperty(value = "用户当前总分数")
     private Integer countIntegral;
+    @ApiModelProperty(value = "用户当前排名")
+    private Integer currentRank;
     @ApiModelProperty(value = "用户排名上升")
     private Integer rankUp;
     @ApiModelProperty(value = "用户是否中奖")
     private Boolean win;
-
-    public SettleRes(Integer countIntegral, Integer rankUp, Boolean win) {
-        this.countIntegral = countIntegral;
-        this.rankUp = rankUp;
-        this.win = win;
-    }
 }

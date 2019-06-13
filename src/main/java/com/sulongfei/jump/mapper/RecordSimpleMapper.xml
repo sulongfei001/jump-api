@@ -152,20 +152,41 @@
   </update>
 
     <select id="randomResult" resultMap="BaseResultMap">
+        SET @counter := 0;
         SELECT
-        <include refid="Base_Column_List"/>
+            user_id,	integral,	remote_club_id
         FROM
-        record
+            (
+            SELECT
+                @counter := @counter + 1 AS cid,
+                rc.user_id AS user_id,
+                rc.integral AS integral,
+                ro.remote_club_id AS remote_club_id
+            FROM
+                record_simple rc,
+                room_simple ro
+            WHERE
+                rc.room_id = ro.id UNION ALL
+            SELECT
+                @counter := @counter + 1 AS cid,
+                rc.user_id AS user_id,
+                rc.integral AS integral,
+                ro.remote_club_id AS remote_club_id
+            FROM
+                record_spread rc,
+                room_spread ro
+            WHERE
+                rc.room_id = ro.id
+            ) t
         WHERE
-        id >= ( ( SELECT max( id ) FROM record ) - ( SELECT MIN( id ) FROM record ) ) * rand( ) + ( SELECT MIN( id )
-        FROM record )
-        and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
-        and user_id != #{userId,jdbcType=BIGINT}
-        LIMIT 1
+            cid >= @counter * RAND( )
+            and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+            and user_id != #{userId,jdbcType=BIGINT}
+            LIMIT 1;
     </select>
     <select id="countPrize" resultType="java.lang.Integer">
         select count(0)
-        from record
+        from record_simple
         where room_id = #{roomId,jdbcType=BIGINT} and is_win = true
     </select>
 </mapper>
