@@ -12,7 +12,7 @@ public class RoomSpread extends Model {
 
     private Long remoteClubId;
 
-    private Long userId;
+    private Long createUserId;
 
     private String password;
 

@@ -206,7 +206,7 @@ public class RoomServiceImpl implements RoomService {
         RoomSpread roomSpread = new RoomSpread();
         roomSpread.setPassword(password);
         roomSpread.setRemoteClubId(dto.getRemoteClubId());
-        roomSpread.setUserId(UserInterceptor.getLocalUser().getId());
+        roomSpread.setCreateUserId(UserInterceptor.getLocalUser().getId());
         roomSpread.setCreateTime(new Timestamp(System.currentTimeMillis()));
         roomSpread.setSpreadGoodsId(dto.getSpreadGoodsId());
         roomSpread.setTicketNum(dto.getTicketNum());
@@ -241,11 +241,13 @@ public class RoomServiceImpl implements RoomService {
             if (roomSpread.getWinRecordId() != null && roomSpread.getWinRecordId() != -1 && roomSpread.getStatus() == 1) {
                 RecordSpread recordSpread = recordSpreadMapper.selectByPrimaryKey(roomSpread.getWinRecordId());
                 if (recordSpread != null) {
-                    SecurityUser securityUser = userMapper.selectByPrimaryKey(recordSpread.getId());
-                    UserRes user = new UserRes();
-                    BeanUtils.copyProperties(securityUser, user);
-                    res.setUser(user);
-                    res.setWinTime(recordSpread.getCreateTime().getTime());
+                    SecurityUser securityUser = userMapper.selectByPrimaryKey(recordSpread.getUserId());
+                    if (securityUser != null) {
+                        UserRes user = new UserRes();
+                        BeanUtils.copyProperties(securityUser, user);
+                        res.setUser(user);
+                        res.setWinTime(recordSpread.getCreateTime().getTime());
+                    }
                 }
             }
             data.add(res);
@@ -260,6 +262,7 @@ public class RoomServiceImpl implements RoomService {
         Long userId = UserInterceptor.getLocalUser().getId();
         RoomSpread roomSpread = roomSpreadMapper.selectByPrimaryKey(dto.getRoomId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        SpreadGoods spreadGoods = spreadGoodsMapper.selectByPrimaryKey(roomSpread.getSpreadGoodsId());
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
         Integer userTicketNum = user.getTicketNum();
         SettleRes res = new SettleRes();
@@ -272,7 +275,6 @@ public class RoomServiceImpl implements RoomService {
 
         Boolean win = false;
         if (roomSpread.getWinRecordId() == -1 && roomSpread.getPartakeNum() == roomSpread.getWinNum() - 1) win = true;
-
 
         // 记录结果
         RecordSpread recordSpread = new RecordSpread(userId, dto.getRoomId(), dto.getIntegral(), win, roomSpread.getTicketNum(), dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
@@ -293,13 +295,14 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // 发送道具
-        if (roomSpread.getPartakeNum() >= roomSpread.getJoinNum()){
+        if (roomSpread.getPartakeNum() >= roomSpread.getJoinNum() - 1) {
             roomSpread.setStatus((byte) 1);
             // 发送大奖物品
         }
 
         // 参与次数+1
         roomSpread.setPartakeNum(roomSpread.getPartakeNum() == null ? 0 : roomSpread.getPartakeNum() + 1);
+        // 设置中将人
         roomSpread.setWinRecordId(win ? recordSpread.getId() : -1);
         roomSpreadMapper.updateByPrimaryKey(roomSpread);
 

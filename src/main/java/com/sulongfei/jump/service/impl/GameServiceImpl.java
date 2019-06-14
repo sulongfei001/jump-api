@@ -5,9 +5,11 @@ import com.sulongfei.jump.config.GlobalContext;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.exception.JumpException;
+import com.sulongfei.jump.mapper.ClubMapper;
 import com.sulongfei.jump.mapper.IntegralMapper;
 import com.sulongfei.jump.mapper.RecordSimpleMapper;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
+import com.sulongfei.jump.model.Club;
 import com.sulongfei.jump.model.RecordSimple;
 import com.sulongfei.jump.model.SecurityUser;
 import com.sulongfei.jump.response.*;
@@ -46,6 +48,8 @@ public class GameServiceImpl implements GameService {
     private GlobalContext globalContext;
     @Autowired
     private IntegralMapper integralMapper;
+    @Autowired
+    private ClubMapper clubMapper;
 
     @Override
     public Response randomGameResult(BaseDTO dto) {
@@ -68,16 +72,19 @@ public class GameServiceImpl implements GameService {
         if (!HttpStatus.OK.equals(result.getStatusCode()) || !"200".equals(result.getBody().getErrorCode())) {
             throw new JumpException(ResponseStatus.OTHER_EXCEPTION);
         }
+        Club club = clubMapper.selectByOrgId(dto.getRemoteClubId());
         List<PrdRes> exchangeList = Lists.newArrayList();
         List<PrdRes> exclusiveList = Lists.newArrayList();
         result.getBody().getResult().forEach(prd -> {
             if (prd.getUseType() == 2) {
                 PrdRes res = new PrdRes();
                 BeanUtils.copyProperties(prd, res);
+                res.setUsePlace(club.getSupplierAddress());
                 exchangeList.add(res);
             } else if (prd.getUseType() == 3) {
                 PrdRes res = new PrdRes();
                 BeanUtils.copyProperties(prd, res);
+                res.setUsePlace(club.getSupplierAddress());
                 exclusiveList.add(res);
             }
         });

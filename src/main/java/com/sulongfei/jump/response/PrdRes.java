@@ -36,4 +36,7 @@ public class PrdRes {
 
     @ApiModelProperty(value = "商品上架标题")
     private String title;
+
+    @ApiModelProperty(value = "卡券使用场所")
+    private String usePlace;
 }

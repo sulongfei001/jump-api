@@ -28,6 +28,9 @@ public class RecordSpread extends Model {
 
     private Timestamp createTime;
 
+    public RecordSpread() {
+    }
+
     public RecordSpread(Long userId, Long roomId, Integer integral, Boolean isWin, Integer consumeTicket, Integer getTicket, Long saleId, Integer saleType, Timestamp createTime) {
         this.userId = userId;
         this.roomId = roomId;
