@@ -2,6 +2,7 @@ package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
 import com.sulongfei.jump.config.GlobalContext;
+import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.RoomSpreadDTO;
@@ -14,6 +15,7 @@ import com.sulongfei.jump.rest.request.SendPrdRequest;
 import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.rest.response.SendPrdResponse;
 import com.sulongfei.jump.service.RoomService;
+import com.sulongfei.jump.utils.SerializeUtil;
 import com.sulongfei.jump.utils.StrUtils;
 import com.sulongfei.jump.web.interceptor.UserInterceptor;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -61,6 +62,8 @@ public class RoomServiceImpl implements RoomService {
     private RankPrizeMapper rankPrizeMapper;
     @Autowired
     private GlobalContext globalContext;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public Response roomSimpleList(BaseDTO dto) {
@@ -82,17 +85,13 @@ public class RoomServiceImpl implements RoomService {
         Long userId = UserInterceptor.getLocalUser().getId();
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
         RoomSimple room = roomSimpleMapper.selectByPrimaryKey(dto.getRoomId());
+        if (room == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
         Goods goods = goodsMapper.selectByGoodsId(room.getRemoteGoodsId());
         Integer ticketNum = room.getTicketNum();
         Integer consumeNum = room.getConsumeNum();
         Integer userTicketNum = user.getTicketNum();
         SettleRes res = new SettleRes();
 
-        if (room == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
-        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
-
-        // 消耗门票
-        user.setTicketNum(userTicketNum - ticketNum);
         // 奖励门票
         user.setTicketNum(userTicketNum + dto.getGetTicket());
         userMapper.updateByPrimaryKeySelective(user);
@@ -105,19 +104,12 @@ public class RoomServiceImpl implements RoomService {
         Integer prizeCount = recordSimpleMapper.countPrize(dto.getRoomId());
         Boolean randomOn = mustNum + prizeCount * (mustNum + 1) < consumeNum;
         Boolean win = false;
-        if (randomOn && Math.random() <= prize) { // 中奖
+        if (randomOn && Math.random() <= prize) { // 中奖 -- 判断是寄送物品或者门店兑换
             win = true;
             // 发送大奖物品
-            if (!StringUtils.isEmpty(room.getRemoteClubId()) && !StringUtils.isEmpty(room.getGoodsNum()) && 0 < room.getGoodsNum()) {
-                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-                ResponseEntity<RestResponse<SendPrdResponse>> goodsResult = restService.sendPrd(goodsRequest);
-            }
-        }
+            SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
+            ResponseEntity<RestResponse<SendPrdResponse>> goodsResult = restService.sendPrd(goodsRequest);
 
-        // 发送卡券
-        if (!StringUtils.isEmpty(dto.getCardId()) && !StringUtils.isEmpty(dto.getCardNum()) && dto.getCardNum() > 0) {
-            SendPrdRequest cardRequest = new SendPrdRequest(user.getMemberId(), dto.getRemoteClubId(), dto.getCardId(), dto.getCardNum(), dto.getSaleId(), dto.getSaleType());
-            ResponseEntity<RestResponse<SendPrdResponse>> cardResult = restService.sendPrd(cardRequest);
         }
 
         // 记录结果
@@ -128,13 +120,13 @@ public class RoomServiceImpl implements RoomService {
         if (integral == null) {
             integral = new Integral(userId, dto.getRemoteClubId(), dto.getIntegral());
             integralMapper.insertSelective(integral);
-            Integer currentRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            Integer currentRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setCurrentRank(currentRank);
         } else {
-            Integer formerRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             integral.setIntegral(integral.getIntegral() + dto.getIntegral());
             integralMapper.updateByPrimaryKey(integral);
-            Integer laterRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            Integer laterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setRankUp(formerRank - laterRank);
         }
         // 房间消耗门票总数
@@ -148,10 +140,24 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Response rankList(BaseDTO dto) {
+        SerializeUtil<List<Integral>> redisResult = redisService.get(Constants.RedisName.LAST_WEEK_RANK + dto.getRemoteClubId());
         List<Integral> integrals = integralMapper.rankListTop(dto.getRemoteClubId(), globalContext.getEntryIntegral(), globalContext.getEntryNum());
         List<RankPrize> rankPrizes = rankPrizeMapper.selectByClubId(dto.getRemoteClubId());
+
+        RankListRes data = new RankListRes();
+        if (redisResult != null && redisResult.getData() != null) {
+            List<IntegralRes> lastWeekList = Lists.newArrayList();
+            redisResult.getData().forEach(integral -> {
+                IntegralRes integralRes = new IntegralRes();
+                UserRes userRes = new UserRes();
+                BeanUtils.copyProperties(integral.getUser(), userRes);
+                integralRes.setIntegral(integral.getIntegral());
+                integralRes.setUser(userRes);
+                lastWeekList.add(integralRes);
+            });
+            data.setLastWeekList(lastWeekList);
+        }
         List<IntegralRes> list = Lists.newArrayList();
-        List<PrizeRes> prizeList = Lists.newArrayList();
         integrals.forEach(integral -> {
             IntegralRes integralRes = new IntegralRes();
             UserRes userRes = new UserRes();
@@ -160,12 +166,12 @@ public class RoomServiceImpl implements RoomService {
             integralRes.setUser(userRes);
             list.add(integralRes);
         });
+        List<PrizeRes> prizeList = Lists.newArrayList();
         rankPrizes.forEach(rankPrize -> {
             PrizeRes res = new PrizeRes();
             BeanUtils.copyProperties(rankPrize, res);
             prizeList.add(res);
         });
-        RankListRes data = new RankListRes();
         UserRes userRes = new UserRes();
         BeanUtils.copyProperties(UserInterceptor.getLocalUser(), userRes);
         data.setList(list);
@@ -178,6 +184,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional(readOnly = false)
     public Response spreadRoomCreate(RoomSpreadDTO dto) {
+        if (!UserInterceptor.getLocalUser().getIsSaler()) {
+            throw new JumpException(ResponseStatus.NO_PERMISSION);
+        }
         // 更改商品剩余库存
         SpreadGoods spreadGoods = spreadGoodsMapper.selectByPrimaryKey(dto.getSpreadGoodsId());
         Goods goods = goodsMapper.selectByGoodsId(spreadGoods.getRemoteGoodsId());
@@ -197,8 +206,7 @@ public class RoomServiceImpl implements RoomService {
         RoomSpread roomSpread = new RoomSpread();
         roomSpread.setPassword(password);
         roomSpread.setRemoteClubId(dto.getRemoteClubId());
-        roomSpread.setSaleId(dto.getSaleId());
-        roomSpread.setSaleType(dto.getSaleType());
+        roomSpread.setUserId(UserInterceptor.getLocalUser().getId());
         roomSpread.setCreateTime(new Timestamp(System.currentTimeMillis()));
         roomSpread.setSpreadGoodsId(dto.getSpreadGoodsId());
         roomSpread.setTicketNum(dto.getTicketNum());
@@ -214,7 +222,10 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Response spreadRoomList(BaseDTO dto) {
-        List<RoomSpread> list = roomSpreadMapper.selectEffective(dto.getRemoteClubId());
+        if (!UserInterceptor.getLocalUser().getIsSaler()) {
+            throw new JumpException(ResponseStatus.NO_PERMISSION);
+        }
+        List<RoomSpread> list = roomSpreadMapper.selectAll(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
         List<RoomSpreadRes> data = Lists.newArrayList();
         list.forEach(roomSpread -> {
             RoomSpreadRes res = new RoomSpreadRes();
@@ -248,60 +259,89 @@ public class RoomServiceImpl implements RoomService {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         Long userId = UserInterceptor.getLocalUser().getId();
         RoomSpread roomSpread = roomSpreadMapper.selectByPrimaryKey(dto.getRoomId());
+        if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
-        Integer ticketNum = roomSpread.getTicketNum();
         Integer userTicketNum = user.getTicketNum();
         SettleRes res = new SettleRes();
 
-        if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
         if (roomSpread.getStatus() == 1) throw new JumpException(ResponseStatus.ROOM_CLOSED);
-        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
 
-        // 消耗门票
-        user.setTicketNum(userTicketNum - ticketNum);
         // 奖励门票
         user.setTicketNum(userTicketNum + dto.getGetTicket());
         userMapper.updateByPrimaryKeySelective(user);
 
         Boolean win = false;
-        if (roomSpread.getWinRecordId() == -1 && roomSpread.getPartakeNum() == roomSpread.getWinNum() - 1) {
-            win = true;
-        }
+        if (roomSpread.getWinRecordId() == -1 && roomSpread.getPartakeNum() == roomSpread.getWinNum() - 1) win = true;
+
 
         // 记录结果
-        RecordSpread recordSpread = new RecordSpread(userId, dto.getRoomId(), dto.getIntegral(), win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
+        RecordSpread recordSpread = new RecordSpread(userId, dto.getRoomId(), dto.getIntegral(), win, roomSpread.getTicketNum(), dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
         recordSpreadMapper.insertSelective(recordSpread);
         // 计算分数
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         if (integral == null) {
             integral = new Integral(userId, dto.getRemoteClubId(), dto.getIntegral());
             integralMapper.insertSelective(integral);
-            Integer currentRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            Integer currentRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setCurrentRank(currentRank);
         } else {
-            Integer formerRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             integral.setIntegral(integral.getIntegral() + dto.getIntegral());
             integralMapper.updateByPrimaryKey(integral);
-            Integer laterRank = integralMapper.findRankByIntegral(dto.getRemoteClubId(), integral.getIntegral());
+            Integer laterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setRankUp(formerRank - laterRank);
         }
+
+        // 发送道具
+        if (roomSpread.getPartakeNum() >= roomSpread.getJoinNum()){
+            roomSpread.setStatus((byte) 1);
+            // 发送大奖物品
+        }
+
         // 参与次数+1
         roomSpread.setPartakeNum(roomSpread.getPartakeNum() == null ? 0 : roomSpread.getPartakeNum() + 1);
         roomSpread.setWinRecordId(win ? recordSpread.getId() : -1);
-        roomSpread.setStatus((byte) (roomSpread.getPartakeNum() >= roomSpread.getJoinNum() ? 1 : 0));
         roomSpreadMapper.updateByPrimaryKey(roomSpread);
 
         res.setCountIntegral(integral.getIntegral());
-        res.setWin(win);
+        res.setWin(false);
         return new Response(res);
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Response spreadRoomGet(BaseDTO dto, String password) {
         RoomSpread roomSpread = roomSpreadMapper.selectByPassword(password);
+        SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        Integer ticketNum = roomSpread.getTicketNum();
+        Integer userTicketNum = user.getTicketNum();
+        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+        // 消耗门票
+        user.setTicketNum(userTicketNum - ticketNum);
+        userMapper.updateByPrimaryKeySelective(user);
+
         RoomSpreadRes res = new RoomSpreadRes();
         BeanUtils.copyProperties(roomSpread, res);
         return new Response(res);
     }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Response roomSimpleGet(BaseDTO dto, Long roomId) {
+        RoomSimple roomSimple = roomSimpleMapper.selectByPrimaryKey(roomId);
+        SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
+        if (roomSimple == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        Integer ticketNum = roomSimple.getTicketNum();
+        Integer userTicketNum = user.getTicketNum();
+        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+        // 消耗门票
+        user.setTicketNum(userTicketNum - ticketNum);
+        userMapper.updateByPrimaryKeySelective(user);
+
+        RoomSimpleRes res = new RoomSimpleRes();
+        BeanUtils.copyProperties(roomSimple, res);
+        return new Response(res);
+    }
+
 }

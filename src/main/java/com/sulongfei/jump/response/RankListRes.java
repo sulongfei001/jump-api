@@ -16,6 +16,9 @@ import java.util.List;
 @ApiModel(value = "排行榜返回对象")
 @Data
 public class RankListRes {
+    @ApiModelProperty(value = "上周排行榜集合")
+    private List<IntegralRes> lastWeekList;
+
     @ApiModelProperty(value = "排行榜集合")
     private List<IntegralRes> list;
 

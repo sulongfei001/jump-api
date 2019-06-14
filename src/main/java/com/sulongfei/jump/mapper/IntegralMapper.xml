@@ -105,25 +105,6 @@
 	  LIMIT 0 , #{entryNum,jdbcType=INTEGER}
     </select>
 
-    <select id="findRankByIntegral" resultType="java.lang.Integer">
-        SELECT
-            t.cid
-        FROM
-            (
-            SELECT
-                @counter := @counter + 1 AS cid,
-                integral , remote_club_id
-            FROM
-                integral,
-                ( SELECT @counter := 0 ) c
-            ORDER BY
-                integral DESC
-            ) t
-        WHERE
-            t.integral = #{integral,jdbcType=INTEGER}
-            and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
-    </select>
-
     <select id="findRankByUserId" resultType="java.lang.Integer">
         SELECT
             t.cid
@@ -146,4 +127,8 @@
     <update id="resetRankList">
         update integral set integral = 0
     </update>
+
+    <select id="groupByClubId" resultType="java.lang.Long">
+        SELECT remote_club_id from integral GROUP BY remote_club_id
+    </select>
 </mapper>

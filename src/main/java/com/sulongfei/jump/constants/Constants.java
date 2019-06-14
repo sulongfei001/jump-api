@@ -16,5 +16,6 @@ public interface Constants {
 
     interface RedisName {
         String LOGIN_SMS_CODE = "login_sms_code:";
+        String LAST_WEEK_RANK = "last_week_rank:";
     }
 }

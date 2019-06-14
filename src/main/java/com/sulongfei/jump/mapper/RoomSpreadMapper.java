@@ -22,7 +22,7 @@ public interface RoomSpreadMapper {
 
     int updateByPrimaryKey(RoomSpread record);
 
-    List<RoomSpread> selectEffective(@Param("remoteClubId") Long remoteClubId);
+    List<RoomSpread> selectAll(@Param("remoteClubId") Long remoteClubId, @Param("userId") Long userId);
 
     Long checkPassword(@Param("password") String password);
 

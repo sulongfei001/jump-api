@@ -86,6 +86,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Deprecated
     @Transactional(readOnly = false)
     public Response getTicket(BaseDTO dto) {
         SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());

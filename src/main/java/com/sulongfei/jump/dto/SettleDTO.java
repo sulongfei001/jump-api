@@ -21,10 +21,6 @@ public class SettleDTO extends BaseDTO {
     private Long roomId;
     @ApiModelProperty(value = "分数", example = "0")
     private Integer integral;
-    @ApiModelProperty(value = "卡券ID", example = "0")
-    private Long cardId;
-    @ApiModelProperty(value = "卡券数量", example = "0")
-    private Integer cardNum;
     @ApiModelProperty(value = "奖励门票数量", example = "0")
     private Integer getTicket;
 

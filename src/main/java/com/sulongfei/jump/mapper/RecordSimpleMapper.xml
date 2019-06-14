@@ -166,7 +166,10 @@
                 record_simple rc,
                 room_simple ro
             WHERE
-                rc.room_id = ro.id UNION ALL
+                rc.room_id = ro.id
+                and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+                and user_id != #{userId,jdbcType=BIGINT}
+            UNION ALL
             SELECT
                 @counter := @counter + 1 AS cid,
                 rc.user_id AS user_id,
@@ -177,11 +180,11 @@
                 room_spread ro
             WHERE
                 rc.room_id = ro.id
+                and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
+                and user_id != #{userId,jdbcType=BIGINT}
             ) t
         WHERE
-            cid >= @counter * RAND( )
-            and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
-            and user_id != #{userId,jdbcType=BIGINT}
+            cid >= FLOOR( @counter * RAND( ) ) + 1
             LIMIT 1;
     </select>
     <select id="countPrize" resultType="java.lang.Integer">

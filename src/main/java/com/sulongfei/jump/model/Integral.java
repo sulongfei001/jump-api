@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Integral extends Model {
+    private static final long serialVersionUID = 15872275513416154L;
+
     private Long id;
 
     private Long userId;

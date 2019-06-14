@@ -23,6 +23,17 @@ public class RedisService {
         this.redisTemplate = redisTemplate;
     }
 
+
+    /**
+     * set  key 不过期
+     *
+     * @param key   redis key
+     * @param value 存储redis 的值
+     */
+    public void set(String key, Serializable value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
     /**
      * set
      *

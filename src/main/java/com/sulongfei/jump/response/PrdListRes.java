@@ -16,10 +16,11 @@ import java.util.List;
 @ApiModel(value = "卡券列表对象")
 @Data
 public class PrdListRes {
-    @ApiModelProperty(value = "寄送卡券")
-    private List<PrdRes> exchangeList;
 
     @ApiModelProperty(value = "门店兑换")
+    private List<PrdRes> exchangeList;
+
+    @ApiModelProperty(value = "寄送卡券")
     private List<PrdRes> exclusiveList;
 
     public PrdListRes(List<PrdRes> exchangeList, List<PrdRes> exclusiveList) {

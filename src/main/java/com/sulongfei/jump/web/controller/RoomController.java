@@ -38,6 +38,16 @@ public class RoomController extends BaseController {
         return roomService.roomSimpleList(dto);
     }
 
+    @ApiOperation(value = "获取大游戏房间")
+    @ApiImplicitParam(value = "房间ID", name = "roomId", paramType = "path", required = true)
+    @PostMapping("/simple/get/{roomId}")
+    public Response<RoomSimpleRes> roomSimpleGet(
+            @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
+            @PathVariable Long roomId
+    ) {
+        return roomService.roomSimpleGet(dto, roomId);
+    }
+
     @ApiOperation(value = "游戏房间游戏结算", notes = "用于游戏方房间结算分数")
     @PostMapping("/simple/settle")
     public Response<SettleRes> settleSimpleGame(
@@ -70,7 +80,7 @@ public class RoomController extends BaseController {
         return roomService.spreadRoomGet(dto, password);
     }
 
-    @ApiOperation(value = "推广员房间列表", notes = "正在进行中的房间列表")
+    @ApiOperation(value = "推广员房间列表")
     @PostMapping("/spread/list")
     public Response<List<RoomSpreadRes>> spreadRoomList(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto

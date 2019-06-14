@@ -50,6 +50,7 @@ public class LoginServiceImpl implements LoginService {
             user = new SecurityUser();
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setPassword(new BCryptPasswordEncoder().encode(SmsCode));
+            user.setNickname(dto.getPhoneNumber());
             user.setCreateTime(now);
             user.setUpdateTime(now);
             user.setRegisterClue(dto.getRemoteClubId());
@@ -57,7 +58,7 @@ public class LoginServiceImpl implements LoginService {
             user.setLastOperationTime(now);
             user.setLastOperationClub(dto.getRemoteClubId());
             user.setEverydayTicket(false);
-            user.setTicketNum(100);
+            user.setTicketNum(1000);
             if (result.getBody() != null && "200".equals(result.getBody().getErrorCode())) {
                 user.setMemberId(result.getBody().getResult().getMemberId());
                 user.setIsSaler(result.getBody().getResult().getIsSaler() == 1 ? true : false);
