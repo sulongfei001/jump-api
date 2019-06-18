@@ -18,4 +18,6 @@ public interface RecordSpreadMapper {
     int updateByPrimaryKeySelective(RecordSpread record);
 
     int updateByPrimaryKey(RecordSpread record);
+
+    Long mostTimesUser(Long roomId);
 }

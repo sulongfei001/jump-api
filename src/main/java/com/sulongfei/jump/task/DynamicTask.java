@@ -1,6 +1,6 @@
 package com.sulongfei.jump.task;
 
-import com.sulongfei.jump.config.GlobalContext;
+import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.exception.JumpException;
 import com.sulongfei.jump.service.TaskService;
 import lombok.extern.slf4j.Slf4j;

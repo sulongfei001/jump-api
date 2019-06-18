@@ -24,7 +24,6 @@ public class BaseController {
         verifyBaseDTO(dto);
         Assert.notNull(dto.getRoomId(), ResponseStatus.EMPTY_ROOM_ID);
         Assert.notNull(dto.getGetTicket(), ResponseStatus.EMPTY_TICKET);
-        Assert.isTrue(null != dto.getIntegral() || 1 < dto.getIntegral(), ResponseStatus.ERROR_INTEGRAL);
     }
 
     protected void verifySpreadRoomCreateDTO(RoomSpreadDTO dto) {

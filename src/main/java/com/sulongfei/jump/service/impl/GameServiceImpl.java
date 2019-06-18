@@ -1,7 +1,7 @@
 package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
-import com.sulongfei.jump.config.GlobalContext;
+import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.exception.JumpException;

@@ -1,6 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
-import com.sulongfei.jump.config.GlobalContext;
+import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.mapper.IntegralMapper;
 import com.sulongfei.jump.model.Integral;

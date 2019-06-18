@@ -1,4 +1,4 @@
-package com.sulongfei.jump.config;
+package com.sulongfei.jump.context;
 
 import com.sulongfei.jump.mapper.GlobalDictionaryMapper;
 import com.sulongfei.jump.model.GlobalDictionary;
@@ -51,5 +51,9 @@ public class GlobalContext {
         return (model != null && model.getValue() != null) ? model.getValue() : "";
     }
 
+    public String getDefaultAvatar() {
+        GlobalDictionary model = dictionaryMapper.selectByKey("default_avatar");
+        return (model != null && model.getValue() != null) ? model.getValue() : "";
+    }
 
 }

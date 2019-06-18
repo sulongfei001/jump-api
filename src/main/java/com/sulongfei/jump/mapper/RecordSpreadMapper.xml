@@ -151,4 +151,18 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <select id="mostTimesUser" resultType="java.lang.Long">
+        SELECT
+            user_id
+        FROM
+            record_spread
+        GROUP BY
+            room_id,
+            user_id
+        ORDER BY
+            COUNT( id ) DESC,
+            MIN(create_time) ASC
+            LIMIT 0,1
+    </select>
 </mapper>

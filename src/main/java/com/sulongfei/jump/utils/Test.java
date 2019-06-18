@@ -21,5 +21,9 @@ public class Test {
 //        System.out.println(premium);
 //        System.out.println(singlePrice);
 //        System.out.println(price.multiply(premium).divide(singlePrice,10,BigDecimal.ROUND_HALF_UP).intValue());
+
+        for (int i = 0; i < 100; i++) {
+            System.out.println(new Random().nextInt(2 - 1 + 1) + 1);
+        }
     }
 }

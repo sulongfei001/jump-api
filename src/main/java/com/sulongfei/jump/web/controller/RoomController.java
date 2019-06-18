@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class RoomController extends BaseController {
     public Response<RoomSimpleRes> roomSimpleGet(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @PathVariable Long roomId
-    ) {
+    ) throws IOException {
         return roomService.roomSimpleGet(dto, roomId);
     }
 
@@ -53,7 +54,7 @@ public class RoomController extends BaseController {
     public Response<SettleRes> settleSimpleGame(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO baseDTO,
             @ApiParam(value = "Json消息体", required = true) @RequestBody SettleDTO dto
-    ) {
+    ) throws IOException {
         BeanUtils.copyProperties(baseDTO, dto);
         verifySettleSimpleDTO(dto);
         return roomService.settleSimpleGame(dto);
@@ -76,7 +77,7 @@ public class RoomController extends BaseController {
     public Response spreadRoomGet(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @PathVariable String password
-    ) {
+    ) throws IOException {
         return roomService.spreadRoomGet(dto, password);
     }
 
@@ -94,7 +95,7 @@ public class RoomController extends BaseController {
     public Response<SettleRes> settleSpreadGame(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO baseDTO,
             @ApiParam(value = "Json消息体", required = true) @RequestBody SettleDTO dto
-    ) {
+    ) throws IOException {
         BeanUtils.copyProperties(baseDTO, dto);
         verifySettleSimpleDTO(dto);
         return roomService.settleSpreadGame(dto);

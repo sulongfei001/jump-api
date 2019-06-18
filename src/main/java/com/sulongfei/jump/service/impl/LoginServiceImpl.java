@@ -1,6 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
-import com.sulongfei.jump.config.GlobalContext;
+import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.dto.UserLoginDTO;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
@@ -51,6 +51,7 @@ public class LoginServiceImpl implements LoginService {
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setPassword(new BCryptPasswordEncoder().encode(SmsCode));
             user.setNickname(dto.getPhoneNumber());
+            user.setAvatar(globalContext.getDefaultAvatar());
             user.setCreateTime(now);
             user.setUpdateTime(now);
             user.setRegisterClue(dto.getRemoteClubId());

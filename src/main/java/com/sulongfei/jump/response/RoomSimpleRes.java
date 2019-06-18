@@ -1,10 +1,12 @@
 package com.sulongfei.jump.response;
 
+import com.sulongfei.jump.model.Integral;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 〈〉
@@ -48,4 +50,7 @@ public class RoomSimpleRes {
 
     @ApiModelProperty(value = "图片4")
     private String picture4;
+
+    @ApiModelProperty(value = "随机宝石格子")
+    private List<Integer> randomCells;
 }

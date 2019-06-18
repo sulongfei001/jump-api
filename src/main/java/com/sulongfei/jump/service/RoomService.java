@@ -5,6 +5,9 @@ import com.sulongfei.jump.dto.RoomSpreadDTO;
 import com.sulongfei.jump.dto.SettleDTO;
 import com.sulongfei.jump.response.Response;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * 〈〉
  *
@@ -15,7 +18,7 @@ import com.sulongfei.jump.response.Response;
 public interface RoomService {
     Response roomSimpleList(BaseDTO dto);
 
-    Response settleSimpleGame(SettleDTO dto);
+    Response settleSimpleGame(SettleDTO dto) throws IOException;
 
     Response rankList(BaseDTO dto);
 
@@ -23,9 +26,10 @@ public interface RoomService {
 
     Response spreadRoomList(BaseDTO dto);
 
-    Response settleSpreadGame(SettleDTO dto);
+    Response settleSpreadGame(SettleDTO dto) throws IOException;
 
-    Response spreadRoomGet(BaseDTO dto, String password);
+    Response spreadRoomGet(BaseDTO dto, String password) throws IOException;
 
-    Response roomSimpleGet(BaseDTO dto, Long roomId);
+    Response roomSimpleGet(BaseDTO dto, Long roomId) throws IOException;
+
 }
