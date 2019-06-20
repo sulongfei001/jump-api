@@ -18,13 +18,9 @@ public class SpreadGoods extends Model {
 
     private Integer goodsNum;
 
-    private BigDecimal goodsPrice;
-
     private String goodsPicture;
 
     private String goodsText;
-
-    private Integer prizeProbability;
 
     private Integer premiumProportion;
 

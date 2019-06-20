@@ -1,4 +1,4 @@
-package com.sulongfei.jump.constants;
+package com.sulongfei.jump.utils;
 
 
 import lombok.Data;

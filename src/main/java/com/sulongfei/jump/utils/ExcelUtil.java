@@ -1,8 +1,6 @@
 package com.sulongfei.jump.utils;
 
 import cn.hutool.poi.excel.ExcelReader;
-import com.sulongfei.jump.constants.IntegralConfig;
-import com.sulongfei.jump.constants.RandomCellGem;
 import com.sulongfei.jump.response.ChargeListRes;
 import org.springframework.core.io.ClassPathResource;
 

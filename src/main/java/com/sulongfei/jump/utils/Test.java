@@ -1,6 +1,6 @@
 package com.sulongfei.jump.utils;
 
-import java.util.Random;
+import java.io.IOException;
 
 /**
  * 〈〉
@@ -12,7 +12,7 @@ import java.util.Random;
 public class Test {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        BigDecimal price = BigDecimal.valueOf(35.22);
 //        BigDecimal premium = BigDecimal.valueOf(100).divide(BigDecimal.valueOf(3),10,BigDecimal.ROUND_HALF_UP);
 //        BigDecimal singlePrice = BigDecimal.valueOf(100);
@@ -22,8 +22,6 @@ public class Test {
 //        System.out.println(singlePrice);
 //        System.out.println(price.multiply(premium).divide(singlePrice,10,BigDecimal.ROUND_HALF_UP).intValue());
 
-        for (int i = 0; i < 100; i++) {
-            System.out.println(new Random().nextInt(2 - 1 + 1) + 1);
-        }
+        ExcelUtil.integralConfig();
     }
 }

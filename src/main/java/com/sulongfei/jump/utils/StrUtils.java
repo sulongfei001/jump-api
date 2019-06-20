@@ -1,6 +1,7 @@
 package com.sulongfei.jump.utils;
 
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 /**
@@ -24,4 +25,11 @@ public class StrUtils {
         }
         return sb.toString();
     }
+
+    public static BigDecimal getGoodsPrice(BigDecimal price,Integer premiumProportion){
+        final int DEF_DIV_SCALE = 10;
+        BigDecimal premium = BigDecimal.valueOf(premiumProportion).divide(BigDecimal.valueOf(100), DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP);
+        return price.multiply(premium);
+    }
+
 }

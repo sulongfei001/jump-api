@@ -8,12 +8,14 @@
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
         <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice"/>
+        <result column="goods_type" jdbcType="INTEGER" property="goodsType"/>
         <result column="goods_picture" jdbcType="VARCHAR" property="goodsPicture"/>
+        <result column="detail_picture" jdbcType="VARCHAR" property="detailPicture"/>
         <result column="remain_num" jdbcType="INTEGER" property="remainNum"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, remote_goods_id, remote_club_id, goods_name, goods_num, goods_price, goods_picture, 
-     remain_num
+    id, remote_goods_id, remote_club_id, goods_name, goods_num, goods_price, goods_type, 
+    goods_picture, detail_picture, remain_num
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -26,21 +28,24 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.sulongfei.jump.model.Goods">
-    insert into goods (id, remote_goods_id, remote_club_id, 
-      goods_name, goods_num, goods_price, 
-      goods_picture, remain_num
-      )
-    values (#{id,jdbcType=BIGINT}, #{remoteGoodsId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, 
-      #{goodsName,jdbcType=VARCHAR}, #{goodsNum,jdbcType=INTEGER}, #{goodsPrice,jdbcType=DECIMAL}, 
-      #{goodsPicture,jdbcType=VARCHAR},  #{remainNum,jdbcType=INTEGER}
-      )
-  </insert>
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into goods (remote_goods_id, remote_club_id, goods_name,
+        goods_num, goods_price, goods_type,
+        goods_picture, detail_picture, remain_num
+        )
+        values (#{remoteGoodsId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{goodsName,jdbcType=VARCHAR},
+        #{goodsNum,jdbcType=INTEGER}, #{goodsPrice,jdbcType=DECIMAL}, #{goodsType,jdbcType=INTEGER},
+        #{goodsPicture,jdbcType=VARCHAR}, #{detailPicture,jdbcType=VARCHAR}, #{remainNum,jdbcType=INTEGER}
+        )
+    </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.Goods">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
             <if test="remoteGoodsId != null">
                 remote_goods_id,
             </if>
@@ -56,18 +61,20 @@
             <if test="goodsPrice != null">
                 goods_price,
             </if>
+            <if test="goodsType != null">
+                goods_type,
+            </if>
             <if test="goodsPicture != null">
                 goods_picture,
             </if>
-
+            <if test="detailPicture != null">
+                detail_picture,
+            </if>
             <if test="remainNum != null">
                 remain_num,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=BIGINT},
-            </if>
             <if test="remoteGoodsId != null">
                 #{remoteGoodsId,jdbcType=BIGINT},
             </if>
@@ -83,8 +90,14 @@
             <if test="goodsPrice != null">
                 #{goodsPrice,jdbcType=DECIMAL},
             </if>
+            <if test="goodsType != null">
+                #{goodsType,jdbcType=INTEGER},
+            </if>
             <if test="goodsPicture != null">
                 #{goodsPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="detailPicture != null">
+                #{detailPicture,jdbcType=VARCHAR},
             </if>
             <if test="remainNum != null">
                 #{remainNum,jdbcType=INTEGER},
@@ -109,10 +122,15 @@
             <if test="goodsPrice != null">
                 goods_price = #{goodsPrice,jdbcType=DECIMAL},
             </if>
+            <if test="goodsType != null">
+                goods_type = #{goodsType,jdbcType=INTEGER},
+            </if>
             <if test="goodsPicture != null">
                 goods_picture = #{goodsPicture,jdbcType=VARCHAR},
             </if>
-
+            <if test="detailPicture != null">
+                detail_picture = #{detailPicture,jdbcType=VARCHAR},
+            </if>
             <if test="remainNum != null">
                 remain_num = #{remainNum,jdbcType=INTEGER},
             </if>
@@ -126,7 +144,9 @@
       goods_name = #{goodsName,jdbcType=VARCHAR},
       goods_num = #{goodsNum,jdbcType=INTEGER},
       goods_price = #{goodsPrice,jdbcType=DECIMAL},
+      goods_type = #{goodsType,jdbcType=INTEGER},
       goods_picture = #{goodsPicture,jdbcType=VARCHAR},
+      detail_picture = #{detailPicture,jdbcType=VARCHAR},
       remain_num = #{remainNum,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>

@@ -2,8 +2,6 @@ package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
 import com.sulongfei.jump.constants.Constants;
-import com.sulongfei.jump.constants.IntegralConfig;
-import com.sulongfei.jump.constants.RandomCellGem;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.dto.BaseDTO;
@@ -17,9 +15,7 @@ import com.sulongfei.jump.rest.request.SendPrdRequest;
 import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.rest.response.SendPrdResponse;
 import com.sulongfei.jump.service.RoomService;
-import com.sulongfei.jump.utils.ExcelUtil;
-import com.sulongfei.jump.utils.SerializeUtil;
-import com.sulongfei.jump.utils.StrUtils;
+import com.sulongfei.jump.utils.*;
 import com.sulongfei.jump.web.interceptor.UserInterceptor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +30,7 @@ import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * 〈〉
@@ -69,6 +66,8 @@ public class RoomServiceImpl implements RoomService {
     private GlobalContext globalContext;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private SendGoodsMapper sendGoodsMapper;
 
     @Override
     public Response roomSimpleList(BaseDTO dto) {
@@ -102,17 +101,10 @@ public class RoomServiceImpl implements RoomService {
         userMapper.updateByPrimaryKeySelective(user);
 
         // =================分数计算开始=================
-        Integer countIntegral = 0;
+        Integer countIntegral;
         IntegralConfig ic = ExcelUtil.integralConfig();
-        Integer gemstoneNum = 0;
         List<Integer> randomCells = dto.getRandomCells();
-        for (int i = 0; i < randomCells.size(); i++) {
-            if (dto.getPassCellNum() >= randomCells.get(i)) {
-                gemstoneNum++;
-            } else {
-                break;
-            }
-        }
+        Integer gemstoneNum = randomCells.stream().filter(num -> dto.getPassCellNum() >= num).collect(Collectors.counting()).intValue();
         if (dto.getIsWin()) {
             countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
         } else {
@@ -120,6 +112,7 @@ public class RoomServiceImpl implements RoomService {
         }
         // =================分数计算结束=================
 
+        // =================中奖概率计算=================
         BigDecimal price = goods.getGoodsPrice();
         BigDecimal premium = BigDecimal.valueOf(room.getPremiumProportion()).divide(BigDecimal.valueOf(100), DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP);
         Double prize = room.getPrizeProbability() / (100 * 1.0);
@@ -127,13 +120,27 @@ public class RoomServiceImpl implements RoomService {
         Integer mustNum = price.multiply(premium).divide(singlePrice, DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP).intValue();
         Integer prizeCount = recordSimpleMapper.countPrize(dto.getRoomId());
         Boolean randomOn = mustNum + prizeCount * (mustNum + 1) < consumeNum;
-        Boolean win = false;
-        if (randomOn && Math.random() <= prize) { // 中奖 -- 判断是寄送物品或者门店兑换
-            win = true;
-            // 发送大奖物品
-            SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-            ResponseEntity<RestResponse<SendPrdResponse>> goodsResult = restService.sendPrd(goodsRequest);
+        // =================中奖概率计算=================
 
+        Boolean win = false;
+        if (randomOn && Math.random() <= prize) { // 中奖
+            win = true;
+            if (goods.getGoodsType() == 2) { // 寄送
+                SendGoods sendGoods = new SendGoods(
+                        user.getMemberId(),
+                        dto.getRemoteClubId(),
+                        goods.getRemoteGoodsId(),
+                        goods.getGoodsNum(),
+                        dto.getSaleId(),
+                        dto.getSaleType(),
+                        new SnowFlake().nextId(),
+                        new Timestamp(System.currentTimeMillis()),
+                        (byte) 0);
+                sendGoodsMapper.insertSelective(sendGoods);
+            } else if (goods.getGoodsType() == 3) { // 门店兑换
+                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
+                ResponseEntity<RestResponse<SendPrdResponse>> goodsResult = restService.sendPrd(goodsRequest);
+            }
         }
 
         // 记录结果
@@ -296,10 +303,8 @@ public class RoomServiceImpl implements RoomService {
         Long userId = UserInterceptor.getLocalUser().getId();
         RoomSpread roomSpread = roomSpreadMapper.selectByPrimaryKey(dto.getRoomId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
-        if (roomSpread.getStatus() == 1) throw new JumpException(ResponseStatus.ROOM_CLOSED);
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
         Integer userTicketNum = user.getTicketNum();
-        Integer partakeNum = (roomSpread.getPartakeNum() == null ? 0 : roomSpread.getPartakeNum()) + 1;
         // =================系统校验及数据结束=================
         SettleRes res = new SettleRes();
 
@@ -309,21 +314,14 @@ public class RoomServiceImpl implements RoomService {
 
         // =================分数计算开始=================
         IntegralConfig ic = ExcelUtil.integralConfig();
-        Integer gemstoneNum = 0;
         List<Integer> randomCells = dto.getRandomCells();
-        for (int i = 0; i < randomCells.size(); i++) {
-            if (dto.getPassCellNum() >= randomCells.get(i)) {
-                gemstoneNum++;
-            } else {
-                break;
-            }
-        }
+        Integer gemstoneNum = randomCells.stream().filter(num -> dto.getPassCellNum() >= num).collect(Collectors.counting()).intValue();
         Integer countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + gemstoneNum * ic.getGemstoneIntegral();
         // =================分数计算结束=================
 
         // =================中奖逻辑开始=================
         Boolean win = false;
-        if (roomSpread.getWinRecordId() == -1 && partakeNum == roomSpread.getWinNum()) win = true;
+        if (roomSpread.getWinRecordId() == -1 && roomSpread.getPartakeNum() == roomSpread.getWinNum()) win = true;
         // =================中奖逻辑结束=================
 
         // =================记录分数及排行榜开始=================
@@ -345,17 +343,8 @@ public class RoomServiceImpl implements RoomService {
         }
         // =================记录分数及排行榜结束=================
 
-
-        // =================房间状态更新开始=================
-        if (partakeNum >= roomSpread.getJoinNum()) {
-            roomSpread.setStatus((byte) 1);
-            // 发送大奖物品
-        }
-
-        roomSpread.setPartakeNum(partakeNum);
-        roomSpread.setWinRecordId(win ? recordSpread.getId() : -1);
+        if (win) roomSpread.setWinRecordId(recordSpread.getId());
         roomSpreadMapper.updateByPrimaryKey(roomSpread);
-        // =================房间状态更新结束=================
 
         // =================返回结果=================
         res.setCountIntegral(integral.getIntegral());
@@ -369,12 +358,17 @@ public class RoomServiceImpl implements RoomService {
         RoomSpread roomSpread = roomSpreadMapper.selectByPassword(password);
         SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        if (roomSpread.getStatus() == 1) throw new JumpException(ResponseStatus.ROOM_CLOSED);
         Integer ticketNum = roomSpread.getTicketNum();
         Integer userTicketNum = user.getTicketNum();
         if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
         // 消耗门票
         user.setTicketNum(userTicketNum - ticketNum);
         userMapper.updateByPrimaryKeySelective(user);
+        // 房间人数+1
+        roomSpread.setPartakeNum(roomSpread.getPartakeNum() + 1);
+        if (roomSpread.getPartakeNum() >= roomSpread.getJoinNum()) roomSpread.setStatus((byte) 1);
+        roomSpreadMapper.updateByPrimaryKey(roomSpread);
 
         RoomSpreadRes res = new RoomSpreadRes();
         BeanUtils.copyProperties(roomSpread, res);

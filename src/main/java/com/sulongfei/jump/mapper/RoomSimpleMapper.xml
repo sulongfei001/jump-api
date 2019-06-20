@@ -11,7 +11,6 @@
         <result column="remote_goods_id" jdbcType="BIGINT" property="remoteGoodsId"/>
         <result column="goods_name" jdbcType="VARCHAR" property="goodsName"/>
         <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
-        <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice"/>
         <result column="goods_picture" jdbcType="VARCHAR" property="goodsPicture"/>
         <result column="goods_text" jdbcType="VARCHAR" property="goodsText"/>
         <result column="ticket_num" jdbcType="INTEGER" property="ticketNum"/>
@@ -25,7 +24,7 @@
     </resultMap>
     <sql id="Base_Column_List">
     id, remote_club_id, start_time, end_time, create_time, hidden, remote_goods_id, goods_name, 
-    goods_num, goods_price, goods_picture, goods_text, ticket_num, prize_probability, 
+    goods_num, goods_picture, goods_text, ticket_num, prize_probability,
     premium_proportion, consume_num, picture_1, picture_2, picture_3, picture_4
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -42,7 +41,7 @@
     insert into room_simple (id, remote_club_id, start_time, 
       end_time, create_time, hidden, 
       remote_goods_id, goods_name, goods_num, 
-      goods_price, goods_picture, goods_text, 
+      goods_picture, goods_text,
       ticket_num, prize_probability, premium_proportion, 
       consume_num, picture_1,
       picture_2, picture_3, picture_4
@@ -50,7 +49,7 @@
     values (#{id,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{startTime,jdbcType=TIMESTAMP}, 
       #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{hidden,jdbcType=BIT}, 
       #{remoteGoodsId,jdbcType=BIGINT}, #{goodsName,jdbcType=VARCHAR}, #{goodsNum,jdbcType=INTEGER}, 
-      #{goodsPrice,jdbcType=DECIMAL}, #{goodsPicture,jdbcType=VARCHAR}, #{goodsText,jdbcType=VARCHAR}, 
+      #{goodsPicture,jdbcType=VARCHAR}, #{goodsText,jdbcType=VARCHAR},
       #{ticketNum,jdbcType=INTEGER}, #{prizeProbability,jdbcType=INTEGER}, #{premiumProportion,jdbcType=INTEGER}, 
       #{consumeNum,jdbcType=INTEGER}, #{picture1,jdbcType=VARCHAR},
       #{picture2,jdbcType=VARCHAR}, #{picture3,jdbcType=VARCHAR}, #{picture4,jdbcType=VARCHAR}
@@ -85,9 +84,6 @@
             </if>
             <if test="goodsNum != null">
                 goods_num,
-            </if>
-            <if test="goodsPrice != null">
-                goods_price,
             </if>
             <if test="goodsPicture != null">
                 goods_picture,
@@ -148,9 +144,6 @@
             <if test="goodsNum != null">
                 #{goodsNum,jdbcType=INTEGER},
             </if>
-            <if test="goodsPrice != null">
-                #{goodsPrice,jdbcType=DECIMAL},
-            </if>
             <if test="goodsPicture != null">
                 #{goodsPicture,jdbcType=VARCHAR},
             </if>
@@ -210,9 +203,6 @@
             <if test="goodsNum != null">
                 goods_num = #{goodsNum,jdbcType=INTEGER},
             </if>
-            <if test="goodsPrice != null">
-                goods_price = #{goodsPrice,jdbcType=DECIMAL},
-            </if>
             <if test="goodsPicture != null">
                 goods_picture = #{goodsPicture,jdbcType=VARCHAR},
             </if>
@@ -256,7 +246,6 @@
       remote_goods_id = #{remoteGoodsId,jdbcType=BIGINT},
       goods_name = #{goodsName,jdbcType=VARCHAR},
       goods_num = #{goodsNum,jdbcType=INTEGER},
-      goods_price = #{goodsPrice,jdbcType=DECIMAL},
       goods_picture = #{goodsPicture,jdbcType=VARCHAR},
       goods_text = #{goodsText,jdbcType=VARCHAR},
       ticket_num = #{ticketNum,jdbcType=INTEGER},
