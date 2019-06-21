@@ -1,5 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.dto.UserDTO;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 〈〉

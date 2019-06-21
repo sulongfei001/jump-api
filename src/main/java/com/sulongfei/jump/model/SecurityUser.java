@@ -34,7 +34,11 @@ public class SecurityUser extends Model {
 
     private String receiverName;
 
-    private String receiverAddress;
+    private String province;
+
+    private String city;
+
+    private String district;
 
     private Boolean everydayTicket;
 

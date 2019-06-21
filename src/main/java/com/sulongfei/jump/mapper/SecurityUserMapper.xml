@@ -1,230 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sulongfei.jump.mapper.SecurityUserMapper">
-    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.SecurityUser">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="member_id" jdbcType="BIGINT" property="memberId"/>
-        <result column="is_saler" jdbcType="BIT" property="isSaler"/>
-        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber"/>
-        <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
-        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
-        <result column="gender" jdbcType="TINYINT" property="gender"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
-        <result column="register_clue" jdbcType="BIGINT" property="registerClue"/>
-        <result column="delete_status" jdbcType="BIT" property="deleteStatus"/>
-        <result column="last_operation_time" jdbcType="TIMESTAMP" property="lastOperationTime"/>
-        <result column="last_operation_club" jdbcType="BIGINT" property="lastOperationClub"/>
-        <result column="receiver_name" jdbcType="VARCHAR" property="receiverName"/>
-        <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress"/>
-        <result column="everyday_ticket" jdbcType="BIT" property="everydayTicket"/>
-        <result column="ticket_num" jdbcType="INTEGER" property="ticketNum"/>
-    </resultMap>
-    <sql id="Base_Column_List">
+  <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.SecurityUser">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="is_saler" jdbcType="BIT" property="isSaler" />
+    <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="gender" jdbcType="TINYINT" property="gender" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="register_clue" jdbcType="BIGINT" property="registerClue" />
+    <result column="delete_status" jdbcType="BIT" property="deleteStatus" />
+    <result column="last_operation_time" jdbcType="TIMESTAMP" property="lastOperationTime" />
+    <result column="last_operation_club" jdbcType="BIGINT" property="lastOperationClub" />
+    <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="district" jdbcType="VARCHAR" property="district" />
+    <result column="everyday_ticket" jdbcType="BIT" property="everydayTicket" />
+    <result column="ticket_num" jdbcType="INTEGER" property="ticketNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
     id, member_id, is_saler, phone_number, password, avatar, nickname, gender, create_time, 
     update_time, register_clue, delete_status, last_operation_time, last_operation_club, 
-    receiver_name, receiver_address, everyday_ticket, ticket_num
+    receiver_name, province, city, district, everyday_ticket, ticket_num
   </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from security_user
-        where id = #{id,jdbcType=BIGINT}
-    </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from security_user
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from security_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.sulongfei.jump.model.SecurityUser">
-    insert into security_user (id, member_id, is_saler, 
-      phone_number, password, avatar, 
-      nickname, gender, create_time, 
-      update_time, register_clue, delete_status, 
-      last_operation_time, last_operation_club, 
-      receiver_name, receiver_address, everyday_ticket, 
-      ticket_num)
-    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{isSaler,jdbcType=BIT}, 
-      #{phoneNumber,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, 
-      #{nickname,jdbcType=VARCHAR}, #{gender,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{registerClue,jdbcType=BIGINT}, #{deleteStatus,jdbcType=BIT}, 
-      #{lastOperationTime,jdbcType=TIMESTAMP}, #{lastOperationClub,jdbcType=BIGINT}, 
-      #{receiverName,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, #{everydayTicket,jdbcType=BIT}, 
-      #{ticketNum,jdbcType=INTEGER})
+  <insert id="insert" parameterType="com.sulongfei.jump.model.SecurityUser">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into security_user (member_id, is_saler, phone_number, 
+      password, avatar, nickname, 
+      gender, create_time, update_time, 
+      register_clue, delete_status, last_operation_time, 
+      last_operation_club, receiver_name,
+      province, city, district, 
+      everyday_ticket, ticket_num)
+    values (#{memberId,jdbcType=BIGINT}, #{isSaler,jdbcType=BIT}, #{phoneNumber,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{registerClue,jdbcType=BIGINT}, #{deleteStatus,jdbcType=BIT}, #{lastOperationTime,jdbcType=TIMESTAMP}, 
+      #{lastOperationClub,jdbcType=BIGINT}, #{receiverName,jdbcType=VARCHAR},
+      #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{district,jdbcType=VARCHAR}, 
+      #{everydayTicket,jdbcType=BIT}, #{ticketNum,jdbcType=INTEGER})
   </insert>
-    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SecurityUser">
-        insert into security_user
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
-            <if test="memberId != null">
-                member_id,
-            </if>
-            <if test="isSaler != null">
-                is_saler,
-            </if>
-            <if test="phoneNumber != null">
-                phone_number,
-            </if>
-            <if test="password != null">
-                password,
-            </if>
-            <if test="avatar != null">
-                avatar,
-            </if>
-            <if test="nickname != null">
-                nickname,
-            </if>
-            <if test="gender != null">
-                gender,
-            </if>
-            <if test="createTime != null">
-                create_time,
-            </if>
-            <if test="updateTime != null">
-                update_time,
-            </if>
-            <if test="registerClue != null">
-                register_clue,
-            </if>
-            <if test="deleteStatus != null">
-                delete_status,
-            </if>
-            <if test="lastOperationTime != null">
-                last_operation_time,
-            </if>
-            <if test="lastOperationClub != null">
-                last_operation_club,
-            </if>
-            <if test="receiverName != null">
-                receiver_name,
-            </if>
-            <if test="receiverAddress != null">
-                receiver_address,
-            </if>
-            <if test="everydayTicket != null">
-                everyday_ticket,
-            </if>
-            <if test="ticketNum != null">
-                ticket_num,
-            </if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=BIGINT},
-            </if>
-            <if test="memberId != null">
-                #{memberId,jdbcType=BIGINT},
-            </if>
-            <if test="isSaler != null">
-                #{isSaler,jdbcType=BIT},
-            </if>
-            <if test="phoneNumber != null">
-                #{phoneNumber,jdbcType=VARCHAR},
-            </if>
-            <if test="password != null">
-                #{password,jdbcType=VARCHAR},
-            </if>
-            <if test="avatar != null">
-                #{avatar,jdbcType=VARCHAR},
-            </if>
-            <if test="nickname != null">
-                #{nickname,jdbcType=VARCHAR},
-            </if>
-            <if test="gender != null">
-                #{gender,jdbcType=TINYINT},
-            </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updateTime != null">
-                #{updateTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="registerClue != null">
-                #{registerClue,jdbcType=BIGINT},
-            </if>
-            <if test="deleteStatus != null">
-                #{deleteStatus,jdbcType=BIT},
-            </if>
-            <if test="lastOperationTime != null">
-                #{lastOperationTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="lastOperationClub != null">
-                #{lastOperationClub,jdbcType=BIGINT},
-            </if>
-            <if test="receiverName != null">
-                #{receiverName,jdbcType=VARCHAR},
-            </if>
-            <if test="receiverAddress != null">
-                #{receiverAddress,jdbcType=VARCHAR},
-            </if>
-            <if test="everydayTicket != null">
-                #{everydayTicket,jdbcType=BIT},
-            </if>
-            <if test="ticketNum != null">
-                #{ticketNum,jdbcType=INTEGER},
-            </if>
-        </trim>
-    </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.SecurityUser">
-        update security_user
-        <set>
-            <if test="memberId != null">
-                member_id = #{memberId,jdbcType=BIGINT},
-            </if>
-            <if test="isSaler != null">
-                is_saler = #{isSaler,jdbcType=BIT},
-            </if>
-            <if test="phoneNumber != null">
-                phone_number = #{phoneNumber,jdbcType=VARCHAR},
-            </if>
-            <if test="password != null">
-                password = #{password,jdbcType=VARCHAR},
-            </if>
-            <if test="avatar != null">
-                avatar = #{avatar,jdbcType=VARCHAR},
-            </if>
-            <if test="nickname != null">
-                nickname = #{nickname,jdbcType=VARCHAR},
-            </if>
-            <if test="gender != null">
-                gender = #{gender,jdbcType=TINYINT},
-            </if>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="registerClue != null">
-                register_clue = #{registerClue,jdbcType=BIGINT},
-            </if>
-            <if test="deleteStatus != null">
-                delete_status = #{deleteStatus,jdbcType=BIT},
-            </if>
-            <if test="lastOperationTime != null">
-                last_operation_time = #{lastOperationTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="lastOperationClub != null">
-                last_operation_club = #{lastOperationClub,jdbcType=BIGINT},
-            </if>
-            <if test="receiverName != null">
-                receiver_name = #{receiverName,jdbcType=VARCHAR},
-            </if>
-            <if test="receiverAddress != null">
-                receiver_address = #{receiverAddress,jdbcType=VARCHAR},
-            </if>
-            <if test="everydayTicket != null">
-                everyday_ticket = #{everydayTicket,jdbcType=BIT},
-            </if>
-            <if test="ticketNum != null">
-                ticket_num = #{ticketNum,jdbcType=INTEGER},
-            </if>
-        </set>
-        where id = #{id,jdbcType=BIGINT}
-    </update>
-    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.SecurityUser">
+  <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SecurityUser">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into security_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="memberId != null">
+        member_id,
+      </if>
+      <if test="isSaler != null">
+        is_saler,
+      </if>
+      <if test="phoneNumber != null">
+        phone_number,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="avatar != null">
+        avatar,
+      </if>
+      <if test="nickname != null">
+        nickname,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="registerClue != null">
+        register_clue,
+      </if>
+      <if test="deleteStatus != null">
+        delete_status,
+      </if>
+      <if test="lastOperationTime != null">
+        last_operation_time,
+      </if>
+      <if test="lastOperationClub != null">
+        last_operation_club,
+      </if>
+      <if test="receiverName != null">
+        receiver_name,
+      </if>
+      <if test="province != null">
+        province,
+      </if>
+      <if test="city != null">
+        city,
+      </if>
+      <if test="district != null">
+        district,
+      </if>
+      <if test="everydayTicket != null">
+        everyday_ticket,
+      </if>
+      <if test="ticketNum != null">
+        ticket_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="memberId != null">
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="isSaler != null">
+        #{isSaler,jdbcType=BIT},
+      </if>
+      <if test="phoneNumber != null">
+        #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null">
+        #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null">
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registerClue != null">
+        #{registerClue,jdbcType=BIGINT},
+      </if>
+      <if test="deleteStatus != null">
+        #{deleteStatus,jdbcType=BIT},
+      </if>
+      <if test="lastOperationTime != null">
+        #{lastOperationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastOperationClub != null">
+        #{lastOperationClub,jdbcType=BIGINT},
+      </if>
+      <if test="receiverName != null">
+        #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null">
+        #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="everydayTicket != null">
+        #{everydayTicket,jdbcType=BIT},
+      </if>
+      <if test="ticketNum != null">
+        #{ticketNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.SecurityUser">
+    update security_user
+    <set>
+      <if test="memberId != null">
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="isSaler != null">
+        is_saler = #{isSaler,jdbcType=BIT},
+      </if>
+      <if test="phoneNumber != null">
+        phone_number = #{phoneNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="avatar != null">
+        avatar = #{avatar,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null">
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registerClue != null">
+        register_clue = #{registerClue,jdbcType=BIGINT},
+      </if>
+      <if test="deleteStatus != null">
+        delete_status = #{deleteStatus,jdbcType=BIT},
+      </if>
+      <if test="lastOperationTime != null">
+        last_operation_time = #{lastOperationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastOperationClub != null">
+        last_operation_club = #{lastOperationClub,jdbcType=BIGINT},
+      </if>
+      <if test="receiverName != null">
+        receiver_name = #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null">
+        district = #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="everydayTicket != null">
+        everyday_ticket = #{everydayTicket,jdbcType=BIT},
+      </if>
+      <if test="ticketNum != null">
+        ticket_num = #{ticketNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.SecurityUser">
     update security_user
     set member_id = #{memberId,jdbcType=BIGINT},
       is_saler = #{isSaler,jdbcType=BIT},
@@ -240,7 +260,9 @@
       last_operation_time = #{lastOperationTime,jdbcType=TIMESTAMP},
       last_operation_club = #{lastOperationClub,jdbcType=BIGINT},
       receiver_name = #{receiverName,jdbcType=VARCHAR},
-      receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      district = #{district,jdbcType=VARCHAR},
       everyday_ticket = #{everydayTicket,jdbcType=BIT},
       ticket_num = #{ticketNum,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
@@ -249,7 +271,7 @@
     <cache />
     <select id="selectByUsername" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from security_user
         where phone_number = #{username,jdbcType=VARCHAR}
     </select>

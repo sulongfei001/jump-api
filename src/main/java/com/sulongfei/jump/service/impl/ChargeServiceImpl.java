@@ -1,5 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.dto.BaseDTO;
@@ -60,13 +61,13 @@ public class ChargeServiceImpl implements ChargeService {
 
     @Override
     @Transactional(readOnly = false)
-    public Response sendGoods(SendGoodsDTO sendGoodsDTO) {
-        SendGoods sendGoods = sendGoodsMapper.selectByPrimaryKey(sendGoodsDTO.getId());
+    public Response sendGoods(SendGoodsDTO dto) {
+        SendGoods sendGoods = sendGoodsMapper.selectByPrimaryKey(dto.getId());
         SecurityUser user = UserInterceptor.getLocalUser();
 
-        sendGoods.setSendPerson(sendGoodsDTO.getSendPerson());
+        sendGoods.setSendPerson(dto.getSendPerson());
         sendGoods.setMobile(user.getPhoneNumber());
-        sendGoods.setSendPlace(sendGoodsDTO.getSendPlace());
+        sendGoods.setSendPlace(StrUtil.join("-", dto.getProvince(), dto.getCity(), dto.getDistrict()));
         sendGoods.setStatus((byte) 1);
 
         SendGoodsRequest request = new SendGoodsRequest(
@@ -85,6 +86,12 @@ public class ChargeServiceImpl implements ChargeService {
         if (HttpStatus.OK.equals(result.getStatusCode()) && "200".equals(result.getBody().getErrorCode())) {
             sendGoodsMapper.updateByPrimaryKey(sendGoods);
         }
+
+        user.setProvince(dto.getProvince());
+        user.setCity(dto.getCity());
+        user.setDistrict(dto.getDistrict());
+        userMapper.updateByPrimaryKey(user);
+
         return new Response();
     }
 
@@ -114,9 +121,9 @@ public class ChargeServiceImpl implements ChargeService {
         orderMapper.updateByPrimaryKey(order);
 
         // 赠送门票
-        if (status == 1){
+        if (status == 1) {
             SecurityUser user = userMapper.selectByPrimaryKey(order.getUserId());
-            user.setTicketNum(user.getTicketNum()+order.getTicketNum());
+            user.setTicketNum(user.getTicketNum() + order.getTicketNum());
             userMapper.updateByPrimaryKey(user);
         }
         return new Response();
@@ -124,9 +131,9 @@ public class ChargeServiceImpl implements ChargeService {
 
     @Override
     public Response orderList(BaseDTO dto) {
-        List<PaymentOrder> list = orderMapper.selectAll(UserInterceptor.getLocalUser().getId(),dto.getRemoteClubId());
+        List<PaymentOrder> list = orderMapper.selectAll(UserInterceptor.getLocalUser().getId(), dto.getRemoteClubId());
         List<PaymentOrderRes> data = Lists.newArrayList();
-        list.forEach(order->{
+        list.forEach(order -> {
             PaymentOrderRes res = new PaymentOrderRes();
             res.setProductNum(order.getProductNum());
             res.setPrice(order.getPrice());

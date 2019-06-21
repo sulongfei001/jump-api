@@ -1,6 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
-import com.sulongfei.jump.config.MyRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisService {
 
-    private MyRedisTemplate redisTemplate;
+    private RedisTemplate<String, Serializable> redisTemplate;
 
-    public RedisService(MyRedisTemplate redisTemplate) {
+    public RedisService(RedisTemplate<String, Serializable> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

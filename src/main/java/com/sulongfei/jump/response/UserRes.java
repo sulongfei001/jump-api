@@ -35,8 +35,14 @@ public class UserRes {
     @ApiModelProperty(value = "收货姓名")
     private String receiverName;
 
-    @ApiModelProperty(value = "收货地址")
-    private String receiverAddress;
+    @ApiModelProperty(value = "收货地址-省")
+    private String province;
+
+    @ApiModelProperty(value = "收货地址-市")
+    private String city;
+
+    @ApiModelProperty(value = "收货地址-区")
+    private String district;
 
     @ApiModelProperty(value = "每日领取门票")
     private Boolean everydayTicket;
