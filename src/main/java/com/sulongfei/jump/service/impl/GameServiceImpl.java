@@ -1,19 +1,16 @@
 package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
-import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.constants.ResponseStatus;
+import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.exception.JumpException;
-import com.sulongfei.jump.mapper.ClubMapper;
-import com.sulongfei.jump.mapper.IntegralMapper;
-import com.sulongfei.jump.mapper.RecordSimpleMapper;
-import com.sulongfei.jump.mapper.SecurityUserMapper;
-import com.sulongfei.jump.model.Club;
-import com.sulongfei.jump.model.RecordSimple;
-import com.sulongfei.jump.model.SecurityUser;
+import com.sulongfei.jump.mapper.*;
+import com.sulongfei.jump.model.*;
 import com.sulongfei.jump.response.*;
+import com.sulongfei.jump.rest.request.MarketOrderRequest;
 import com.sulongfei.jump.rest.request.PrdRequest;
+import com.sulongfei.jump.rest.response.MarketOrderResponse;
 import com.sulongfei.jump.rest.response.PrdResponse;
 import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.GameService;
@@ -50,6 +47,10 @@ public class GameServiceImpl implements GameService {
     private IntegralMapper integralMapper;
     @Autowired
     private ClubMapper clubMapper;
+    @Autowired
+    private SendGoodsMapper sendGoodsMapper;
+    @Autowired
+    private GoodsMapper goodsMapper;
 
     @Override
     public Response randomGameResult(BaseDTO dto) {
@@ -59,36 +60,53 @@ public class GameServiceImpl implements GameService {
         if (user == null) return new Response();
         UserRes userRes = new UserRes();
         BeanUtils.copyProperties(user, userRes);
-        Integer ownRank = integralMapper.findRankByUserId(dto.getRemoteClubId(),UserInterceptor.getLocalUser().getId());
-        Integer rivalRank = integralMapper.findRankByUserId(dto.getRemoteClubId(),user.getId());
-        RandomResultRes data = new RandomResultRes(record.getIntegral(), userRes,ownRank,rivalRank);
+        Integer ownRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
+        Integer rivalRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), user.getId());
+        RandomResultRes data = new RandomResultRes(record.getIntegral(), userRes, ownRank, rivalRank);
         return new Response(data);
     }
 
     @Override
     public Response<PrdListRes> getPrdList(BaseDTO dto) {
-        PrdRequest request = new PrdRequest(UserInterceptor.getLocalUser().getMemberId(), dto.getRemoteClubId(), 1L);
+        SecurityUser user = UserInterceptor.getLocalUser();
+        PrdRequest request = new PrdRequest(user.getMemberId(), dto.getRemoteClubId());
         ResponseEntity<RestResponse<List<PrdResponse>>> result = restService.getPrdList(request);
+        MarketOrderRequest orderRequest = new MarketOrderRequest(user.getMemberId(), dto.getRemoteClubId());
+        ResponseEntity<RestResponse<List<MarketOrderResponse>>> orderRes = restService.getMarketOrderList(orderRequest);
+        List<SendGoods> list = sendGoodsMapper.selectByStatus(user.getMemberId(), dto.getRemoteClubId(), 0);
+        Club club = clubMapper.selectByOrgId(dto.getRemoteClubId());
+
         if (!HttpStatus.OK.equals(result.getStatusCode()) || !"200".equals(result.getBody().getErrorCode())) {
             throw new JumpException(ResponseStatus.OTHER_EXCEPTION);
         }
-        Club club = clubMapper.selectByOrgId(dto.getRemoteClubId());
-        List<PrdRes> exchangeList = Lists.newArrayList();
+        if (!HttpStatus.OK.equals(orderRes.getStatusCode()) || !"200".equals(orderRes.getBody().getErrorCode())) {
+            throw new JumpException(ResponseStatus.OTHER_EXCEPTION);
+        }
         List<PrdRes> exclusiveList = Lists.newArrayList();
         result.getBody().getResult().forEach(prd -> {
-            if (prd.getUseType() == 2) {
-                PrdRes res = new PrdRes();
-                BeanUtils.copyProperties(prd, res);
-                res.setUsePlace(club.getSupplierAddress());
-                exchangeList.add(res);
-            } else if (prd.getUseType() == 3) {
+            if (prd.getUseType() == 3) {
                 PrdRes res = new PrdRes();
                 BeanUtils.copyProperties(prd, res);
                 res.setUsePlace(club.getSupplierAddress());
                 exclusiveList.add(res);
             }
         });
-        PrdListRes data = new PrdListRes(exchangeList, exclusiveList);
+        List<SendGoodsRes> goodsList = Lists.newArrayList();
+        list.forEach(sendGoods -> {
+            Goods goods = goodsMapper.selectByGoodsId(sendGoods.getGoodsId());
+            SendGoodsRes res = new SendGoodsRes();
+            BeanUtils.copyProperties(goods,res);
+            res.setId(sendGoods.getId());
+            goodsList.add(res);
+        });
+
+        List<MarketOrderRes> marketOrderList = Lists.newArrayList();
+        orderRes.getBody().getResult().forEach(order -> {
+            MarketOrderRes res = new MarketOrderRes();
+            BeanUtils.copyProperties(order, res);
+            marketOrderList.add(res);
+        });
+        PrdListRes data = new PrdListRes(exclusiveList, goodsList, marketOrderList);
         return new Response<>(data);
     }
 

@@ -12,8 +12,10 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendPrdResponse extends RestResponse {
+public class BaseResponse extends RestResponse {
     private String result;
 
     private Long sendTime;
+
+    private Long mainOrderId;
 }

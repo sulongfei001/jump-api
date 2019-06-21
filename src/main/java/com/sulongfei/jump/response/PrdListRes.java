@@ -16,15 +16,18 @@ import java.util.List;
 @ApiModel(value = "卡券列表对象")
 @Data
 public class PrdListRes {
-
     @ApiModelProperty(value = "门店兑换")
-    private List<PrdRes> exchangeList;
-
-    @ApiModelProperty(value = "寄送卡券")
     private List<PrdRes> exclusiveList;
 
-    public PrdListRes(List<PrdRes> exchangeList, List<PrdRes> exclusiveList) {
-        this.exchangeList = exchangeList;
+    @ApiModelProperty(value = "未寄送商品")
+    private List<SendGoodsRes> goodsList;
+
+    @ApiModelProperty(value = "寄送商品")
+    private List<MarketOrderRes> marketOrderList;
+
+    public PrdListRes(List<PrdRes> exclusiveList, List<SendGoodsRes> goodsList, List<MarketOrderRes> marketOrderList) {
         this.exclusiveList = exclusiveList;
+        this.goodsList = goodsList;
+        this.marketOrderList = marketOrderList;
     }
 }

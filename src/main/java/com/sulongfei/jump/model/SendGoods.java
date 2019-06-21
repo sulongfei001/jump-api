@@ -34,6 +34,8 @@ public class SendGoods extends Model {
 
     private Byte status;
 
+    private Goods goods;
+
     public SendGoods() {
     }
 

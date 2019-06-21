@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sulongfei.jump.mapper.PaymentOrderMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.PaymentOrder">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="org_id" jdbcType="BIGINT" property="orgId"/>
+        <result column="product_id" jdbcType="BIGINT" property="productId"/>
+        <result column="product_num" jdbcType="INTEGER" property="productNum"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="ticket_num" jdbcType="INTEGER" property="ticketNum"/>
+        <result column="buy_time" jdbcType="TIMESTAMP" property="buyTime"/>
+        <result column="sw_order_id" jdbcType="BIGINT" property="swOrderId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, org_id, product_id, product_num, price, ticket_num, buy_time, sw_order_id, 
+    status
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from payment_order
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from payment_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.sulongfei.jump.model.PaymentOrder">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into payment_order (user_id, org_id, product_id,
+        product_num, price, ticket_num,
+        buy_time, sw_order_id, status
+        )
+        values (#{userId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT},
+        #{productNum,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, #{ticketNum,jdbcType=INTEGER},
+        #{buyTime,jdbcType=TIMESTAMP}, #{swOrderId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.PaymentOrder">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into payment_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="productNum != null">
+                product_num,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="ticketNum != null">
+                ticket_num,
+            </if>
+            <if test="buyTime != null">
+                buy_time,
+            </if>
+            <if test="swOrderId != null">
+                sw_order_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="orgId != null">
+                #{orgId,jdbcType=BIGINT},
+            </if>
+            <if test="productId != null">
+                #{productId,jdbcType=BIGINT},
+            </if>
+            <if test="productNum != null">
+                #{productNum,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="ticketNum != null">
+                #{ticketNum,jdbcType=INTEGER},
+            </if>
+            <if test="buyTime != null">
+                #{buyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="swOrderId != null">
+                #{swOrderId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.PaymentOrder">
+        update payment_order
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId,jdbcType=BIGINT},
+            </if>
+            <if test="productId != null">
+                product_id = #{productId,jdbcType=BIGINT},
+            </if>
+            <if test="productNum != null">
+                product_num = #{productNum,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="ticketNum != null">
+                ticket_num = #{ticketNum,jdbcType=INTEGER},
+            </if>
+            <if test="buyTime != null">
+                buy_time = #{buyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="swOrderId != null">
+                sw_order_id = #{swOrderId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.PaymentOrder">
+    update payment_order
+    set user_id = #{userId,jdbcType=BIGINT},
+      org_id = #{orgId,jdbcType=BIGINT},
+      product_id = #{productId,jdbcType=BIGINT},
+      product_num = #{productNum,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      ticket_num = #{ticketNum,jdbcType=INTEGER},
+      buy_time = #{buyTime,jdbcType=TIMESTAMP},
+      sw_order_id = #{swOrderId,jdbcType=BIGINT},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <resultMap id="OrderGoodsMap" type="com.sulongfei.jump.model.PaymentOrder" extends="BaseResultMap">
+        <collection column="product_id" property="goods" ofType="Goods"
+                    select="com.sulongfei.jump.mapper.GoodsMapper.selectByGoodsId"/>
+    </resultMap>
+    <select id="selectByOrderId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from payment_order
+        where sw_order_id = #{swOrderId,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="OrderGoodsMap">
+        select
+        <include refid="Base_Column_List"/>
+        from payment_order
+        where user_id = #{userId,jdbcType=BIGINT} and org_id = #{remoteClubId,jdbcType=BIGINT}
+    </select>
+</mapper>

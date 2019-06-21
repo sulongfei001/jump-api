@@ -1,175 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sulongfei.jump.mapper.SendGoodsMapper">
-  <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.SendGoods">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="member_id" jdbcType="BIGINT" property="memberId" />
-    <result column="org_id" jdbcType="BIGINT" property="orgId" />
-    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
-    <result column="goods_num" jdbcType="INTEGER" property="goodsNum" />
-    <result column="sale_id" jdbcType="BIGINT" property="saleId" />
-    <result column="sale_type" jdbcType="INTEGER" property="saleType" />
-    <result column="send_person" jdbcType="VARCHAR" property="sendPerson" />
-    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-    <result column="send_place" jdbcType="VARCHAR" property="sendPlace" />
-    <result column="order_id" jdbcType="BIGINT" property="orderId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-  </resultMap>
-  <sql id="Base_Column_List">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.SendGoods">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="member_id" jdbcType="BIGINT" property="memberId"/>
+        <result column="org_id" jdbcType="BIGINT" property="orgId"/>
+        <result column="goods_id" jdbcType="BIGINT" property="goodsId"/>
+        <result column="goods_num" jdbcType="INTEGER" property="goodsNum"/>
+        <result column="sale_id" jdbcType="BIGINT" property="saleId"/>
+        <result column="sale_type" jdbcType="INTEGER" property="saleType"/>
+        <result column="send_person" jdbcType="VARCHAR" property="sendPerson"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="send_place" jdbcType="VARCHAR" property="sendPlace"/>
+        <result column="order_id" jdbcType="BIGINT" property="orderId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, member_id, org_id, goods_id, goods_num, sale_id, sale_type, send_person, mobile, 
     send_place, order_id, create_time, status
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from send_goods
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from send_goods
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from send_goods
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.sulongfei.jump.model.SendGoods">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into send_goods (member_id, org_id, goods_id, 
-      goods_num, sale_id, sale_type, 
-      send_person, mobile, send_place, 
-      order_id, create_time, status
-      )
-    values (#{memberId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, 
-      #{goodsNum,jdbcType=INTEGER}, #{saleId,jdbcType=BIGINT}, #{saleType,jdbcType=INTEGER}, 
-      #{sendPerson,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{sendPlace,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SendGoods">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into send_goods
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="memberId != null">
-        member_id,
-      </if>
-      <if test="orgId != null">
-        org_id,
-      </if>
-      <if test="goodsId != null">
-        goods_id,
-      </if>
-      <if test="goodsNum != null">
-        goods_num,
-      </if>
-      <if test="saleId != null">
-        sale_id,
-      </if>
-      <if test="saleType != null">
-        sale_type,
-      </if>
-      <if test="sendPerson != null">
-        send_person,
-      </if>
-      <if test="mobile != null">
-        mobile,
-      </if>
-      <if test="sendPlace != null">
-        send_place,
-      </if>
-      <if test="orderId != null">
-        order_id,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="memberId != null">
-        #{memberId,jdbcType=BIGINT},
-      </if>
-      <if test="orgId != null">
-        #{orgId,jdbcType=BIGINT},
-      </if>
-      <if test="goodsId != null">
-        #{goodsId,jdbcType=BIGINT},
-      </if>
-      <if test="goodsNum != null">
-        #{goodsNum,jdbcType=INTEGER},
-      </if>
-      <if test="saleId != null">
-        #{saleId,jdbcType=BIGINT},
-      </if>
-      <if test="saleType != null">
-        #{saleType,jdbcType=INTEGER},
-      </if>
-      <if test="sendPerson != null">
-        #{sendPerson,jdbcType=VARCHAR},
-      </if>
-      <if test="mobile != null">
-        #{mobile,jdbcType=VARCHAR},
-      </if>
-      <if test="sendPlace != null">
-        #{sendPlace,jdbcType=VARCHAR},
-      </if>
-      <if test="orderId != null">
-        #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null">
-        #{status,jdbcType=TINYINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.SendGoods">
-    update send_goods
-    <set>
-      <if test="memberId != null">
-        member_id = #{memberId,jdbcType=BIGINT},
-      </if>
-      <if test="orgId != null">
-        org_id = #{orgId,jdbcType=BIGINT},
-      </if>
-      <if test="goodsId != null">
-        goods_id = #{goodsId,jdbcType=BIGINT},
-      </if>
-      <if test="goodsNum != null">
-        goods_num = #{goodsNum,jdbcType=INTEGER},
-      </if>
-      <if test="saleId != null">
-        sale_id = #{saleId,jdbcType=BIGINT},
-      </if>
-      <if test="saleType != null">
-        sale_type = #{saleType,jdbcType=INTEGER},
-      </if>
-      <if test="sendPerson != null">
-        send_person = #{sendPerson,jdbcType=VARCHAR},
-      </if>
-      <if test="mobile != null">
-        mobile = #{mobile,jdbcType=VARCHAR},
-      </if>
-      <if test="sendPlace != null">
-        send_place = #{sendPlace,jdbcType=VARCHAR},
-      </if>
-      <if test="orderId != null">
-        order_id = #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.SendGoods">
+    <insert id="insert" parameterType="com.sulongfei.jump.model.SendGoods">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into send_goods (member_id, org_id, goods_id,
+        goods_num, sale_id, sale_type,
+        send_person, mobile, send_place,
+        order_id, create_time, status
+        )
+        values (#{memberId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT},
+        #{goodsNum,jdbcType=INTEGER}, #{saleId,jdbcType=BIGINT}, #{saleType,jdbcType=INTEGER},
+        #{sendPerson,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{sendPlace,jdbcType=VARCHAR},
+        #{orderId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SendGoods">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into send_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="memberId != null">
+                member_id,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="goodsNum != null">
+                goods_num,
+            </if>
+            <if test="saleId != null">
+                sale_id,
+            </if>
+            <if test="saleType != null">
+                sale_type,
+            </if>
+            <if test="sendPerson != null">
+                send_person,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="sendPlace != null">
+                send_place,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="memberId != null">
+                #{memberId,jdbcType=BIGINT},
+            </if>
+            <if test="orgId != null">
+                #{orgId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsNum != null">
+                #{goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="saleId != null">
+                #{saleId,jdbcType=BIGINT},
+            </if>
+            <if test="saleType != null">
+                #{saleType,jdbcType=INTEGER},
+            </if>
+            <if test="sendPerson != null">
+                #{sendPerson,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="sendPlace != null">
+                #{sendPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.SendGoods">
+        update send_goods
+        <set>
+            <if test="memberId != null">
+                member_id = #{memberId,jdbcType=BIGINT},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsNum != null">
+                goods_num = #{goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="saleId != null">
+                sale_id = #{saleId,jdbcType=BIGINT},
+            </if>
+            <if test="saleType != null">
+                sale_type = #{saleType,jdbcType=INTEGER},
+            </if>
+            <if test="sendPerson != null">
+                send_person = #{sendPerson,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="sendPlace != null">
+                send_place = #{sendPlace,jdbcType=VARCHAR},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.SendGoods">
     update send_goods
     set member_id = #{memberId,jdbcType=BIGINT},
       org_id = #{orgId,jdbcType=BIGINT},
@@ -185,4 +185,16 @@
       status = #{status,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <!--<resultMap id="SendGoodsMap" type="com.sulongfei.jump.model.Goods" extends="BaseResultMap">
+        <collection column="goods_id" property="goods" ofType="Goods"
+                    select="com.sulongfei.jump.mapper.GoodsMapper.selectByGoodsId"/>
+    </resultMap>-->
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from send_goods
+        where member_id = #{memberId,jdbcType=BIGINT} and org_id = #{remoteClubId,jdbcType=BIGINT} and status =
+        #{status,jdbcType=TINYINT}
+    </select>
 </mapper>

@@ -10,6 +10,7 @@ public interface ResponseStatus {
 
     // 响应码
     interface Code {
+
         // 错误码
         int FAILURE = 1000;
         // 没有权限码
@@ -83,4 +84,6 @@ public interface ResponseStatus {
     String GOT_TICKET = "今日已领取过门票";
 
     String ROOM_CLOSED = "房间已关闭";
+
+    String NO_ORDER = "订单不存在";
 }

@@ -4,7 +4,8 @@ import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.RoomSpreadDTO;
 import com.sulongfei.jump.dto.SettleDTO;
 import com.sulongfei.jump.response.*;
-import com.sulongfei.jump.service.RoomService;
+import com.sulongfei.jump.service.RoomSimpleService;
+import com.sulongfei.jump.service.RoomSpreadService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +29,9 @@ import java.util.List;
 @RequestMapping("/{remoteClubId}/{saleId}/{saleType}/room")
 public class RoomController extends BaseController {
     @Autowired
-    private RoomService roomService;
+    private RoomSimpleService simpleService;
+    @Autowired
+    private RoomSpreadService spreadService;
 
     @ApiOperation(value = "获取游戏方房间列表")
     @PostMapping("/simple/list")
@@ -36,7 +39,7 @@ public class RoomController extends BaseController {
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto
     ) {
         verifyBaseDTO(dto);
-        return roomService.roomSimpleList(dto);
+        return simpleService.roomSimpleList(dto);
     }
 
     @ApiOperation(value = "获取大游戏房间")
@@ -46,7 +49,7 @@ public class RoomController extends BaseController {
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @PathVariable Long roomId
     ) throws IOException {
-        return roomService.roomSimpleGet(dto, roomId);
+        return simpleService.roomSimpleGet(dto, roomId);
     }
 
     @ApiOperation(value = "游戏房间游戏结算", notes = "用于游戏方房间结算分数")
@@ -57,7 +60,7 @@ public class RoomController extends BaseController {
     ) throws IOException {
         BeanUtils.copyProperties(baseDTO, dto);
         verifySettleSimpleDTO(dto);
-        return roomService.settleSimpleGame(dto);
+        return simpleService.settleSimpleGame(dto);
     }
 
     @ApiOperation(value = "推广员创建房间")
@@ -68,7 +71,7 @@ public class RoomController extends BaseController {
     ) {
         BeanUtils.copyProperties(baseDTO, dto);
         verifySpreadRoomCreateDTO(dto);
-        return roomService.spreadRoomCreate(dto);
+        return spreadService.spreadRoomCreate(dto);
     }
 
     @ApiOperation(value = "根据密码获取推广员房间")
@@ -78,7 +81,7 @@ public class RoomController extends BaseController {
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @PathVariable String password
     ) throws IOException {
-        return roomService.spreadRoomGet(dto, password);
+        return spreadService.spreadRoomGet(dto, password);
     }
 
     @ApiOperation(value = "推广员房间列表")
@@ -87,7 +90,7 @@ public class RoomController extends BaseController {
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto
     ) {
         verifyBaseDTO(dto);
-        return roomService.spreadRoomList(dto);
+        return spreadService.spreadRoomList(dto);
     }
 
     @ApiOperation(value = "推广房间游戏结算", notes = "用于推广方房间结算分数")
@@ -98,7 +101,7 @@ public class RoomController extends BaseController {
     ) throws IOException {
         BeanUtils.copyProperties(baseDTO, dto);
         verifySettleSimpleDTO(dto);
-        return roomService.settleSpreadGame(dto);
+        return spreadService.settleSpreadGame(dto);
     }
 
 
@@ -108,7 +111,7 @@ public class RoomController extends BaseController {
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto
     ) {
         verifyBaseDTO(dto);
-        return roomService.rankList(dto);
+        return simpleService.rankList(dto);
     }
 
 }

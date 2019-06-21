@@ -6,16 +6,16 @@ import lombok.Data;
  * 〈〉
  *
  * @Author sulongfei
- * @Date 2019/6/11 11:17
+ * @Date 2019/6/20 16:04
  * @Version 1.0
  */
 @Data
-public class PrdRequest {
-    private Integer gameId = 1;
+public class MarketOrderRequest {
     private Long memberId;
+    private Integer status;
     private Long orgId;
 
-    public PrdRequest(Long memberId, Long orgId) {
+    public MarketOrderRequest(Long memberId, Long orgId) {
         this.memberId = memberId;
         this.orgId = orgId;
     }

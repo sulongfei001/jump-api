@@ -1,11 +1,14 @@
 package com.sulongfei.jump.utils;
 
 import cn.hutool.poi.excel.ExcelReader;
+import com.google.common.collect.Lists;
 import com.sulongfei.jump.response.ChargeListRes;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 〈〉
@@ -42,6 +45,24 @@ public class ExcelUtil {
         ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(new ClassPathResource(FILE_PATH).getInputStream(), 0);
         List<IntegralConfig> list = reader.read(HEADER_ROW_INDEX, START_ROW_INDEX, IntegralConfig.class);
         return list.get(0);
+    }
+
+    public static List<Integer> getGameConfig() throws IOException {
+        List<RandomCellGem> list = ExcelUtil.gameConfig();
+        List<Integer> cells = Lists.newArrayList();
+        list.forEach(randomCellGem -> {
+            Integer gemNum = new Random().nextInt(randomCellGem.getEndGem() - randomCellGem.getStartGem() + 1) + randomCellGem.getStartGem();
+            for (Integer i = 0; i < gemNum; i++) {
+                Integer cellNum = new Random().nextInt(randomCellGem.getEndCell() - randomCellGem.getStartCell() + 1) + randomCellGem.getStartCell();
+                if (cells.contains(cellNum)) {
+                    i--;
+                    continue;
+                }
+                cells.add(cellNum);
+            }
+        });
+        cells.sort(Comparator.comparingInt(a -> a));
+        return cells;
     }
 
 }

@@ -1,6 +1,6 @@
 package com.sulongfei.jump.web.controller;
 
-import com.sulongfei.jump.service.RoomService;
+import com.sulongfei.jump.service.RoomSimpleService;
 import com.sulongfei.jump.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class TestController {
     @Autowired
     private TaskService taskService;
     @Autowired
-    private RoomService roomService;
+    private RoomSimpleService roomService;
 
     @GetMapping("/t1")
     public void test() throws IOException {

@@ -2,13 +2,8 @@ package com.sulongfei.jump.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.sulongfei.jump.dto.UserLoginDTO;
-import com.sulongfei.jump.rest.request.PrdRequest;
-import com.sulongfei.jump.rest.request.RegisterRequest;
-import com.sulongfei.jump.rest.request.SendPrdRequest;
-import com.sulongfei.jump.rest.response.PrdResponse;
-import com.sulongfei.jump.rest.response.RegisterResponse;
-import com.sulongfei.jump.rest.response.RestResponse;
-import com.sulongfei.jump.rest.response.SendPrdResponse;
+import com.sulongfei.jump.rest.request.*;
+import com.sulongfei.jump.rest.response.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -57,12 +52,12 @@ public class RestService {
         return result;
     }
 
-    public ResponseEntity<RestResponse<SendPrdResponse>> sendPrd(SendPrdRequest request) {
+    public ResponseEntity<RestResponse<BaseResponse>> sendPrd(SendPrdRequest request) {
         String url = realmName + "/gamePlat/sendPrd";
-        ResponseEntity<RestResponse<SendPrdResponse>> result = restTemplate.exchange(url,
+        ResponseEntity<RestResponse<BaseResponse>> result = restTemplate.exchange(url,
                 HttpMethod.POST,
                 new HttpEntity<>(JSON.toJSONString(request), headers),
-                new ParameterizedTypeReference<RestResponse<SendPrdResponse>>() {
+                new ParameterizedTypeReference<RestResponse<BaseResponse>>() {
                 });
         log.info("发送卡券，返回消息体：{}", result.getBody());
         return result;
@@ -77,4 +72,25 @@ public class RestService {
                 });
         return result;
     }
+
+    public ResponseEntity<RestResponse<BaseResponse>> createSendOrder(SendGoodsRequest request) {
+        String url = realmName + "/gamePlat/createSendOrder";
+        ResponseEntity<RestResponse<BaseResponse>> result = restTemplate.exchange(url,
+                HttpMethod.POST,
+                new HttpEntity<>(JSON.toJSONString(request), headers),
+                new ParameterizedTypeReference<RestResponse<BaseResponse>>() {
+                });
+        return result;
+    }
+
+    public ResponseEntity<RestResponse<List<MarketOrderResponse>>> getMarketOrderList(MarketOrderRequest request) {
+        String url = realmName + "/marketSendOrder/getMarketSendOrderList";
+        ResponseEntity<RestResponse<List<MarketOrderResponse>>> result = restTemplate.exchange(url,
+                HttpMethod.POST,
+                new HttpEntity<>(JSON.toJSONString(request), headers),
+                new ParameterizedTypeReference<RestResponse<List<MarketOrderResponse>>>() {
+                });
+        return result;
+    }
+
 }
