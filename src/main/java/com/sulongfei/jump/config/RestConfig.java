@@ -28,6 +28,7 @@ public class RestConfig {
 
     @Bean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
+        System.out.println("===============================================aaaaaa====");
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(30 * 3000);
         factory.setReadTimeout(30 * 3000);
