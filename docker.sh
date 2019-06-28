@@ -25,9 +25,7 @@ function backup(){
 # 构建docker镜像
 function build(){
 	if [ -n "$IID" ]; then
-		echo "存在$SERVER_NAME镜像，IID=$IID，重新构建镜像"
-			cd $BASE_PATH
-			docker build -t $SERVER_NAME .
+		echo "存在$SERVER_NAME镜像，IID=$IID"
 	else
 		echo "不存在$SERVER_NAME镜像，开始构建镜像"
 			cd $BASE_PATH
@@ -37,13 +35,14 @@ function build(){
  
 # 运行docker容器
 function run(){
-	backup
+	#backup
 	build
 	if [ -n "$CID" ]; then
 		echo "存在$SERVER_NAME容器，CID=$CID,重启docker容器 ..."
-			docker stop $SERVER_NAME
-			docker rm $SERVER_NAME
-			docker run --name $SERVER_NAME -v $BASE_PATH:$BASE_PATH -d -p 9004:9004 $SERVER_NAME
+		    docker restart $SERVER_NAME
+			#docker stop $SERVER_NAME
+			#docker rm $SERVER_NAME
+			#docker run --name $SERVER_NAME -v $BASE_PATH:$BASE_PATH -d -p 9004:9004 $SERVER_NAME
 		echo "$SERVER_NAME容器重启完成"
 	else
 		echo "不存在$SERVER_NAME容器，docker run创建容器..."
