@@ -31,4 +31,7 @@ public class SendGoodsDTO extends BaseDTO{
 
     @ApiModelProperty(value = "收货地址-区")
     private String district;
+
+    @ApiModelProperty(value = "详细地址")
+    private String receiverAddress;
 }

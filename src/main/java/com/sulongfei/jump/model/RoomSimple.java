@@ -21,6 +21,8 @@ public class RoomSimple extends Model {
 
     private Boolean hidden;
 
+    private Integer sequence;
+
     private Long remoteGoodsId;
 
     private String goodsName;

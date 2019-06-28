@@ -31,9 +31,6 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.sulongfei.jump.model.SendGoods">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into send_goods (member_id, org_id, goods_id,
         goods_num, sale_id, sale_type,
         send_person, mobile, send_place,
@@ -46,9 +43,6 @@
         )
     </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SendGoods">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into send_goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="memberId != null">

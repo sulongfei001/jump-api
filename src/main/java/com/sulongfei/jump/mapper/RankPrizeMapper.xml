@@ -91,7 +91,11 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-    <select id="selectByClubId" resultMap="BaseResultMap">
+    <resultMap id="GoodsList" type="com.sulongfei.jump.model.RankPrize" extends="BaseResultMap">
+        <collection column="remote_goods_id" property="goods" ofType="Goods"
+                    select="com.sulongfei.jump.mapper.GoodsMapper.selectByGoodsId"/>
+    </resultMap>
+    <select id="selectByClubId" resultMap="GoodsList">
         select
         <include refid="Base_Column_List"/>
         from rank_prize

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 〈〉
  *
@@ -37,6 +39,9 @@ public class ChargeListRes {
 
     @ApiModelProperty(value = "商品详情")
     private String goodsText;
+
+    @ApiModelProperty(value = "价格")
+    private BigDecimal price;
 
     @ApiModelProperty(value = "副标题")
     private String ticketTitle;

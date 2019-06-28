@@ -54,15 +54,31 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Response randomGameResult(BaseDTO dto) {
+        RandomResultRes data = new RandomResultRes();
         RecordSimple record = recordSimpleMapper.randomResult(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
         if (record == null) return new Response();
+        data.setIntegral(record.getIntegral());
         SecurityUser user = userMapper.selectByPrimaryKey(record.getUserId());
         if (user == null) return new Response();
+        Integral integral = integralMapper.selectByUserIdClubId(user.getId(), dto.getRemoteClubId());
+        if (integral == null || integral.getIntegral() < globalContext.getEntryIntegral()) {
+            Integer rivalRank = -1;
+            data.setRivalRank(rivalRank);
+        } else {
+            Integer rivalRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), user.getId());
+            data.setRivalRank(rivalRank);
+        }
+        Integral myIntegral = integralMapper.selectByUserIdClubId(UserInterceptor.getLocalUser().getId(), dto.getRemoteClubId());
+        if (myIntegral == null || myIntegral.getIntegral() < globalContext.getEntryIntegral()) {
+            Integer ownRank = -1;
+            data.setOwnRank(ownRank);
+        } else {
+            Integer ownRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
+            data.setOwnRank(ownRank);
+        }
         UserRes userRes = new UserRes();
         BeanUtils.copyProperties(user, userRes);
-        Integer ownRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), UserInterceptor.getLocalUser().getId());
-        Integer rivalRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), user.getId());
-        RandomResultRes data = new RandomResultRes(record.getIntegral(), userRes, ownRank, rivalRank);
+        data.setUser(userRes);
         return new Response(data);
     }
 
@@ -87,6 +103,11 @@ public class GameServiceImpl implements GameService {
             if (prd.getUseType() == 3) {
                 PrdRes res = new PrdRes();
                 BeanUtils.copyProperties(prd, res);
+                Goods goods = goodsMapper.selectByGoodsId(prd.getGoodsId());
+                if (goods != null) {
+                    res.setLogo(goods.getGoodsPicture());
+                    res.setGoodsText(goods.getGoodsText());
+                }
                 res.setUsePlace(club.getSupplierAddress());
                 exclusiveList.add(res);
             }
@@ -95,7 +116,7 @@ public class GameServiceImpl implements GameService {
         list.forEach(sendGoods -> {
             Goods goods = goodsMapper.selectByGoodsId(sendGoods.getGoodsId());
             SendGoodsRes res = new SendGoodsRes();
-            BeanUtils.copyProperties(goods,res);
+            BeanUtils.copyProperties(goods, res);
             res.setId(sendGoods.getId());
             goodsList.add(res);
         });
@@ -104,6 +125,9 @@ public class GameServiceImpl implements GameService {
         orderRes.getBody().getResult().forEach(order -> {
             MarketOrderRes res = new MarketOrderRes();
             BeanUtils.copyProperties(order, res);
+            res.setName(order.getBatisName());
+            res.setLogo(order.getBaseLogo());
+            res.setPrice(order.getBasePrice());
             marketOrderList.add(res);
         });
         PrdListRes data = new PrdListRes(exclusiveList, goodsList, marketOrderList);

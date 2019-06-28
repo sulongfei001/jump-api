@@ -24,7 +24,7 @@ public class ExcelUtil {
         final String FILE_PATH = "config/chargeList.xlsx";
         final Integer HEADER_ROW_INDEX = 2;
         final Integer START_ROW_INDEX = 3;
-        ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(new ClassPathResource(FILE_PATH).getInputStream(), 1);
+        ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(new ClassPathResource(FILE_PATH).getInputStream(), 2);
         List<ChargeListRes> list = reader.read(HEADER_ROW_INDEX, START_ROW_INDEX, ChargeListRes.class);
         return list;
     }

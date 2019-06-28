@@ -164,8 +164,8 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
         IntegralConfig ic = ExcelUtil.integralConfig();
         List<Integer> randomCells = dto.getRandomCells();
         Integer gemstoneNum = randomCells.stream().filter(num -> dto.getPassCellNum() >= num).collect(Collectors.counting()).intValue();
-        Integer countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + gemstoneNum * ic.getGemstoneIntegral();
-        countIntegral = countIntegral * roomSpread.getTicketNum();
+        Integer countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
+        Integer rankCountIntegral =  countIntegral * roomSpread.getTicketNum();
         // =================分数计算结束=================
 
         // =================中奖逻辑开始=================
@@ -174,18 +174,18 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
         // =================中奖逻辑结束=================
 
         // =================记录分数及排行榜开始=================
-        RecordSpread recordSpread = new RecordSpread(userId, dto.getRoomId(), countIntegral, win, roomSpread.getTicketNum(), dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
+        RecordSpread recordSpread = new RecordSpread(userId, dto.getRoomId(), dto.getPassCellNum(), win, roomSpread.getTicketNum(), dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
         recordSpreadMapper.insertSelective(recordSpread);
         // 计算分数
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         if (integral == null) {
-            integral = new Integral(userId, dto.getRemoteClubId(), countIntegral);
+            integral = new Integral(userId, dto.getRemoteClubId(), rankCountIntegral);
             integralMapper.insertSelective(integral);
             Integer currentRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setCurrentRank(currentRank);
         } else {
             Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
-            integral.setIntegral(integral.getIntegral() + countIntegral);
+            integral.setIntegral(integral.getIntegral() + rankCountIntegral);
             integralMapper.updateByPrimaryKey(integral);
             Integer laterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setRankUp(formerRank - laterRank);
@@ -220,6 +220,9 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
 
         // =================返回结果=================
         res.setCountIntegral(integral.getIntegral());
+        res.setSingleIntegral(rankCountIntegral);
+        res.setStoneNum(ic.getVictoryGemstoneNum());
+        res.setStoneIntegral(ic.getGemstoneIntegral());
         res.setWin(false);
         return new Response(res);
     }

@@ -19,4 +19,6 @@ public class RankPrize extends Model {
 
     private Integer goodsNum;
 
+    private Goods goods;
+
 }

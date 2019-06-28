@@ -1,9 +1,13 @@
-FROM openjdk:8
+FROM    openjdk:8
 
-WORKDIR /work/project
+MAINTAINER  sulongfei
 
-ADD target/jump-api-1.0 /work/project/app.jar
+WORKDIR /work/jump_jump
+
+ADD ./jump-api-1.0.jar /work/jump_jump/app.jar
 
 EXPOSE 9004
 
-ENTRYPOINT "java" "-jar" "app.jar"
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
+
+ENTRYPOINT "java" "-Djava.security.egd=file:/dev/./urandom" "-jar" "app.jar"

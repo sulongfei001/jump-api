@@ -28,9 +28,6 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.sulongfei.jump.model.PaymentOrder">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into payment_order (user_id, org_id, product_id,
         product_num, price, ticket_num,
         buy_time, sw_order_id, status
@@ -41,9 +38,6 @@
         )
     </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.PaymentOrder">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into payment_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">

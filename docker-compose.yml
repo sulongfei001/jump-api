@@ -1,9 +1,12 @@
-version: '2'
+version: '3'
 services:
   jump-api:
-    build: Dockerfile
-    image: jump-api:1.0
-    tty: true
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: jump-api:latest
     ports:
-        - "9004:9004"
+      - "9004:9004"
+    volumes:
+      - /data/jump_jump/config:/work/jump_jump/config
     container_name: "jump-api"

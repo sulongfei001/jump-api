@@ -13,6 +13,8 @@ import java.util.Date;
  */
 @Data
 public class PrdResponse {
+    private Long goodsId;
+
     private String prdNo;
 
     private Long status;
@@ -28,4 +30,6 @@ public class PrdResponse {
     private String name;
 
     private String title;
+
+    private String logo;
 }

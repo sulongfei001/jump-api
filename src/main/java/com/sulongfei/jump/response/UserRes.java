@@ -17,6 +17,9 @@ public class UserRes {
     @ApiModelProperty(value = "用户ID")
     private Long id;
 
+    @ApiModelProperty(value = "memberId")
+    private Long memberId;
+
     @ApiModelProperty(value = "是否为推广员")
     private Boolean isSaler;
 
@@ -43,6 +46,9 @@ public class UserRes {
 
     @ApiModelProperty(value = "收货地址-区")
     private String district;
+
+    @ApiModelProperty(value = "详细地址")
+    private String receiverAddress;
 
     @ApiModelProperty(value = "每日领取门票")
     private Boolean everydayTicket;

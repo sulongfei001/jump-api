@@ -97,15 +97,18 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
 
         // =================分数计算开始=================
         Integer countIntegral;
+        Integer rankCountIntegral;
         IntegralConfig ic = ExcelUtil.integralConfig();
         List<Integer> randomCells = dto.getRandomCells();
         Integer gemstoneNum = randomCells.stream().filter(num -> dto.getPassCellNum() >= num).collect(Collectors.counting()).intValue();
         if (dto.getIsWin()) {
             countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
+            res.setStoneNum(ic.getVictoryGemstoneNum());
         } else {
             countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getDefeatIntegral() + ic.getDefeatGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
+            res.setStoneNum(ic.getDefeatGemstoneNum());
         }
-        countIntegral = countIntegral * room.getTicketNum();
+        rankCountIntegral = countIntegral * room.getTicketNum();
         // =================分数计算结束=================
 
         // =================中奖概率计算=================
@@ -140,18 +143,18 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         }
 
         // 记录结果
-        RecordSimple recordSimple = new RecordSimple(userId, dto.getRoomId(), countIntegral, win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
+        RecordSimple recordSimple = new RecordSimple(userId, dto.getRoomId(), dto.getPassCellNum(), win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
         recordSimpleMapper.insertSelective(recordSimple);
         // 计算分数
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         if (integral == null) {
-            integral = new Integral(userId, dto.getRemoteClubId(), countIntegral);
+            integral = new Integral(userId, dto.getRemoteClubId(), rankCountIntegral);
             integralMapper.insertSelective(integral);
             Integer currentRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setCurrentRank(currentRank);
         } else {
             Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
-            integral.setIntegral(integral.getIntegral() + countIntegral);
+            integral.setIntegral(integral.getIntegral() + rankCountIntegral);
             integralMapper.updateByPrimaryKey(integral);
             Integer laterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setRankUp(formerRank - laterRank);
@@ -161,7 +164,10 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         roomSimpleMapper.updateByPrimaryKey(room);
 
         res.setCountIntegral(integral.getIntegral());
+        res.setSingleIntegral(rankCountIntegral);
         res.setWin(win);
+        res.setStoneIntegral(ic.getGemstoneIntegral());
+        res.setGoodsPicture(goods.getGoodsPicture());
         return new Response(res);
     }
 
@@ -197,6 +203,7 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         rankPrizes.forEach(rankPrize -> {
             PrizeRes res = new PrizeRes();
             BeanUtils.copyProperties(rankPrize, res);
+            res.setGoodsPicture(rankPrize.getGoods().getGoodsPicture());
             prizeList.add(res);
         });
         UserRes userRes = new UserRes();

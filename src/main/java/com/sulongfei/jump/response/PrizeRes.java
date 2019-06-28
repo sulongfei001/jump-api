@@ -19,4 +19,7 @@ public class PrizeRes {
 
     @ApiModelProperty(value = "商品个数")
     private Integer goodsNum;
+
+    @ApiModelProperty(value = "商品图片")
+    private String goodsPicture;
 }

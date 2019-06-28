@@ -12,10 +12,11 @@
         <result column="goods_picture" jdbcType="VARCHAR" property="goodsPicture"/>
         <result column="detail_picture" jdbcType="VARCHAR" property="detailPicture"/>
         <result column="remain_num" jdbcType="INTEGER" property="remainNum"/>
+        <result column="goods_text" jdbcType="VARCHAR" property="goodsText"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, remote_goods_id, remote_club_id, goods_name, goods_num, goods_price, goods_type, 
-    goods_picture, detail_picture, remain_num
+    goods_picture, detail_picture, remain_num, goods_text
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -28,22 +29,16 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.sulongfei.jump.model.Goods">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into goods (remote_goods_id, remote_club_id, goods_name,
         goods_num, goods_price, goods_type,
-        goods_picture, detail_picture, remain_num
-        )
+        goods_picture, detail_picture, remain_num,
+        goods_text)
         values (#{remoteGoodsId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, #{goodsName,jdbcType=VARCHAR},
         #{goodsNum,jdbcType=INTEGER}, #{goodsPrice,jdbcType=DECIMAL}, #{goodsType,jdbcType=INTEGER},
-        #{goodsPicture,jdbcType=VARCHAR}, #{detailPicture,jdbcType=VARCHAR}, #{remainNum,jdbcType=INTEGER}
-        )
+        #{goodsPicture,jdbcType=VARCHAR}, #{detailPicture,jdbcType=VARCHAR}, #{remainNum,jdbcType=INTEGER},
+        #{goodsText,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.Goods">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into goods
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="remoteGoodsId != null">
@@ -73,6 +68,9 @@
             <if test="remainNum != null">
                 remain_num,
             </if>
+            <if test="goodsText != null">
+                goods_text,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="remoteGoodsId != null">
@@ -101,6 +99,9 @@
             </if>
             <if test="remainNum != null">
                 #{remainNum,jdbcType=INTEGER},
+            </if>
+            <if test="goodsText != null">
+                #{goodsText,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -134,6 +135,9 @@
             <if test="remainNum != null">
                 remain_num = #{remainNum,jdbcType=INTEGER},
             </if>
+            <if test="goodsText != null">
+                goods_text = #{goodsText,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -147,7 +151,8 @@
       goods_type = #{goodsType,jdbcType=INTEGER},
       goods_picture = #{goodsPicture,jdbcType=VARCHAR},
       detail_picture = #{detailPicture,jdbcType=VARCHAR},
-      remain_num = #{remainNum,jdbcType=INTEGER}
+      remain_num = #{remainNum,jdbcType=INTEGER},
+      goods_text = #{goodsText,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 

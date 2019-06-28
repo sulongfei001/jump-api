@@ -2,6 +2,7 @@ package com.sulongfei.jump.mapper;
 
 import com.sulongfei.jump.model.RecordSpread;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,5 +20,5 @@ public interface RecordSpreadMapper {
 
     int updateByPrimaryKey(RecordSpread record);
 
-    Long mostTimesUser(Long roomId);
+    Long mostTimesUser(@Param("roomId") Long roomId);
 }

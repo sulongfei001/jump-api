@@ -116,16 +116,16 @@
             FROM
                 integral,
                 ( SELECT @counter := 0 ) c
+            WHERE remote_club_id = #{remoteClubId,jdbcType=BIGINT}
             ORDER BY
                 integral DESC
             ) t
         WHERE
             t.user_id = #{userId,jdbcType=INTEGER}
-            and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
     </select>
 
     <update id="resetRankList">
-        update integral set integral = 0
+        delete from integral
     </update>
 
     <select id="groupByClubId" resultType="java.lang.Long">

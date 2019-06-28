@@ -16,11 +16,11 @@ public class MarketOrderResponse {
     private Long sendOrderId;
     private Long createTime;
     private Long status;
-    private String name;
-    private BigDecimal price;
+    private String batisName;
+    private BigDecimal basePrice;
     private Integer goodNum;
     private String sendNo;
     private String supplierName;
     private String saleInfo;
-    private String logo;
+    private String baseLogo;
 }

@@ -157,6 +157,7 @@
             user_id
         FROM
             record_spread
+        WHERE room_id = #{roomId,jdbcType=BIGINT}
         GROUP BY
             room_id,
             user_id

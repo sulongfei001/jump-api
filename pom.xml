@@ -105,6 +105,16 @@
             <version>2.11.7</version>
         </dependency>
         <!--==================阿里云结束=================-->
+
+
+
+        <!--==================腾讯云结束=================-->
+        <dependency>
+            <groupId>com.github.qcloudsms</groupId>
+            <artifactId>qcloudsms</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+        <!--==================腾讯云结束=================-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

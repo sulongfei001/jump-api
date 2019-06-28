@@ -30,9 +30,6 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.sulongfei.jump.model.RoomSpread">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into room_spread (remote_club_id, create_user_id, password,
         spread_goods_id, ticket_num, join_num,
         partake_num, win_record_id, win_num,
@@ -43,9 +40,6 @@
         #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RoomSpread">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into room_spread
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="remoteClubId != null">

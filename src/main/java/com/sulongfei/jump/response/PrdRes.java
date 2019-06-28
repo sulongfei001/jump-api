@@ -39,4 +39,10 @@ public class PrdRes {
 
     @ApiModelProperty(value = "卡券使用场所")
     private String usePlace;
+
+    @ApiModelProperty(value = "logo")
+    private String logo;
+
+    @ApiModelProperty(value = "商品说明")
+    private String goodsText;
 }

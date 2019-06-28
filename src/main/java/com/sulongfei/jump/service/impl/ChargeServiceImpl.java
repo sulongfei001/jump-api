@@ -7,9 +7,11 @@ import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.PaymentDTO;
 import com.sulongfei.jump.dto.SendGoodsDTO;
 import com.sulongfei.jump.exception.JumpException;
+import com.sulongfei.jump.mapper.GoodsMapper;
 import com.sulongfei.jump.mapper.PaymentOrderMapper;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
 import com.sulongfei.jump.mapper.SendGoodsMapper;
+import com.sulongfei.jump.model.Goods;
 import com.sulongfei.jump.model.PaymentOrder;
 import com.sulongfei.jump.model.SecurityUser;
 import com.sulongfei.jump.model.SendGoods;
@@ -51,11 +53,18 @@ public class ChargeServiceImpl implements ChargeService {
     @Autowired
     private SecurityUserMapper userMapper;
     @Autowired
+    private GoodsMapper goodsMapper;
+    @Autowired
     private RestService restService;
 
     @Override
     public Response chargeList(BaseDTO dto) throws IOException {
         List<ChargeListRes> list = ExcelUtil.readChargeXLSX();
+        list.forEach(charge -> {
+            Goods goods = goodsMapper.selectByGoodsId(charge.getGoodsId());
+            charge.setGoodsPicture(goods.getGoodsPicture());
+            charge.setGoodsText(goods.getGoodsText());
+        });
         return new Response(list);
     }
 
@@ -67,7 +76,7 @@ public class ChargeServiceImpl implements ChargeService {
 
         sendGoods.setSendPerson(dto.getSendPerson());
         sendGoods.setMobile(user.getPhoneNumber());
-        sendGoods.setSendPlace(StrUtil.join("-", dto.getProvince(), dto.getCity(), dto.getDistrict()));
+        sendGoods.setSendPlace(StrUtil.join("-", dto.getProvince(), dto.getCity(), dto.getDistrict(),dto.getReceiverAddress()));
         sendGoods.setStatus((byte) 1);
 
         SendGoodsRequest request = new SendGoodsRequest(
@@ -87,9 +96,11 @@ public class ChargeServiceImpl implements ChargeService {
             sendGoodsMapper.updateByPrimaryKey(sendGoods);
         }
 
+        user.setReceiverName(dto.getSendPerson());
         user.setProvince(dto.getProvince());
         user.setCity(dto.getCity());
         user.setDistrict(dto.getDistrict());
+        user.setReceiverAddress(dto.getReceiverAddress());
         userMapper.updateByPrimaryKey(user);
 
         return new Response();
