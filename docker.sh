@@ -39,7 +39,7 @@ function run(){
 	build
 	if [ -n "$CID" ]; then
 		echo "存在$SERVER_NAME容器，CID=$CID,重启docker容器 ..."
-		    docker restart $SERVER_NAME
+            docker restart $SERVER_NAME
 			#docker stop $SERVER_NAME
 			#docker rm $SERVER_NAME
 			#docker run --name $SERVER_NAME -v $BASE_PATH:$BASE_PATH -d -p 9004:9004 $SERVER_NAME

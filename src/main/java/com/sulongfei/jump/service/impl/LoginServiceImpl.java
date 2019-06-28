@@ -9,6 +9,8 @@ import com.sulongfei.jump.response.Response;
 import com.sulongfei.jump.rest.response.RegisterResponse;
 import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.LoginService;
+import com.sulongfei.jump.utils.QCloudUtil;
+import com.sulongfei.jump.utils.StrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,8 +44,7 @@ public class LoginServiceImpl implements LoginService {
     public Response generatingSmsCode(UserLoginDTO dto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         SecurityUser user = securityUserMapper.selectByUsername(dto.getPhoneNumber());
-        // String SmsCode = StrUtils.randomNumber(6);
-        String SmsCode = "111111";
+        String SmsCode = StrUtils.randomNumber(6);
         redisService.set(Constants.RedisName.LOGIN_SMS_CODE + dto.getPhoneNumber(), new BCryptPasswordEncoder().encode(SmsCode), globalContext.getSmsCodeExpire() * 60);
         if (user == null) {
             ResponseEntity<RestResponse<RegisterResponse>> result = restService.register(dto);
@@ -70,6 +71,9 @@ public class LoginServiceImpl implements LoginService {
             user.setLastOperationClub(dto.getRemoteClubId());
             securityUserMapper.updateByPrimaryKeySelective(user);
         }
+        new Thread(() -> {
+            QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode);
+        }).start();
         return new Response();
     }
 }
