@@ -26,6 +26,7 @@ public class TestController {
 
     @GetMapping("/t1")
     public void test() throws IOException {
-        taskService.resetRank();
+        //taskService.resetRank();
+        System.out.println("测试docker重启");
     }
 }

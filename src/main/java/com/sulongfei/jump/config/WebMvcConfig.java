@@ -28,6 +28,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userInterceptor)
                 .addPathPatterns("/**")
+                .excludePathPatterns("/test/**")
                 .excludePathPatterns("/error/**")
                 .excludePathPatterns("/swagger-resources/**") // 过滤swagger页面权限控制
                 .excludePathPatterns("/*/*/*/login/**")

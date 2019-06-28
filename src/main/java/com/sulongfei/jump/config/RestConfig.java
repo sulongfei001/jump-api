@@ -28,7 +28,6 @@ public class RestConfig {
 
     @Bean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
-        System.out.println("测试docker重启");
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(30 * 3000);
         factory.setReadTimeout(30 * 3000);
