@@ -5,7 +5,7 @@ BASE_PATH=/data/jump_jump
 #docker 镜像/容器名字或者jar名字 这里都命名为这个
 SERVER_NAME=jump-api
 #容器id
-CID=$(docker ps | grep "$SERVER_NAME" | awk '{print $1}')
+CID=$(docker ps -a | grep "$SERVER_NAME" | awk '{print $1}')
 #镜像id
 IID=$(docker images | grep "$SERVER_NAME" | awk '{print $3}')
  
@@ -39,7 +39,7 @@ function run(){
 	build
 	if [ -n "$CID" ]; then
 		echo "存在$SERVER_NAME容器，CID=$CID,重启docker容器 ..."
-            docker restart $SERVER_NAME
+			docker restart $SERVER_NAME
 			#docker stop $SERVER_NAME
 			#docker rm $SERVER_NAME
 			#docker run --name $SERVER_NAME -v $BASE_PATH:$BASE_PATH -d -p 9004:9004 $SERVER_NAME
