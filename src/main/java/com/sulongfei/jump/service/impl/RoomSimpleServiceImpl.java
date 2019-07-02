@@ -1,7 +1,6 @@
 package com.sulongfei.jump.service.impl;
 
 import com.google.common.collect.Lists;
-import com.sulongfei.jump.constants.Constants;
 import com.sulongfei.jump.constants.ResponseStatus;
 import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.dto.BaseDTO;
@@ -15,7 +14,6 @@ import com.sulongfei.jump.service.RoomSimpleService;
 import com.sulongfei.jump.service.TaskService;
 import com.sulongfei.jump.utils.ExcelUtil;
 import com.sulongfei.jump.utils.IntegralConfig;
-import com.sulongfei.jump.utils.SerializeUtil;
 import com.sulongfei.jump.utils.SnowFlake;
 import com.sulongfei.jump.web.interceptor.UserInterceptor;
 import org.springframework.beans.BeanUtils;
@@ -52,6 +50,8 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     private SecurityUserMapper userMapper;
     @Autowired
     private IntegralMapper integralMapper;
+    @Autowired
+    private LastWeekIntegralMapper lastIntegralMapper;
     @Autowired
     private RankPrizeMapper rankPrizeMapper;
     @Autowired
@@ -142,7 +142,7 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
             }
         }
 
-        // 记录结果
+        // =================记录分数及排行榜开始=================
         RecordSimple recordSimple = new RecordSimple(userId, dto.getRoomId(), dto.getPassCellNum(), win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
         recordSimpleMapper.insertSelective(recordSimple);
         // 计算分数
@@ -159,7 +159,8 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
             Integer laterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
             res.setRankUp(formerRank - laterRank);
         }
-        // 房间消耗门票总数
+        // =================记录分数及排行榜结束=================
+
         room.setConsumeNum(consumeNum + ticketNum);
         roomSimpleMapper.updateByPrimaryKey(room);
 
@@ -173,23 +174,22 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
 
     @Override
     public Response rankList(BaseDTO dto) {
-        SerializeUtil<List<Integral>> redisResult = redisService.get(Constants.RedisName.LAST_WEEK_RANK + dto.getRemoteClubId());
+        List<LastWeekIntegral> lastIntegrals = lastIntegralMapper.selectByClubId(dto.getRemoteClubId());
         List<Integral> integrals = integralMapper.rankListTop(dto.getRemoteClubId(), globalContext.getEntryIntegral(), globalContext.getEntryNum());
         List<RankPrize> rankPrizes = rankPrizeMapper.selectByClubId(dto.getRemoteClubId());
 
         RankListRes data = new RankListRes();
-        if (redisResult != null && redisResult.getData() != null) {
-            List<IntegralRes> lastWeekList = Lists.newArrayList();
-            redisResult.getData().forEach(integral -> {
-                IntegralRes integralRes = new IntegralRes();
-                UserRes userRes = new UserRes();
-                BeanUtils.copyProperties(integral.getUser(), userRes);
-                integralRes.setIntegral(integral.getIntegral());
-                integralRes.setUser(userRes);
-                lastWeekList.add(integralRes);
-            });
-            data.setLastWeekList(lastWeekList);
-        }
+        List<IntegralRes> lastWeekList = Lists.newArrayList();
+        lastIntegrals.forEach(integral -> {
+            IntegralRes integralRes = new IntegralRes();
+            UserRes userRes = new UserRes();
+            BeanUtils.copyProperties(integral.getUser(), userRes);
+            integralRes.setIntegral(integral.getIntegral());
+            integralRes.setUser(userRes);
+            lastWeekList.add(integralRes);
+        });
+        data.setLastWeekList(lastWeekList);
+
         List<IntegralRes> list = Lists.newArrayList();
         integrals.forEach(integral -> {
             IntegralRes integralRes = new IntegralRes();

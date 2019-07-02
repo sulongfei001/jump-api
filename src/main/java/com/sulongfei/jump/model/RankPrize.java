@@ -7,8 +7,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class RankPrize extends Model {
 
-    private static final long serialVersionUID = 1506545129832804642L;
-
     private Long id;
 
     private Long remoteClubId;

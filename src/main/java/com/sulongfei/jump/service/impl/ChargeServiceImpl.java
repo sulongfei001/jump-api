@@ -79,6 +79,13 @@ public class ChargeServiceImpl implements ChargeService {
         sendGoods.setSendPlace(StrUtil.join("-", dto.getProvince(), dto.getCity(), dto.getDistrict(),dto.getReceiverAddress()));
         sendGoods.setStatus((byte) 1);
 
+        user.setReceiverName(dto.getSendPerson());
+        user.setProvince(dto.getProvince());
+        user.setCity(dto.getCity());
+        user.setDistrict(dto.getDistrict());
+        user.setReceiverAddress(dto.getReceiverAddress());
+        userMapper.updateByPrimaryKey(user);
+
         SendGoodsRequest request = new SendGoodsRequest(
                 user.getMemberId(),
                 sendGoods.getOrgId(),
@@ -91,18 +98,11 @@ public class ChargeServiceImpl implements ChargeService {
                 sendGoods.getSendPlace(),
                 sendGoods.getOrderId()
         );
+
         ResponseEntity<RestResponse<BaseResponse>> result = restService.createSendOrder(request);
         if (HttpStatus.OK.equals(result.getStatusCode()) && "200".equals(result.getBody().getErrorCode())) {
             sendGoodsMapper.updateByPrimaryKey(sendGoods);
         }
-
-        user.setReceiverName(dto.getSendPerson());
-        user.setProvince(dto.getProvince());
-        user.setCity(dto.getCity());
-        user.setDistrict(dto.getDistrict());
-        user.setReceiverAddress(dto.getReceiverAddress());
-        userMapper.updateByPrimaryKey(user);
-
         return new Response();
     }
 

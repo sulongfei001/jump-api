@@ -5,8 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class Integral extends Model {
-
+public class LastWeekIntegral extends Model {
     private Long id;
 
     private Long userId;
@@ -17,12 +16,4 @@ public class Integral extends Model {
 
     private SecurityUser user;
 
-    public Integral() {
-    }
-
-    public Integral(Long userId, Long remoteClubId, Integer integral) {
-        this.userId = userId;
-        this.remoteClubId = remoteClubId;
-        this.integral = integral;
-    }
 }

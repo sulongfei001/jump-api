@@ -52,6 +52,7 @@ public class LoginServiceImpl implements LoginService {
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setPassword(new BCryptPasswordEncoder().encode(SmsCode));
             user.setNickname(dto.getPhoneNumber());
+            user.setGender((byte) 0);
             user.setAvatar(globalContext.getDefaultAvatar());
             user.setCreateTime(now);
             user.setUpdateTime(now);

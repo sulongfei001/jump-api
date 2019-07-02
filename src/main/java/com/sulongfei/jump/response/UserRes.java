@@ -32,7 +32,7 @@ public class UserRes {
     @ApiModelProperty(value = "用户昵称")
     private String nickname;
 
-    @ApiModelProperty(value = "用户性别")
+    @ApiModelProperty(value = "用户性别（0：未知、1：男、2：女）")
     private Byte gender;
 
     @ApiModelProperty(value = "收货姓名")

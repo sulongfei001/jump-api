@@ -9,8 +9,6 @@ import java.sql.Timestamp;
 @Data
 public class Club extends Model {
 
-    private static final long serialVersionUID = 997627662628618997L;
-
     private Long id;
 
     private Long remoteClubId;

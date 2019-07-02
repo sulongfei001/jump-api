@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sulongfei.jump.mapper.IntegralMapper">
-    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.Integral">
+<mapper namespace="com.sulongfei.jump.mapper.LastWeekIntegralMapper">
+    <resultMap id="BaseResultMap" type="com.sulongfei.jump.model.LastWeekIntegral">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="remote_club_id" jdbcType="BIGINT" property="remoteClubId"/>
@@ -13,21 +13,21 @@
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from integral
+        from last_week_integral
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from integral
+    delete from last_week_integral
     where id = #{id,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.sulongfei.jump.model.Integral">
-    insert into integral (id, user_id, remote_club_id, 
+    <insert id="insert" parameterType="com.sulongfei.jump.model.LastWeekIntegral">
+    insert into last_week_integral (id, user_id, remote_club_id, 
       integral)
     values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{remoteClubId,jdbcType=BIGINT}, 
-      #{integral,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+      #{integral,jdbcType=INTEGER})
   </insert>
-    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.Integral">
-        insert into integral
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.LastWeekIntegral">
+        insert into last_week_integral
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
@@ -55,13 +55,10 @@
             <if test="integral != null">
                 #{integral,jdbcType=INTEGER},
             </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
-            </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.Integral">
-        update integral
+    <update id="updateByPrimaryKeySelective" parameterType="com.sulongfei.jump.model.LastWeekIntegral">
+        update last_week_integral
         <set>
             <if test="userId != null">
                 user_id = #{userId,jdbcType=BIGINT},
@@ -75,60 +72,34 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.Integral">
-    update integral
+    <update id="updateByPrimaryKey" parameterType="com.sulongfei.jump.model.LastWeekIntegral">
+    update last_week_integral
     set user_id = #{userId,jdbcType=BIGINT},
       remote_club_id = #{remoteClubId,jdbcType=BIGINT},
       integral = #{integral,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-    <cache/>
-    <resultMap id="RankListMap" type="com.sulongfei.jump.model.Integral" extends="BaseResultMap">
+
+    <resultMap id="integralUserMap" type="com.sulongfei.jump.model.LastWeekIntegral" extends="BaseResultMap">
         <collection column="user_id" property="user" ofType="SecurityUser"
                     select="com.sulongfei.jump.mapper.SecurityUserMapper.selectByPrimaryKey"/>
     </resultMap>
-
-    <select id="selectByUserIdClubId" resultMap="BaseResultMap">
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into last_week_integral
+        (user_id, remote_club_id, integral)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.userId,jdbcType=BIGINT}, #{item.remoteClubId,jdbcType=BIGINT}, #{item.integral,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <delete id="deleteAll">
+    delete from last_week_integral
+  </delete>
+    <select id="selectByClubId" resultMap="integralUserMap">
         select
         <include refid="Base_Column_List"/>
-        from integral
-        where user_id = #{userId,jdbcType=BIGINT} and remote_club_id = #{remoteClubId,jdbcType=BIGINT}
-    </select>
-
-    <select id="rankListTop" resultMap="RankListMap">
-      SELECT
-	  i.integral,i.user_id,i.remote_club_id
-      FROM	integral i
-      WHERE	i.remote_club_id = #{remoteClubId,jdbcType=BIGINT} AND i.integral &gt; #{entryIntegral,jdbcType=INTEGER}
-      ORDER BY	integral DESC
-	  LIMIT 0 , #{entryNum,jdbcType=INTEGER}
-    </select>
-
-    <select id="findRankByUserId" resultType="java.lang.Integer">
-        SELECT
-            t.cid
-        FROM
-            (
-            SELECT
-                @counter := @counter + 1 AS cid,
-                user_id , remote_club_id
-            FROM
-                integral,
-                ( SELECT @counter := 0 ) c
-            WHERE remote_club_id = #{remoteClubId,jdbcType=BIGINT}
-            ORDER BY
-                integral DESC
-            ) t
-        WHERE
-            t.user_id = #{userId,jdbcType=INTEGER}
-    </select>
-
-    <update id="resetRankList">
-        delete from integral
-    </update>
-
-    <select id="groupByClubId" resultType="java.lang.Long">
-        SELECT remote_club_id from integral GROUP BY remote_club_id
+        from last_week_integral
+        where remote_club_id = #{remoteClubId,jdbcType=BIGINT}
     </select>
 </mapper>

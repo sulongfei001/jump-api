@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 @Data
 public class SecurityUser extends Model {
 
-    private static final long serialVersionUID = 4773591935821999048L;
     private Long id;
 
     private Long memberId;
