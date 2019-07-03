@@ -60,7 +60,7 @@ public class LoginServiceImpl implements LoginService {
             user.setDeleteStatus(Constants.Delete.NO);
             user.setLastOperationTime(now);
             user.setLastOperationClub(dto.getRemoteClubId());
-            user.setEverydayTicket(false);
+            user.setConfirmPush(false);
             user.setTicketNum(1000);
             if (result.getBody() != null && "200".equals(result.getBody().getErrorCode())) {
                 user.setMemberId(result.getBody().getResult().getMemberId());

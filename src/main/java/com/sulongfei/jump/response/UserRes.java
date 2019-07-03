@@ -50,8 +50,8 @@ public class UserRes {
     @ApiModelProperty(value = "详细地址")
     private String receiverAddress;
 
-    @ApiModelProperty(value = "每日领取门票")
-    private Boolean everydayTicket;
+    @ApiModelProperty(value = "消息推送确认")
+    private Boolean confirmPush;
 
     @ApiModelProperty(value = "用户所有门票")
     private Integer ticketNum;

@@ -16,4 +16,7 @@ public interface TaskService {
     void savePrd(SendGoods sendGoods);
 
     void sendPrd(SendPrdRequest request);
+
+    void settle();
+
 }

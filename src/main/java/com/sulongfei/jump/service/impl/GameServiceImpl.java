@@ -134,17 +134,4 @@ public class GameServiceImpl implements GameService {
         return new Response<>(data);
     }
 
-    @Override
-    @Deprecated
-    @Transactional(readOnly = false)
-    public Response getTicket(BaseDTO dto) {
-        SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
-        if (user.getEverydayTicket()) {
-            throw new JumpException(ResponseStatus.GOT_TICKET);
-        }
-        user.setTicketNum(user.getTicketNum() + globalContext.getEverydayTicketNum());
-        user.setEverydayTicket(true);
-        userMapper.updateByPrimaryKey(user);
-        return new Response();
-    }
 }

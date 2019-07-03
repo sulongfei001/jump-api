@@ -16,6 +16,7 @@ import com.sulongfei.jump.utils.ExcelUtil;
 import com.sulongfei.jump.utils.IntegralConfig;
 import com.sulongfei.jump.utils.SnowFlake;
 import com.sulongfei.jump.web.interceptor.UserInterceptor;
+import com.sulongfei.jump.web.socket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -56,8 +59,6 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     private RankPrizeMapper rankPrizeMapper;
     @Autowired
     private GlobalContext globalContext;
-    @Autowired
-    private RedisService redisService;
     @Autowired
     @Qualifier("taskExecutor")
     private ThreadPoolTaskExecutor taskExecutor;
@@ -140,6 +141,15 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
                 SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
                 taskExecutor.execute(() -> taskService.sendPrd(goodsRequest));
             }
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", 0);
+            map.put("content", "恭喜" + user.getNickname() + "，刚刚获得了" + goods.getGoodsName());
+            WebSocketServer.sendInfo(null, map);
+            user.setConfirmPush(true);
+            userMapper.updateByPrimaryKey(user);
+            Map<String, Object> newMap = new HashMap<>();
+            newMap.put("type", 1);
+            WebSocketServer.sendInfo(userId, newMap);
         }
 
         // =================记录分数及排行榜开始=================

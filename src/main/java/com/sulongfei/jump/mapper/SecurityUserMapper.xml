@@ -21,13 +21,13 @@
     <result column="city" jdbcType="VARCHAR" property="city" />
     <result column="district" jdbcType="VARCHAR" property="district" />
     <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
-    <result column="everyday_ticket" jdbcType="BIT" property="everydayTicket" />
+    <result column="confirm_push" jdbcType="BIT" property="confirmPush" />
     <result column="ticket_num" jdbcType="INTEGER" property="ticketNum" />
   </resultMap>
   <sql id="Base_Column_List">
     id, member_id, is_saler, phone_number, password, avatar, nickname, gender, create_time, 
     update_time, register_clue, delete_status, last_operation_time, last_operation_club, 
-    receiver_name, province, city, district, receiver_address, everyday_ticket, ticket_num
+    receiver_name, province, city, district, receiver_address, confirm_push, ticket_num
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -40,24 +40,29 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.sulongfei.jump.model.SecurityUser">
-    insert into security_user (member_id, is_saler, phone_number, 
-      password, avatar, nickname, 
-      gender, create_time, update_time, 
-      register_clue, delete_status, last_operation_time, 
-      last_operation_club, receiver_name, province, 
-      city, district, receiver_address, 
-      everyday_ticket, ticket_num)
-    values (#{memberId,jdbcType=BIGINT}, #{isSaler,jdbcType=BIT}, #{phoneNumber,jdbcType=VARCHAR}, 
-      #{password,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, 
-      #{gender,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{registerClue,jdbcType=BIGINT}, #{deleteStatus,jdbcType=BIT}, #{lastOperationTime,jdbcType=TIMESTAMP}, 
-      #{lastOperationClub,jdbcType=BIGINT}, #{receiverName,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
-      #{city,jdbcType=VARCHAR}, #{district,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, 
-      #{everydayTicket,jdbcType=BIT}, #{ticketNum,jdbcType=INTEGER})
+    insert into security_user (id, member_id, is_saler, 
+      phone_number, password, avatar, 
+      nickname, gender, create_time, 
+      update_time, register_clue, delete_status, 
+      last_operation_time, last_operation_club, 
+      receiver_name, province, city, 
+      district, receiver_address, confirm_push, 
+      ticket_num)
+    values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{isSaler,jdbcType=BIT}, 
+      #{phoneNumber,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, 
+      #{nickname,jdbcType=VARCHAR}, #{gender,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{registerClue,jdbcType=BIGINT}, #{deleteStatus,jdbcType=BIT}, 
+      #{lastOperationTime,jdbcType=TIMESTAMP}, #{lastOperationClub,jdbcType=BIGINT}, 
+      #{receiverName,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{district,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, #{confirmPush,jdbcType=BIT}, 
+      #{ticketNum,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.sulongfei.jump.model.SecurityUser">
     insert into security_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
       <if test="memberId != null">
         member_id,
       </if>
@@ -112,14 +117,17 @@
       <if test="receiverAddress != null">
         receiver_address,
       </if>
-      <if test="everydayTicket != null">
-        everyday_ticket,
+      <if test="confirmPush != null">
+        confirm_push,
       </if>
       <if test="ticketNum != null">
         ticket_num,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
       <if test="memberId != null">
         #{memberId,jdbcType=BIGINT},
       </if>
@@ -174,8 +182,8 @@
       <if test="receiverAddress != null">
         #{receiverAddress,jdbcType=VARCHAR},
       </if>
-      <if test="everydayTicket != null">
-        #{everydayTicket,jdbcType=BIT},
+      <if test="confirmPush != null">
+        #{confirmPush,jdbcType=BIT},
       </if>
       <if test="ticketNum != null">
         #{ticketNum,jdbcType=INTEGER},
@@ -239,8 +247,8 @@
       <if test="receiverAddress != null">
         receiver_address = #{receiverAddress,jdbcType=VARCHAR},
       </if>
-      <if test="everydayTicket != null">
-        everyday_ticket = #{everydayTicket,jdbcType=BIT},
+      <if test="confirmPush != null">
+        confirm_push = #{confirmPush,jdbcType=BIT},
       </if>
       <if test="ticketNum != null">
         ticket_num = #{ticketNum,jdbcType=INTEGER},
@@ -268,10 +276,11 @@
       city = #{city,jdbcType=VARCHAR},
       district = #{district,jdbcType=VARCHAR},
       receiver_address = #{receiverAddress,jdbcType=VARCHAR},
-      everyday_ticket = #{everydayTicket,jdbcType=BIT},
+      confirm_push = #{confirmPush,jdbcType=BIT},
       ticket_num = #{ticketNum,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
 
     <cache />
     <select id="selectByUsername" resultMap="BaseResultMap">

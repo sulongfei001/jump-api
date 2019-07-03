@@ -45,14 +45,4 @@ public class GameController extends BaseController {
         verifyBaseDTO(dto);
         return gameService.getPrdList(dto);
     }
-
-    @ApiOperation(value = "每日领取门票")
-    @PostMapping("/get_ticket")
-    public Response getTicket(
-            @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto
-    ){
-        verifyBaseDTO(dto);
-        return gameService.getTicket(dto);
-    }
-
 }

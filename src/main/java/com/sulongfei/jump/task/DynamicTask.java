@@ -40,6 +40,7 @@ public class DynamicTask implements SchedulingConfigurer {
         return () -> {
             log.info("=============开始执行定时任务=============");
             taskService.resetRank();
+            taskService.settle();
             log.info("=============定时任务执行完毕=============");
         };
     }

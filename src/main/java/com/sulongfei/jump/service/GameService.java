@@ -16,5 +16,4 @@ public interface GameService {
 
     Response<PrdListRes> getPrdList(BaseDTO dto);
 
-    Response getTicket(BaseDTO dto);
 }

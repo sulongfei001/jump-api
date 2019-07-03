@@ -17,6 +17,7 @@ import com.sulongfei.jump.utils.IntegralConfig;
 import com.sulongfei.jump.utils.SnowFlake;
 import com.sulongfei.jump.utils.StrUtils;
 import com.sulongfei.jump.web.interceptor.UserInterceptor;
+import com.sulongfei.jump.web.socket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -165,7 +168,7 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
         List<Integer> randomCells = dto.getRandomCells();
         Integer gemstoneNum = randomCells.stream().filter(num -> dto.getPassCellNum() >= num).collect(Collectors.counting()).intValue();
         Integer countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
-        Integer rankCountIntegral =  countIntegral * roomSpread.getTicketNum();
+        Integer rankCountIntegral = countIntegral * roomSpread.getTicketNum();
         // =================分数计算结束=================
 
         // =================中奖逻辑开始=================
@@ -215,6 +218,15 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
                 SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), roomSpread.getRemoteClubId(), spreadGoods.getRemoteGoodsId(), spreadGoods.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
                 taskExecutor.execute(() -> taskService.sendPrd(goodsRequest));
             }
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", 0);
+            map.put("content", "恭喜" + user.getNickname() + "，刚刚获得了" + spreadGoods.getGoodsName());
+            WebSocketServer.sendInfo(null, map);
+            user.setConfirmPush(true);
+            userMapper.updateByPrimaryKeySelective(user);
+            Map<String, Object> newMap = new HashMap<>();
+            newMap.put("type", 1);
+            WebSocketServer.sendInfo(userId, newMap);
         }
         // =================发送奖品结束=================
 
