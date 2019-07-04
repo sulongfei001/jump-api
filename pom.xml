@@ -113,6 +113,11 @@
             <artifactId>qcloudsms</artifactId>
             <version>1.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>5.5.5</version>
+        </dependency>
         <!--==================腾讯云结束=================-->
         <dependency>
             <groupId>org.projectlombok</groupId>
