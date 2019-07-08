@@ -19,7 +19,7 @@ public class ChargeListRes {
     @ApiModelProperty(value = "唯一标识ID")
     private Long id;
 
-    @ApiModelProperty(value = "归属门店ID", hidden = true)
+    @ApiModelProperty(value = "归属门店ID")
     private Long remoteClubId;
 
     @ApiModelProperty(value = "备注（无用项）", hidden = true)
@@ -28,10 +28,10 @@ public class ChargeListRes {
     @ApiModelProperty(value = "充值名称")
     private String chargeName;
 
-    @ApiModelProperty(value = "商品道具", hidden = true)
+    @ApiModelProperty(value = "商品道具")
     private Long goodsId;
 
-    @ApiModelProperty(value = "商品数量", hidden = true)
+    @ApiModelProperty(value = "商品数量")
     private Integer goodsNum;
 
     @ApiModelProperty(value = "商品图片")
@@ -46,6 +46,6 @@ public class ChargeListRes {
     @ApiModelProperty(value = "副标题")
     private String ticketTitle;
 
-    @ApiModelProperty(value = "游戏门票数量", hidden = true)
+    @ApiModelProperty(value = "游戏门票数量")
     private Integer ticketNum;
 }

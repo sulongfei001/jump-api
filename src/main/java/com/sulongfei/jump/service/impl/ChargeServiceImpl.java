@@ -60,12 +60,16 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     public Response chargeList(BaseDTO dto) throws IOException {
         List<ChargeListRes> list = ExcelUtil.readChargeXLSX();
+        List<ChargeListRes> data = Lists.newArrayList();
         list.forEach(charge -> {
-            Goods goods = goodsMapper.selectByGoodsId(charge.getGoodsId());
-            charge.setGoodsPicture(goods.getGoodsPicture());
-            charge.setGoodsText(goods.getGoodsText());
+            if (dto.getRemoteClubId().equals(charge.getRemoteClubId())) {
+                Goods goods = goodsMapper.selectByGoodsId(charge.getGoodsId());
+                charge.setGoodsPicture(goods.getGoodsPicture());
+                charge.setGoodsText(goods.getGoodsText());
+                data.add(charge);
+            }
         });
-        return new Response(list);
+        return new Response(data);
     }
 
     @Override
@@ -76,7 +80,7 @@ public class ChargeServiceImpl implements ChargeService {
 
         sendGoods.setSendPerson(dto.getSendPerson());
         sendGoods.setMobile(user.getPhoneNumber());
-        sendGoods.setSendPlace(StrUtil.join("-", dto.getProvince(), dto.getCity(), dto.getDistrict(),dto.getReceiverAddress()));
+        sendGoods.setSendPlace(StrUtil.join("-", dto.getProvince(), dto.getCity(), dto.getDistrict(), dto.getReceiverAddress()));
         sendGoods.setStatus((byte) 1);
 
         user.setReceiverName(dto.getSendPerson());
