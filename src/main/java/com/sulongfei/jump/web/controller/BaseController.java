@@ -1,10 +1,7 @@
 package com.sulongfei.jump.web.controller;
 
 import com.sulongfei.jump.constants.ResponseStatus;
-import com.sulongfei.jump.dto.BaseDTO;
-import com.sulongfei.jump.dto.RoomSpreadDTO;
-import com.sulongfei.jump.dto.SettleDTO;
-import com.sulongfei.jump.dto.UserLoginDTO;
+import com.sulongfei.jump.dto.*;
 import org.springframework.util.Assert;
 
 /**
@@ -37,5 +34,14 @@ public class BaseController {
         Assert.notNull(dto.getRemoteClubId(), ResponseStatus.EMPTY_CLUB_ID);
         Assert.notNull(dto.getSaleId(), ResponseStatus.EMPTY_SALE);
         Assert.notNull(dto.getSaleType(), ResponseStatus.EMPTY_SALE);
+    }
+
+    protected void verifyPaymentDTO(PaymentDTO dto) {
+        verifyBaseDTO(dto);
+        Assert.notNull(dto.getProductId(), "商品ID为空");
+        Assert.notNull(dto.getNum(), "商品数量为空");
+        Assert.notNull(dto.getSwOrderId(), "订单号为空");
+        Assert.notNull(dto.getResult(), "支付状态为空");
+        Assert.notNull(dto.getStatus(), "卡券状态为空");
     }
 }

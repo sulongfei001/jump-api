@@ -1,6 +1,7 @@
 package com.sulongfei.jump.utils;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 〈〉
@@ -22,6 +23,7 @@ public class Test {
 //        System.out.println(singlePrice);
 //        System.out.println(price.multiply(premium).divide(singlePrice,10,BigDecimal.ROUND_HALF_UP).intValue());
 
-        ExcelUtil.integralConfig();
+//        ExcelUtil.integralConfig();
+        System.out.println(new Date().getTime());
     }
 }

@@ -11,11 +11,12 @@
         <result column="ticket_num" jdbcType="INTEGER" property="ticketNum"/>
         <result column="buy_time" jdbcType="TIMESTAMP" property="buyTime"/>
         <result column="sw_order_id" jdbcType="BIGINT" property="swOrderId"/>
+        <result column="result" jdbcType="TINYINT" property="result"/>
         <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, user_id, org_id, product_id, product_num, price, ticket_num, buy_time, sw_order_id, 
-    status
+    result, status
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -28,18 +29,21 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.sulongfei.jump.model.PaymentOrder">
-        insert into payment_order (user_id, org_id, product_id,
-        product_num, price, ticket_num,
-        buy_time, sw_order_id, status
-        )
-        values (#{userId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT},
-        #{productNum,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, #{ticketNum,jdbcType=INTEGER},
-        #{buyTime,jdbcType=TIMESTAMP}, #{swOrderId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}
-        )
-    </insert>
+    insert into payment_order (id, user_id, org_id, 
+      product_id, product_num, price, 
+      ticket_num, buy_time, sw_order_id, 
+      result, status)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{orgId,jdbcType=BIGINT}, 
+      #{productId,jdbcType=BIGINT}, #{productNum,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, 
+      #{ticketNum,jdbcType=INTEGER}, #{buyTime,jdbcType=TIMESTAMP}, #{swOrderId,jdbcType=BIGINT}, 
+      #{result,jdbcType=TINYINT}, #{status,jdbcType=TINYINT})
+  </insert>
     <insert id="insertSelective" parameterType="com.sulongfei.jump.model.PaymentOrder">
         insert into payment_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
             <if test="userId != null">
                 user_id,
             </if>
@@ -64,11 +68,17 @@
             <if test="swOrderId != null">
                 sw_order_id,
             </if>
+            <if test="result != null">
+                result,
+            </if>
             <if test="status != null">
                 status,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
             <if test="userId != null">
                 #{userId,jdbcType=BIGINT},
             </if>
@@ -92,6 +102,9 @@
             </if>
             <if test="swOrderId != null">
                 #{swOrderId,jdbcType=BIGINT},
+            </if>
+            <if test="result != null">
+                #{result,jdbcType=TINYINT},
             </if>
             <if test="status != null">
                 #{status,jdbcType=TINYINT},
@@ -125,6 +138,9 @@
             <if test="swOrderId != null">
                 sw_order_id = #{swOrderId,jdbcType=BIGINT},
             </if>
+            <if test="result != null">
+                result = #{result,jdbcType=TINYINT},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=TINYINT},
             </if>
@@ -141,13 +157,14 @@
       ticket_num = #{ticketNum,jdbcType=INTEGER},
       buy_time = #{buyTime,jdbcType=TIMESTAMP},
       sw_order_id = #{swOrderId,jdbcType=BIGINT},
+      result = #{result,jdbcType=TINYINT},
       status = #{status,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
 
-    <resultMap id="OrderGoodsMap" type="com.sulongfei.jump.model.PaymentOrder" extends="BaseResultMap">
-        <collection column="product_id" property="goods" ofType="Goods"
+    <resultMap extends="BaseResultMap" id="OrderGoodsMap" type="com.sulongfei.jump.model.PaymentOrder">
+        <collection column="product_id" ofType="Goods" property="goods"
                     select="com.sulongfei.jump.mapper.GoodsMapper.selectByGoodsId"/>
     </resultMap>
     <select id="selectByOrderId" resultMap="BaseResultMap">

@@ -49,8 +49,8 @@ public class ChargeController extends BaseController {
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @ApiParam(value = "Json消息体", required = true) @RequestBody PaymentDTO paymentDTO
     ) {
-        verifyBaseDTO(dto);
         BeanUtils.copyProperties(dto, paymentDTO);
+        verifyPaymentDTO(paymentDTO);
         return chargeService.advancePayment(paymentDTO);
     }
 

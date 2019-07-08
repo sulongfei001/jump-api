@@ -37,6 +37,9 @@ public class PaymentDTO extends BaseDTO {
     @ApiModelProperty(value = "订单号")
     private Long swOrderId;
 
+    @ApiModelProperty(value = "支付状态")
+    private String result;
+
     @ApiModelProperty(value = "卡券发放状态")
     private Byte status;
 }

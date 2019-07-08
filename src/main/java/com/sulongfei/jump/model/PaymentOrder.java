@@ -27,6 +27,8 @@ public class PaymentOrder extends Model {
 
     private Long swOrderId;
 
+    private Byte result;
+
     private Byte status;
 
     private Goods goods;
