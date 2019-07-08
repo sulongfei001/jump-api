@@ -43,6 +43,4 @@ public class SecurityUser extends Model {
 
     private Boolean confirmPush;
 
-    private Integer ticketNum;
-
 }

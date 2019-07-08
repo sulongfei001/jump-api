@@ -10,8 +10,9 @@ import com.sulongfei.jump.mapper.*;
 import com.sulongfei.jump.model.*;
 import com.sulongfei.jump.response.*;
 import com.sulongfei.jump.rest.request.SendPrdRequest;
+import com.sulongfei.jump.rest.response.BaseResponse;
+import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.RoomSpreadService;
-import com.sulongfei.jump.service.TaskService;
 import com.sulongfei.jump.utils.ExcelUtil;
 import com.sulongfei.jump.utils.IntegralConfig;
 import com.sulongfei.jump.utils.SnowFlake;
@@ -20,8 +21,7 @@ import com.sulongfei.jump.web.interceptor.UserInterceptor;
 import com.sulongfei.jump.web.socket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,12 +55,13 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
     @Autowired
     private SecurityUserMapper userMapper;
     @Autowired
+    private TicketMapper ticketMapper;
+    @Autowired
     private IntegralMapper integralMapper;
     @Autowired
-    @Qualifier("taskExecutor")
-    private ThreadPoolTaskExecutor taskExecutor;
+    private SendGoodsMapper sendGoodsMapper;
     @Autowired
-    private TaskService taskService;
+    private RestService restService;
 
 
     @Override
@@ -155,13 +156,13 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
         RoomSpread roomSpread = roomSpreadMapper.selectByPrimaryKey(dto.getRoomId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
-        Integer userTicketNum = user.getTicketNum();
+        Ticket ticket = ticketMapper.selectByClubId(userId, dto.getRemoteClubId());
         // =================系统校验及数据结束=================
         SettleRes res = new SettleRes();
 
         // 奖励门票
-        user.setTicketNum(userTicketNum + dto.getGetTicket());
-        userMapper.updateByPrimaryKeySelective(user);
+        ticket.setNum(ticket.getNum() + dto.getGetTicket());
+        ticketMapper.updateByPrimaryKey(ticket);
 
         // =================分数计算开始=================
         IntegralConfig ic = ExcelUtil.integralConfig();
@@ -213,10 +214,10 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
                         new SnowFlake().nextId(),
                         new Timestamp(System.currentTimeMillis()),
                         (byte) 0);
-                taskExecutor.execute(() -> taskService.savePrd(sendGoods));
+                sendGoodsMapper.insertSelective(sendGoods);
             } else if (goods.getGoodsType() == 3) { // 门店兑换
                 SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), roomSpread.getRemoteClubId(), spreadGoods.getRemoteGoodsId(), spreadGoods.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-                taskExecutor.execute(() -> taskService.sendPrd(goodsRequest));
+                ResponseEntity<RestResponse<BaseResponse>> goodsResult = restService.sendPrd(goodsRequest);
             }
             Map<String, Object> map = new HashMap<>();
             map.put("type", 0);
@@ -244,14 +245,13 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
     public Response spreadRoomGet(BaseDTO dto, String password) throws IOException {
         RoomSpread roomSpread = roomSpreadMapper.selectByPassword(password);
         SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
+        Ticket ticket = ticketMapper.selectByClubId(user.getId(), dto.getRemoteClubId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
         if (roomSpread.getStatus() == 1) throw new JumpException(ResponseStatus.ROOM_CLOSED);
-        Integer ticketNum = roomSpread.getTicketNum();
-        Integer userTicketNum = user.getTicketNum();
-        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+        if (roomSpread.getTicketNum() > ticket.getNum()) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
         // 消耗门票
-        user.setTicketNum(userTicketNum - ticketNum);
-        userMapper.updateByPrimaryKeySelective(user);
+        ticket.setNum(ticket.getNum() - roomSpread.getTicketNum());
+        ticketMapper.updateByPrimaryKey(ticket);
         // 房间人数+1
         roomSpread.setPartakeNum(roomSpread.getPartakeNum() + 1);
         if (roomSpread.getPartakeNum() >= roomSpread.getJoinNum()) roomSpread.setStatus((byte) 1);

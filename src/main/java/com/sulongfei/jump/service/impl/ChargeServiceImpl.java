@@ -7,14 +7,8 @@ import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.PaymentDTO;
 import com.sulongfei.jump.dto.SendGoodsDTO;
 import com.sulongfei.jump.exception.JumpException;
-import com.sulongfei.jump.mapper.GoodsMapper;
-import com.sulongfei.jump.mapper.PaymentOrderMapper;
-import com.sulongfei.jump.mapper.SecurityUserMapper;
-import com.sulongfei.jump.mapper.SendGoodsMapper;
-import com.sulongfei.jump.model.Goods;
-import com.sulongfei.jump.model.PaymentOrder;
-import com.sulongfei.jump.model.SecurityUser;
-import com.sulongfei.jump.model.SendGoods;
+import com.sulongfei.jump.mapper.*;
+import com.sulongfei.jump.model.*;
 import com.sulongfei.jump.response.ChargeListRes;
 import com.sulongfei.jump.response.PaymentOrderRes;
 import com.sulongfei.jump.response.Response;
@@ -56,6 +50,8 @@ public class ChargeServiceImpl implements ChargeService {
     private GoodsMapper goodsMapper;
     @Autowired
     private RestService restService;
+    @Autowired
+    private TicketMapper ticketMapper;
 
     @Override
     public Response chargeList(BaseDTO dto) throws IOException {
@@ -138,9 +134,9 @@ public class ChargeServiceImpl implements ChargeService {
 
         // 赠送门票
         if (status == 1) {
-            SecurityUser user = userMapper.selectByPrimaryKey(order.getUserId());
-            user.setTicketNum(user.getTicketNum() + order.getTicketNum());
-            userMapper.updateByPrimaryKey(user);
+            Ticket ticket = ticketMapper.selectByClubId(order.getUserId(),order.getOrgId());
+            ticket.setNum(ticket.getNum()+order.getTicketNum());
+            ticketMapper.updateByPrimaryKey(ticket);
         }
         return new Response();
     }

@@ -10,8 +10,9 @@ import com.sulongfei.jump.mapper.*;
 import com.sulongfei.jump.model.*;
 import com.sulongfei.jump.response.*;
 import com.sulongfei.jump.rest.request.SendPrdRequest;
+import com.sulongfei.jump.rest.response.BaseResponse;
+import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.RoomSimpleService;
-import com.sulongfei.jump.service.TaskService;
 import com.sulongfei.jump.utils.ExcelUtil;
 import com.sulongfei.jump.utils.IntegralConfig;
 import com.sulongfei.jump.utils.SnowFlake;
@@ -19,8 +20,7 @@ import com.sulongfei.jump.web.interceptor.UserInterceptor;
 import com.sulongfei.jump.web.socket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +52,8 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     @Autowired
     private SecurityUserMapper userMapper;
     @Autowired
+    private TicketMapper ticketMapper;
+    @Autowired
     private IntegralMapper integralMapper;
     @Autowired
     private LastWeekIntegralMapper lastIntegralMapper;
@@ -60,10 +62,9 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     @Autowired
     private GlobalContext globalContext;
     @Autowired
-    @Qualifier("taskExecutor")
-    private ThreadPoolTaskExecutor taskExecutor;
+    private SendGoodsMapper sendGoodsMapper;
     @Autowired
-    private TaskService taskService;
+    private RestService restService;
 
     @Override
     public Response roomSimpleList(BaseDTO dto) {
@@ -83,18 +84,18 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         final int DEF_DIV_SCALE = 10;
         Long userId = UserInterceptor.getLocalUser().getId();
-        SecurityUser user = userMapper.selectByPrimaryKey(userId);
         RoomSimple room = roomSimpleMapper.selectByPrimaryKey(dto.getRoomId());
         if (room == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        SecurityUser user = userMapper.selectByPrimaryKey(userId);
+        Ticket ticket = ticketMapper.selectByClubId(userId, dto.getRemoteClubId());
         Goods goods = goodsMapper.selectByGoodsId(room.getRemoteGoodsId());
         Integer ticketNum = room.getTicketNum();
         Integer consumeNum = room.getConsumeNum();
-        Integer userTicketNum = user.getTicketNum();
         SettleRes res = new SettleRes();
 
         // 奖励门票
-        user.setTicketNum(userTicketNum + dto.getGetTicket());
-        userMapper.updateByPrimaryKeySelective(user);
+        ticket.setNum(ticket.getNum() + dto.getGetTicket());
+        ticketMapper.updateByPrimaryKey(ticket);
 
         // =================分数计算开始=================
         Integer countIntegral;
@@ -136,10 +137,10 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
                         new SnowFlake().nextId(),
                         new Timestamp(System.currentTimeMillis()),
                         (byte) 0);
-                taskExecutor.execute(() -> taskService.savePrd(sendGoods));
+                sendGoodsMapper.insertSelective(sendGoods);
             } else if (goods.getGoodsType() == 3) { // 门店兑换
                 SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-                taskExecutor.execute(() -> taskService.sendPrd(goodsRequest));
+                ResponseEntity<RestResponse<BaseResponse>> goodsResult = restService.sendPrd(goodsRequest);
             }
             Map<String, Object> map = new HashMap<>();
             map.put("type", 0);
@@ -230,13 +231,12 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     public Response roomSimpleGet(BaseDTO dto, Long roomId) throws IOException {
         RoomSimple roomSimple = roomSimpleMapper.selectByPrimaryKey(roomId);
         SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
+        Ticket ticket = ticketMapper.selectByClubId(user.getId(), dto.getRemoteClubId());
         if (roomSimple == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
-        Integer ticketNum = roomSimple.getTicketNum();
-        Integer userTicketNum = user.getTicketNum();
-        if (ticketNum > userTicketNum) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+        if (roomSimple.getTicketNum() > ticket.getNum()) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
         // 消耗门票
-        user.setTicketNum(userTicketNum - ticketNum);
-        userMapper.updateByPrimaryKeySelective(user);
+        ticket.setNum(ticket.getNum() - roomSimple.getTicketNum());
+        ticketMapper.updateByPrimaryKey(ticket);
 
         RoomSimpleRes res = new RoomSimpleRes();
         BeanUtils.copyProperties(roomSimple, res);

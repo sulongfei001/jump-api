@@ -1,10 +1,12 @@
 package com.sulongfei.jump.service.impl;
 
-import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.constants.Constants;
+import com.sulongfei.jump.context.GlobalContext;
 import com.sulongfei.jump.dto.UserLoginDTO;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
+import com.sulongfei.jump.mapper.TicketMapper;
 import com.sulongfei.jump.model.SecurityUser;
+import com.sulongfei.jump.model.Ticket;
 import com.sulongfei.jump.response.Response;
 import com.sulongfei.jump.rest.response.RegisterResponse;
 import com.sulongfei.jump.rest.response.RestResponse;
@@ -12,7 +14,9 @@ import com.sulongfei.jump.service.LoginService;
 import com.sulongfei.jump.utils.QCloudUtil;
 import com.sulongfei.jump.utils.StrUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,6 +42,11 @@ public class LoginServiceImpl implements LoginService {
     private RestService restService;
     @Autowired
     private GlobalContext globalContext;
+    @Autowired
+    @Qualifier("taskExecutor")
+    private ThreadPoolTaskExecutor taskExecutor;
+    @Autowired
+    private TicketMapper ticketMapper;
 
     @Override
     @Transactional(readOnly = false)
@@ -61,20 +70,19 @@ public class LoginServiceImpl implements LoginService {
             user.setLastOperationTime(now);
             user.setLastOperationClub(dto.getRemoteClubId());
             user.setConfirmPush(false);
-            user.setTicketNum(1000);
             if (result.getBody() != null && "200".equals(result.getBody().getErrorCode())) {
                 user.setMemberId(result.getBody().getResult().getMemberId());
                 user.setIsSaler(result.getBody().getResult().getIsSaler() == 1 ? true : false);
             }
             securityUserMapper.insertSelective(user);
+            Ticket ticket = new Ticket(user.getId(),dto.getRemoteClubId(),0);
+            ticketMapper.insertSelective(ticket);
         } else {
             user.setLastOperationTime(now);
             user.setLastOperationClub(dto.getRemoteClubId());
             securityUserMapper.updateByPrimaryKeySelective(user);
         }
-        new Thread(() -> {
-            QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode);
-        }).start();
+        taskExecutor.execute(() -> QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode));
         return new Response();
     }
 }

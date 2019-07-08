@@ -1,8 +1,5 @@
 package com.sulongfei.jump.service;
 
-import com.sulongfei.jump.model.SendGoods;
-import com.sulongfei.jump.rest.request.SendPrdRequest;
-
 /**
  * 〈〉
  *
@@ -12,10 +9,6 @@ import com.sulongfei.jump.rest.request.SendPrdRequest;
  */
 public interface TaskService {
     void resetRank();
-
-    void savePrd(SendGoods sendGoods);
-
-    void sendPrd(SendPrdRequest request);
 
     void settle();
 

@@ -1,5 +1,6 @@
 package com.sulongfei.jump.service;
 
+import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.UserDTO;
 import com.sulongfei.jump.response.Response;
 
@@ -11,7 +12,7 @@ import com.sulongfei.jump.response.Response;
  * @Version 1.0
  */
 public interface UserService {
-    Response getUserInfo();
+    Response getUserInfo(BaseDTO dto);
 
     Response updateUser(UserDTO dto);
 }

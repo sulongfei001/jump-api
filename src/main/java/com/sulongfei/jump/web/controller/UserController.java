@@ -31,7 +31,7 @@ public class UserController extends BaseController {
     public Response<UserRes> getUserInfo(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto
     ) {
-        return userService.getUserInfo();
+        return userService.getUserInfo(dto);
     }
 
     @ApiOperation("修改用户信息")

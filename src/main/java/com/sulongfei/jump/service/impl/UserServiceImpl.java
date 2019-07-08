@@ -1,10 +1,12 @@
 package com.sulongfei.jump.service.impl;
 
-import cn.hutool.core.util.StrUtil;
 import com.sulongfei.jump.context.GlobalContext;
+import com.sulongfei.jump.dto.BaseDTO;
 import com.sulongfei.jump.dto.UserDTO;
 import com.sulongfei.jump.mapper.SecurityUserMapper;
+import com.sulongfei.jump.mapper.TicketMapper;
 import com.sulongfei.jump.model.SecurityUser;
+import com.sulongfei.jump.model.Ticket;
 import com.sulongfei.jump.response.Response;
 import com.sulongfei.jump.response.UserRes;
 import com.sulongfei.jump.service.UserService;
@@ -15,9 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 〈〉
@@ -33,12 +32,16 @@ public class UserServiceImpl implements UserService {
     private SecurityUserMapper userMapper;
     @Autowired
     private GlobalContext context;
+    @Autowired
+    private TicketMapper ticketMapper;
 
     @Override
-    public Response getUserInfo() {
+    public Response getUserInfo(BaseDTO dto) {
         SecurityUser user = UserInterceptor.getLocalUser();
+        Ticket ticket = ticketMapper.selectByClubId(user.getId(), dto.getRemoteClubId());
         UserRes data = new UserRes();
         BeanUtils.copyProperties(user, data);
+        data.setTicketNum(ticket.getNum());
         return new Response(data);
     }
 

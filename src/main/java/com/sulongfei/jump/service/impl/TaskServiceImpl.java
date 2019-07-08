@@ -77,10 +77,10 @@ public class TaskServiceImpl implements TaskService {
                             new SnowFlake().nextId(),
                             new Timestamp(System.currentTimeMillis()),
                             (byte) 0);
-                    taskExecutor.execute(() -> savePrd(sendGoods));
+                    sendGoodsMapper.insertSelective(sendGoods);
                 } else if (prize.getGoods().getGoodsType() == 3) { // 门店兑换
                     SendPrdRequest goodsRequest = new SendPrdRequest(integral.getUser().getMemberId(), clubId, prize.getGoods().getRemoteGoodsId(), prize.getGoodsNum(), -1L, -1);
-                    taskExecutor.execute(() -> sendPrd(goodsRequest));
+                    ResponseEntity<RestResponse<BaseResponse>> goodsResult = restService.sendPrd(goodsRequest);
                 }
                 integral.getUser().setConfirmPush(true);
                 userMapper.updateByPrimaryKey(integral.getUser());
@@ -109,14 +109,4 @@ public class TaskServiceImpl implements TaskService {
         integralMapper.resetRankList();
     }
 
-    @Override
-    @Transactional(readOnly = false)
-    public void savePrd(SendGoods sendGoods) {
-        sendGoodsMapper.insertSelective(sendGoods);
-    }
-
-    @Override
-    public void sendPrd(SendPrdRequest request) {
-        ResponseEntity<RestResponse<BaseResponse>> goodsResult = restService.sendPrd(request);
-    }
 }
