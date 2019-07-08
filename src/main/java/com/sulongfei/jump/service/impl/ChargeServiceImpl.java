@@ -118,6 +118,7 @@ public class ChargeServiceImpl implements ChargeService {
         order.setTicketNum(paymentDTO.getTicketNum());
         order.setBuyTime(new Timestamp(paymentDTO.getBuyTime()));
         order.setSwOrderId(paymentDTO.getSwOrderId());
+        order.setResult(paymentDTO.getResult());
         order.setStatus(paymentDTO.getStatus());
         orderMapper.insertSelective(order);
         return new Response();
