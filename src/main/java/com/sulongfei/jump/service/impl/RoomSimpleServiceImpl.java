@@ -140,7 +140,7 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
                 sendGoodsMapper.insertSelective(sendGoods);
             } else if (goods.getGoodsType() == 3) { // 门店兑换
                 SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-                ResponseEntity<RestResponse<BaseResponse>> goodsResult = restService.sendPrd(goodsRequest);
+                restService.sendPrd(goodsRequest);
             }
             Map<String, Object> map = new HashMap<>();
             map.put("type", 0);

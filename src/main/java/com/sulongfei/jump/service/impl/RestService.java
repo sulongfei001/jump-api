@@ -59,7 +59,7 @@ public class RestService {
                 new HttpEntity<>(JSON.toJSONString(request), headers),
                 new ParameterizedTypeReference<RestResponse<BaseResponse>>() {
                 });
-        log.info("发送卡券，返回消息体：{}", result.getBody());
+        log.info("门店兑换结果：errorCode={},errMsg={}" + result.getBody().getErrorCode(), result.getBody().getErrMsg());
         return result;
     }
 
@@ -80,6 +80,7 @@ public class RestService {
                 new HttpEntity<>(JSON.toJSONString(request), headers),
                 new ParameterizedTypeReference<RestResponse<BaseResponse>>() {
                 });
+        log.info("卡券寄送结果：errorCode={},errMsg={}" + result.getBody().getErrorCode(), result.getBody().getErrMsg());
         return result;
     }
 

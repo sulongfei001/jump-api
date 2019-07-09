@@ -16,9 +16,7 @@ import com.sulongfei.jump.web.socket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,9 +51,6 @@ public class TaskServiceImpl implements TaskService {
     private RestService restService;
     @Autowired
     private GlobalContext context;
-    @Autowired
-    @Qualifier("taskExecutor")
-    private ThreadPoolTaskExecutor taskExecutor;
 
     @Override
     public void settle() {
@@ -80,7 +75,7 @@ public class TaskServiceImpl implements TaskService {
                     sendGoodsMapper.insertSelective(sendGoods);
                 } else if (prize.getGoods().getGoodsType() == 3) { // 门店兑换
                     SendPrdRequest goodsRequest = new SendPrdRequest(integral.getUser().getMemberId(), clubId, prize.getGoods().getRemoteGoodsId(), prize.getGoodsNum(), -1L, -1);
-                    ResponseEntity<RestResponse<BaseResponse>> goodsResult = restService.sendPrd(goodsRequest);
+                    restService.sendPrd(goodsRequest);
                 }
                 integral.getUser().setConfirmPush(true);
                 userMapper.updateByPrimaryKey(integral.getUser());
