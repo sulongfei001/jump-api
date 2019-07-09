@@ -121,6 +121,10 @@ public class ChargeServiceImpl implements ChargeService {
         order.setResult(paymentDTO.getResult());
         order.setStatus(paymentDTO.getStatus());
         orderMapper.insertSelective(order);
+        // 赠送门票
+        Ticket ticket = ticketMapper.selectByClubId(order.getUserId(), order.getOrgId());
+        ticket.setNum(ticket.getNum() + order.getTicketNum());
+        ticketMapper.updateByPrimaryKey(ticket);
         return new Response();
     }
 
@@ -131,13 +135,6 @@ public class ChargeServiceImpl implements ChargeService {
         if (order == null) throw new JumpException(ResponseStatus.NO_ORDER);
         order.setStatus(status);
         orderMapper.updateByPrimaryKey(order);
-
-        // 赠送门票
-        if (status == 1) {
-            Ticket ticket = ticketMapper.selectByClubId(order.getUserId(),order.getOrgId());
-            ticket.setNum(ticket.getNum()+order.getTicketNum());
-            ticketMapper.updateByPrimaryKey(ticket);
-        }
         return new Response();
     }
 

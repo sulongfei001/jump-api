@@ -75,12 +75,16 @@ public class LoginServiceImpl implements LoginService {
                 user.setIsSaler(result.getBody().getResult().getIsSaler() == 1 ? true : false);
             }
             securityUserMapper.insertSelective(user);
-            Ticket ticket = new Ticket(user.getId(),dto.getRemoteClubId(),0);
-            ticketMapper.insertSelective(ticket);
         } else {
             user.setLastOperationTime(now);
             user.setLastOperationClub(dto.getRemoteClubId());
             securityUserMapper.updateByPrimaryKeySelective(user);
+        }
+        // 门票
+        Ticket ticket = ticketMapper.selectByClubId(user.getId(),dto.getRemoteClubId());
+        if (ticket == null){
+            ticket = new Ticket(user.getId(),dto.getRemoteClubId(),0);
+            ticketMapper.insertSelective(ticket);
         }
         taskExecutor.execute(() -> QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode));
         return new Response();
