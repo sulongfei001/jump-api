@@ -152,6 +152,8 @@ public class ChargeServiceImpl implements ChargeService {
             res.setBuyTime(order.getBuyTime().getTime());
             res.setName(order.getGoods().getGoodsName());
             res.setLogo(order.getGoods().getGoodsPicture());
+            res.setResult(order.getResult());
+            res.setStatus(order.getStatus());
             data.add(res);
         });
         return new Response(data);

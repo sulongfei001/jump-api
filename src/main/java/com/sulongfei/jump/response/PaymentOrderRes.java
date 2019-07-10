@@ -33,6 +33,12 @@ public class PaymentOrderRes {
     @ApiModelProperty(value = "订单号")
     private Long swOrderId;
 
+    @ApiModelProperty(value = "订单状态")
+    private Byte result;
+
+    @ApiModelProperty(value = "卡券发放状态")
+    private Byte status;
+
     @ApiModelProperty(value = "商品图片")
     private String logo;
 
