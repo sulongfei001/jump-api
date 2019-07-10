@@ -51,6 +51,4 @@ public class RoomSimpleRes {
     @ApiModelProperty(value = "图片4")
     private String picture4;
 
-    @ApiModelProperty(value = "随机宝石格子")
-    private List<Integer> randomCells;
 }

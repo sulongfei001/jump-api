@@ -18,10 +18,8 @@ public class SettleRes {
     private Integer countIntegral;
     @ApiModelProperty(value = "用户单次获得分数")
     private Integer singleIntegral;
-    @ApiModelProperty(value = "用户当前排名")
-    private Integer currentRank;
-    @ApiModelProperty(value = "用户排名上升")
-    private Integer rankUp;
+    @ApiModelProperty(value = "用户游戏后排名")
+    private Integer latterRank;
     @ApiModelProperty(value = "用户是否中奖")
     private Boolean win;
     @ApiModelProperty(value = "额外宝石个数")

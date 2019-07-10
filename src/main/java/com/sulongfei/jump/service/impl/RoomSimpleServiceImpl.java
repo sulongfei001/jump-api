@@ -10,8 +10,6 @@ import com.sulongfei.jump.mapper.*;
 import com.sulongfei.jump.model.*;
 import com.sulongfei.jump.response.*;
 import com.sulongfei.jump.rest.request.SendPrdRequest;
-import com.sulongfei.jump.rest.response.BaseResponse;
-import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.RoomSimpleService;
 import com.sulongfei.jump.utils.ExcelUtil;
 import com.sulongfei.jump.utils.IntegralConfig;
@@ -20,7 +18,8 @@ import com.sulongfei.jump.web.interceptor.UserInterceptor;
 import com.sulongfei.jump.web.socket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +64,9 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     private SendGoodsMapper sendGoodsMapper;
     @Autowired
     private RestService restService;
+    @Autowired
+    @Qualifier("taskExecutor")
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Override
     public Response roomSimpleList(BaseDTO dto) {
@@ -81,21 +83,13 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     @Override
     @Transactional(readOnly = false)
     public Response settleSimpleGame(SettleDTO dto) throws IOException {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
         final int DEF_DIV_SCALE = 10;
         Long userId = UserInterceptor.getLocalUser().getId();
-        RoomSimple room = roomSimpleMapper.selectByPrimaryKey(dto.getRoomId());
-        if (room == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        RoomSimple roomSimple = roomSimpleMapper.selectByPrimaryKey(dto.getRoomId());
+        if (roomSimple == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
-        Ticket ticket = ticketMapper.selectByClubId(userId, dto.getRemoteClubId());
-        Goods goods = goodsMapper.selectByGoodsId(room.getRemoteGoodsId());
-        Integer ticketNum = room.getTicketNum();
-        Integer consumeNum = room.getConsumeNum();
+        Goods goods = goodsMapper.selectByGoodsId(roomSimple.getRemoteGoodsId());
         SettleRes res = new SettleRes();
-
-        // 奖励门票
-        ticket.setNum(ticket.getNum() + dto.getGetTicket());
-        ticketMapper.updateByPrimaryKey(ticket);
 
         // =================分数计算开始=================
         Integer countIntegral;
@@ -110,76 +104,113 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
             countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getDefeatIntegral() + ic.getDefeatGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
             res.setStoneNum(ic.getDefeatGemstoneNum());
         }
-        rankCountIntegral = countIntegral * room.getTicketNum();
+        rankCountIntegral = countIntegral * roomSimple.getTicketNum();
+        Integer baseIntegral = (ic.getDefeatIntegral() + ic.getDefeatGemstoneNum() * ic.getGemstoneIntegral()) * roomSimple.getTicketNum();
         // =================分数计算结束=================
 
         // =================中奖概率计算=================
+        Boolean win = false;
         BigDecimal price = goods.getGoodsPrice();
-        BigDecimal premium = BigDecimal.valueOf(room.getPremiumProportion()).divide(BigDecimal.valueOf(100), DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP);
-        Double prize = room.getPrizeProbability() / (100 * 1.0);
+        BigDecimal premium = BigDecimal.valueOf(roomSimple.getPremiumProportion()).divide(BigDecimal.valueOf(100), DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP);
+        Double prize = roomSimple.getPrizeProbability() / (100 * 1.0);
         BigDecimal singlePrice = globalContext.getTicketSinglePrice();
         Integer mustNum = price.multiply(premium).divide(singlePrice, DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP).intValue();
         Integer prizeCount = recordSimpleMapper.countPrize(dto.getRoomId());
-        Boolean randomOn = mustNum + prizeCount * (mustNum + 1) < consumeNum;
+        Boolean randomOn = mustNum + prizeCount * (mustNum + 1) < roomSimple.getConsumeNum();
+        if (randomOn && Math.random() <= prize) win = true;
         // =================中奖概率计算=================
 
-        Boolean win = false;
-        if (randomOn && Math.random() <= prize) { // 中奖
-            win = true;
-            if (goods.getGoodsType() == 2) { // 寄送
-                SendGoods sendGoods = new SendGoods(
-                        user.getMemberId(),
-                        dto.getRemoteClubId(),
-                        goods.getRemoteGoodsId(),
-                        room.getGoodsNum(),
-                        dto.getSaleId(),
-                        dto.getSaleType(),
-                        new SnowFlake().nextId(),
-                        new Timestamp(System.currentTimeMillis()),
-                        (byte) 0);
-                sendGoodsMapper.insertSelective(sendGoods);
-            } else if (goods.getGoodsType() == 3) { // 门店兑换
-                SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), room.getRemoteClubId(), room.getRemoteGoodsId(), room.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
-                restService.sendPrd(goodsRequest);
-            }
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", 0);
-            map.put("content", "恭喜" + user.getNickname() + "，刚刚获得了" + goods.getGoodsName());
-            WebSocketServer.sendInfo(null, map);
-            user.setConfirmPush(true);
-            userMapper.updateByPrimaryKey(user);
-            Map<String, Object> newMap = new HashMap<>();
-            newMap.put("type", 1);
-            WebSocketServer.sendInfo(userId, newMap);
-        }
-
-        // =================记录分数及排行榜开始=================
-        RecordSimple recordSimple = new RecordSimple(userId, dto.getRoomId(), dto.getPassCellNum(), win, ticketNum, dto.getGetTicket(), dto.getSaleId(), dto.getSaleType(), now);
-        recordSimpleMapper.insertSelective(recordSimple);
-        // 计算分数
+        RecordSimple recordSimple = recordSimpleMapper.selectByPrimaryKey(dto.getRecordId());
+        recordSimple.setIntegral(dto.getPassCellNum());
+        recordSimple.setIsWin(win);
+        recordSimpleMapper.updateByPrimaryKey(recordSimple);
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
-        if (integral == null) {
-            integral = new Integral(userId, dto.getRemoteClubId(), rankCountIntegral);
-            integralMapper.insertSelective(integral);
-            Integer currentRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
-            res.setCurrentRank(currentRank);
-        } else {
-            Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
-            integral.setIntegral(integral.getIntegral() + rankCountIntegral);
-            integralMapper.updateByPrimaryKey(integral);
-            Integer laterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
-            res.setRankUp(formerRank - laterRank);
-        }
-        // =================记录分数及排行榜结束=================
+        integral.setIntegral(integral.getIntegral() + rankCountIntegral - baseIntegral);
+        integralMapper.updateByPrimaryKey(integral);
+        Integer latterRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
 
-        room.setConsumeNum(consumeNum + ticketNum);
-        roomSimpleMapper.updateByPrimaryKey(room);
+        if (win) {
+            taskExecutor.execute(() -> {
+                if (goods.getGoodsType() == 2) { // 寄送
+                    SendGoods sendGoods = new SendGoods(
+                            user.getMemberId(),
+                            dto.getRemoteClubId(),
+                            goods.getRemoteGoodsId(),
+                            roomSimple.getGoodsNum(),
+                            dto.getSaleId(),
+                            dto.getSaleType(),
+                            new SnowFlake().nextId(),
+                            new Timestamp(System.currentTimeMillis()),
+                            (byte) 0);
+                    sendGoodsMapper.insertSelective(sendGoods);
+                } else if (goods.getGoodsType() == 3) { // 门店兑换
+                    SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), roomSimple.getRemoteClubId(), roomSimple.getRemoteGoodsId(), roomSimple.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
+                    restService.sendPrd(goodsRequest);
+                }
+                Map<String, Object> map = new HashMap<>();
+                map.put("type", 0);
+                map.put("content", "恭喜" + user.getNickname() + "，刚刚获得了" + goods.getGoodsName());
+                WebSocketServer.sendInfo(null, map);
+                user.setConfirmPush(true);
+                userMapper.updateByPrimaryKey(user);
+                Map<String, Object> newMap = new HashMap<>();
+                newMap.put("type", 1);
+                WebSocketServer.sendInfo(userId, newMap);
+            });
+        }
 
         res.setCountIntegral(integral.getIntegral());
         res.setSingleIntegral(rankCountIntegral);
         res.setWin(win);
         res.setStoneIntegral(ic.getGemstoneIntegral());
         res.setGoodsPicture(goods.getGoodsPicture());
+        res.setLatterRank(latterRank);
+        return new Response(res);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Response roomSimpleGet(BaseDTO dto, Long roomId) throws IOException {
+        RoomSimple roomSimple = roomSimpleMapper.selectByPrimaryKey(roomId);
+        Long userId = UserInterceptor.getLocalUser().getId();
+        SecurityUser user = userMapper.selectByPrimaryKey(userId);
+        Ticket ticket = ticketMapper.selectByClubId(user.getId(), dto.getRemoteClubId());
+        if (roomSimple == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
+        if (roomSimple.getTicketNum() > ticket.getNum()) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
+        // 消耗门票
+        ticket.setNum(ticket.getNum() - roomSimple.getTicketNum());
+        ticketMapper.updateByPrimaryKey(ticket);
+
+        // =================分数计算开始=================
+        IntegralConfig ic = ExcelUtil.integralConfig();
+        Integer baseIntegral = (ic.getDefeatIntegral() + ic.getDefeatGemstoneNum() * ic.getGemstoneIntegral()) * roomSimple.getTicketNum();
+        // =================分数计算结束=================
+
+        // =================记录分数及排行榜开始=================
+        RecordSimple recordSimple = new RecordSimple(userId, roomId, 0, false, roomSimple.getTicketNum(), 0, dto.getSaleId(), dto.getSaleType(), new Timestamp(System.currentTimeMillis()));
+        recordSimpleMapper.insertSelective(recordSimple);
+        // 计算分数
+        Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
+        Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
+        if (integral == null) {
+            integral = new Integral(userId, dto.getRemoteClubId(), baseIntegral);
+            integralMapper.insertSelective(integral);
+        } else {
+            integral.setIntegral(integral.getIntegral() + baseIntegral);
+            integralMapper.updateByPrimaryKey(integral);
+        }
+        // =================记录分数及排行榜结束=================
+
+        roomSimple.setConsumeNum(roomSimple.getConsumeNum() + roomSimple.getTicketNum());
+        roomSimpleMapper.updateByPrimaryKey(roomSimple);
+
+        RoomRes res = new RoomRes();
+        res.setId(roomSimple.getId());
+        res.setTicketNum(roomSimple.getTicketNum());
+        res.setGoodsName(roomSimple.getGoodsName());
+        res.setRandomCells(ExcelUtil.getGameConfig());
+        res.setRecordId(recordSimple.getId());
+        res.setFormerRank(formerRank);
         return new Response(res);
     }
 
@@ -224,24 +255,6 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         data.setUser(userRes);
         data.setEntryIntegral(globalContext.getEntryIntegral());
         return new Response(data);
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public Response roomSimpleGet(BaseDTO dto, Long roomId) throws IOException {
-        RoomSimple roomSimple = roomSimpleMapper.selectByPrimaryKey(roomId);
-        SecurityUser user = userMapper.selectByPrimaryKey(UserInterceptor.getLocalUser().getId());
-        Ticket ticket = ticketMapper.selectByClubId(user.getId(), dto.getRemoteClubId());
-        if (roomSimple == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
-        if (roomSimple.getTicketNum() > ticket.getNum()) throw new JumpException(ResponseStatus.NO_ENOUGH_TICKET);
-        // 消耗门票
-        ticket.setNum(ticket.getNum() - roomSimple.getTicketNum());
-        ticketMapper.updateByPrimaryKey(ticket);
-
-        RoomSimpleRes res = new RoomSimpleRes();
-        BeanUtils.copyProperties(roomSimple, res);
-        res.setRandomCells(ExcelUtil.getGameConfig());
-        return new Response(res);
     }
 
 }

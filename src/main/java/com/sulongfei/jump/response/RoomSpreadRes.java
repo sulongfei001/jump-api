@@ -33,12 +33,11 @@ public class RoomSpreadRes {
     private Integer partakeNum;
     @ApiModelProperty(value = "房间是否结束")
     private Boolean ended;
-    @ApiModelProperty(value = "随机宝石格子")
-    private List<Integer> randomCells;
     @ApiModelProperty(value = "房间对应的商品对象")
     private SpreadGoodsRes spreadGoods;
     @ApiModelProperty(value = "房间对应中将人对象")
     private UserRes user;
     @ApiModelProperty(value = "房间参与次数最多用户")
     private UserRes mostUser;
+
 }

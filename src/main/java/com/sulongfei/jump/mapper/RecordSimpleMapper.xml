@@ -37,7 +37,8 @@
       #{getTicket,jdbcType=INTEGER}, #{saleId,jdbcType=BIGINT}, #{saleType,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP})
   </insert>
-    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RecordSimple">
+    <insert id="insertSelective" parameterType="com.sulongfei.jump.model.RecordSimple" useGeneratedKeys="true"
+            keyProperty="id">
         insert into record_simple
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

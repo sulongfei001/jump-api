@@ -45,7 +45,7 @@ public class RoomController extends BaseController {
     @ApiOperation(value = "获取大游戏房间")
     @ApiImplicitParam(value = "房间ID", name = "roomId", paramType = "path", required = true)
     @PostMapping("/simple/get/{roomId}")
-    public Response<RoomSimpleRes> roomSimpleGet(
+    public Response<RoomRes> roomSimpleGet(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @PathVariable Long roomId
     ) throws IOException {
@@ -77,7 +77,7 @@ public class RoomController extends BaseController {
     @ApiOperation(value = "根据密码获取推广员房间")
     @ApiImplicitParam(value = "房间密码", name = "password", paramType = "path", required = true)
     @PostMapping("/spread/get/{password}")
-    public Response spreadRoomGet(
+    public Response<RoomRes> spreadRoomGet(
             @ApiParam(value = "基础请求数据", hidden = true) BaseDTO dto,
             @PathVariable String password
     ) throws IOException {
