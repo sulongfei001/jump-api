@@ -109,18 +109,24 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     @Transactional(readOnly = false)
     public Response advancePayment(PaymentDTO paymentDTO) {
-        PaymentOrder order = new PaymentOrder();
-        order.setUserId(UserInterceptor.getLocalUser().getId());
-        order.setOrgId(paymentDTO.getRemoteClubId());
-        order.setProductId(paymentDTO.getProductId());
-        order.setProductNum(paymentDTO.getNum());
-        order.setPrice(paymentDTO.getPrice());
-        order.setTicketNum(paymentDTO.getTicketNum());
-        order.setBuyTime(new Timestamp(paymentDTO.getBuyTime()));
-        order.setSwOrderId(paymentDTO.getSwOrderId());
-        order.setResult(paymentDTO.getResult());
-        order.setStatus(paymentDTO.getStatus());
-        orderMapper.insertSelective(order);
+        PaymentOrder order = orderMapper.selectByOrderId(paymentDTO.getSwOrderId());
+        if (order == null){
+            order = new PaymentOrder();
+            order.setUserId(UserInterceptor.getLocalUser().getId());
+            order.setOrgId(paymentDTO.getRemoteClubId());
+            order.setProductId(paymentDTO.getProductId());
+            order.setProductNum(paymentDTO.getNum());
+            order.setPrice(paymentDTO.getPrice());
+            order.setTicketNum(paymentDTO.getTicketNum());
+            order.setBuyTime(new Timestamp(paymentDTO.getBuyTime()));
+            order.setSwOrderId(paymentDTO.getSwOrderId());
+            order.setResult(paymentDTO.getResult());
+            order.setStatus(paymentDTO.getStatus());
+            orderMapper.insertSelective(order);
+        }else {
+            order.setResult(paymentDTO.getResult());
+            orderMapper.updateByPrimaryKey(order);
+        }
         // 赠送门票
         if (order.getResult() == 1) {
             Ticket ticket = ticketMapper.selectByClubId(order.getUserId(), order.getOrgId());
