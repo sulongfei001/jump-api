@@ -6,7 +6,6 @@ import com.sulongfei.jump.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
@@ -22,7 +21,6 @@ import org.springframework.util.StringUtils;
  */
 @Slf4j
 @Component
-@EnableScheduling
 public class DynamicTask implements SchedulingConfigurer {
     @Autowired
     private TaskService taskService;

@@ -178,6 +178,7 @@
         <include refid="Base_Column_List"/>
         from room_spread
         where remote_club_id = #{remoteClubId,jdbcType=BIGINT} and create_user_id = #{createUserId,jdbcType=BIGINT}
+        order by create_time desc
     </select>
 
     <select id="checkPassword" resultType="java.lang.Long">

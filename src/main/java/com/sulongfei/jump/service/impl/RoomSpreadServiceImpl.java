@@ -22,16 +22,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +64,9 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
     @Autowired
     @Qualifier("taskExecutor")
     private ThreadPoolTaskExecutor taskExecutor;
+    @Autowired
+    @Qualifier("taskScheduler")
+    private ThreadPoolTaskScheduler taskScheduler;
 
 
     @Override
@@ -154,12 +155,11 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
     @Override
     @Transactional(readOnly = false)
     public Response settleSpreadGame(SettleDTO dto) throws IOException {
+        SettleRes res = new SettleRes();
         // =================系统校验及数据开始=================
         Long userId = UserInterceptor.getLocalUser().getId();
         RoomSpread roomSpread = roomSpreadMapper.selectByPrimaryKey(dto.getRoomId());
         if (roomSpread == null) throw new JumpException(ResponseStatus.NO_EXIST_ROOM);
-        // =================系统校验及数据结束=================
-        SettleRes res = new SettleRes();
 
         // =================分数计算开始=================
         IntegralConfig ic = ExcelUtil.integralConfig();
@@ -168,10 +168,12 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
         Integer countIntegral = dto.getPassCellNum() * ic.getCellIntegral() + ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral() + gemstoneNum * ic.getGemstoneIntegral();
         Integer rankCountIntegral = countIntegral * roomSpread.getTicketNum();
         Integer baseIntegral = (ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral()) * roomSpread.getTicketNum();
-        // =================分数计算结束=================
 
+        // =================分数修改开始=================
         RecordSpread recordSpread = recordSpreadMapper.selectByPrimaryKey(dto.getRecordId());
+        if (recordSpread.getSettled()) throw new JumpException(ResponseStatus.GAME_SETTLED);
         recordSpread.setIntegral(dto.getPassCellNum());
+        recordSpread.setSettled(true);
         recordSpreadMapper.updateByPrimaryKey(recordSpread);
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         integral.setIntegral(integral.getIntegral() + rankCountIntegral - baseIntegral);
@@ -191,6 +193,7 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
     @Override
     @Transactional(readOnly = false)
     public Response spreadRoomGet(BaseDTO dto, String password) throws IOException {
+        // =================系统校验及数据开始=================
         RoomSpread roomSpread = roomSpreadMapper.selectByPassword(password);
         Long userId = UserInterceptor.getLocalUser().getId();
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
@@ -207,16 +210,13 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
         roomSpread.setPartakeNum(roomSpread.getPartakeNum() + 1);
         if (roomSpread.getPartakeNum() >= roomSpread.getJoinNum()) roomSpread.setStatus((byte) 1);
 
-
         // =================分数计算开始=================
         IntegralConfig ic = ExcelUtil.integralConfig();
         Integer baseIntegral = (ic.getVictoryIntegral() + ic.getVictoryGemstoneNum() * ic.getGemstoneIntegral()) * roomSpread.getTicketNum();
-        // =================分数计算结束=================
 
         // =================记录分数及排行榜开始=================
-        RecordSpread recordSpread = new RecordSpread(userId, roomSpread.getId(), 0, roomSpread.getPartakeNum() == roomSpread.getWinNum(), roomSpread.getTicketNum(), 0, dto.getSaleId(), dto.getSaleType(), new Timestamp(System.currentTimeMillis()));
+        RecordSpread recordSpread = new RecordSpread(userId, roomSpread.getId(), 0, roomSpread.getPartakeNum() == roomSpread.getWinNum(), roomSpread.getTicketNum(), 0, dto.getSaleId(), dto.getSaleType(), new Timestamp(System.currentTimeMillis()), false);
         recordSpreadMapper.insertSelective(recordSpread);
-        // 计算分数
         Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         if (integral == null) {
@@ -226,14 +226,13 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
             integral.setIntegral(integral.getIntegral() + baseIntegral);
             integralMapper.updateByPrimaryKey(integral);
         }
-        // =================记录分数及排行榜结束=================
+
         if (roomSpread.getPartakeNum() == roomSpread.getWinNum()) roomSpread.setWinRecordId(recordSpread.getId());
         roomSpreadMapper.updateByPrimaryKey(roomSpread);
-        log.warn("-------------------------------游戏执行结束---------------------------------");
 
         if (roomSpread.getStatus() == 1) {
             taskExecutor.execute(() -> {
-                log.warn("-------------------------------延迟执行开始---------------------------------");
+                log.info("==================发送卡券==================");
                 if (goods.getGoodsType() == 2) { // 寄送
                     SendGoods sendGoods = new SendGoods(
                             user.getMemberId(),
@@ -250,6 +249,9 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
                     SendPrdRequest goodsRequest = new SendPrdRequest(user.getMemberId(), roomSpread.getRemoteClubId(), spreadGoods.getRemoteGoodsId(), spreadGoods.getGoodsNum(), dto.getSaleId(), dto.getSaleType());
                     restService.sendPrd(goodsRequest);
                 }
+            });
+            taskScheduler.schedule(() -> {
+                log.info("==================发送公告==================");
                 Map<String, Object> map = new HashMap<>();
                 map.put("type", 0);
                 map.put("content", "恭喜" + user.getNickname() + "，刚刚获得了" + spreadGoods.getGoodsName());
@@ -259,7 +261,7 @@ public class RoomSpreadServiceImpl implements RoomSpreadService {
                 Map<String, Object> newMap = new HashMap<>();
                 newMap.put("type", 1);
                 WebSocketServer.sendInfo(user.getId(), newMap);
-            });
+            }, new Date(new Date().getTime() + 30 * 1000));
         }
 
         RoomRes res = new RoomRes();

@@ -28,10 +28,12 @@ public class RecordSpread extends Model {
 
     private Timestamp createTime;
 
+    private Boolean settled;
+
     public RecordSpread() {
     }
 
-    public RecordSpread(Long userId, Long roomId, Integer integral, Boolean isWin, Integer consumeTicket, Integer getTicket, Long saleId, Integer saleType, Timestamp createTime) {
+    public RecordSpread(Long userId, Long roomId, Integer integral, Boolean isWin, Integer consumeTicket, Integer getTicket, Long saleId, Integer saleType, Timestamp createTime, Boolean settled) {
         this.userId = userId;
         this.roomId = roomId;
         this.integral = integral;
@@ -41,5 +43,6 @@ public class RecordSpread extends Model {
         this.saleId = saleId;
         this.saleType = saleType;
         this.createTime = createTime;
+        this.settled = settled;
     }
 }

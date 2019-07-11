@@ -53,6 +53,7 @@ public class TaskServiceImpl implements TaskService {
     private GlobalContext context;
 
     @Override
+    @Transactional(readOnly = false)
     public void settle() {
         List<Long> clubIds = integralMapper.groupByClubId();
         clubIds.forEach(clubId -> {

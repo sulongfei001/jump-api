@@ -106,7 +106,6 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         }
         rankCountIntegral = countIntegral * roomSimple.getTicketNum();
         Integer baseIntegral = (ic.getDefeatIntegral() + ic.getDefeatGemstoneNum() * ic.getGemstoneIntegral()) * roomSimple.getTicketNum();
-        // =================分数计算结束=================
 
         // =================中奖概率计算=================
         Boolean win = false;
@@ -118,11 +117,13 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         Integer prizeCount = recordSimpleMapper.countPrize(dto.getRoomId());
         Boolean randomOn = mustNum + prizeCount * (mustNum + 1) < roomSimple.getConsumeNum();
         if (randomOn && Math.random() <= prize) win = true;
-        // =================中奖概率计算=================
 
+        // =================分数修改开始=================
         RecordSimple recordSimple = recordSimpleMapper.selectByPrimaryKey(dto.getRecordId());
+        if (recordSimple.getSettled()) throw new JumpException(ResponseStatus.GAME_SETTLED);
         recordSimple.setIntegral(dto.getPassCellNum());
         recordSimple.setIsWin(win);
+        recordSimple.setSettled(true);
         recordSimpleMapper.updateByPrimaryKey(recordSimple);
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         integral.setIntegral(integral.getIntegral() + rankCountIntegral - baseIntegral);
@@ -171,6 +172,7 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
     @Override
     @Transactional(readOnly = false)
     public Response roomSimpleGet(BaseDTO dto, Long roomId) throws IOException {
+        // =================系统校验及数据开始=================
         RoomSimple roomSimple = roomSimpleMapper.selectByPrimaryKey(roomId);
         Long userId = UserInterceptor.getLocalUser().getId();
         SecurityUser user = userMapper.selectByPrimaryKey(userId);
@@ -184,12 +186,10 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
         // =================分数计算开始=================
         IntegralConfig ic = ExcelUtil.integralConfig();
         Integer baseIntegral = (ic.getDefeatIntegral() + ic.getDefeatGemstoneNum() * ic.getGemstoneIntegral()) * roomSimple.getTicketNum();
-        // =================分数计算结束=================
 
         // =================记录分数及排行榜开始=================
-        RecordSimple recordSimple = new RecordSimple(userId, roomId, 0, false, roomSimple.getTicketNum(), 0, dto.getSaleId(), dto.getSaleType(), new Timestamp(System.currentTimeMillis()));
+        RecordSimple recordSimple = new RecordSimple(userId, roomId, 0, false, roomSimple.getTicketNum(), 0, dto.getSaleId(), dto.getSaleType(), new Timestamp(System.currentTimeMillis()),false);
         recordSimpleMapper.insertSelective(recordSimple);
-        // 计算分数
         Integer formerRank = integralMapper.findRankByUserId(dto.getRemoteClubId(), userId);
         Integral integral = integralMapper.selectByUserIdClubId(userId, dto.getRemoteClubId());
         if (integral == null) {
@@ -199,7 +199,6 @@ public class RoomSimpleServiceImpl implements RoomSimpleService {
             integral.setIntegral(integral.getIntegral() + baseIntegral);
             integralMapper.updateByPrimaryKey(integral);
         }
-        // =================记录分数及排行榜结束=================
 
         roomSimple.setConsumeNum(roomSimple.getConsumeNum() + roomSimple.getTicketNum());
         roomSimpleMapper.updateByPrimaryKey(roomSimple);

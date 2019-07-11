@@ -11,6 +11,7 @@ public interface ResponseStatus {
     // 响应码
     interface Code {
 
+
         // 错误码
         int FAILURE = 1000;
         // 没有权限码
@@ -61,4 +62,6 @@ public interface ResponseStatus {
     String ROOM_CLOSED = "房间已关闭";
 
     String NO_ORDER = "订单不存在";
+
+    String GAME_SETTLED = "本局游戏已经结算";
 }
