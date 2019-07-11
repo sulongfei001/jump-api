@@ -87,7 +87,7 @@
                enableCountByExample="false"
                enableUpdateByExample="false"
                enableSelectByExample="false">
-            <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>
 </generatorConfiguration>
