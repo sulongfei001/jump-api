@@ -24,6 +24,6 @@ public class Test {
 //        System.out.println(price.multiply(premium).divide(singlePrice,10,BigDecimal.ROUND_HALF_UP).intValue());
 
 //        ExcelUtil.integralConfig();
-        System.out.println(new Date().getTime());
+        System.out.println(new Date(1562917096000L));
     }
 }

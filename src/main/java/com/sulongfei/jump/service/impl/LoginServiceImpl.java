@@ -13,6 +13,7 @@ import com.sulongfei.jump.rest.response.RestResponse;
 import com.sulongfei.jump.service.LoginService;
 import com.sulongfei.jump.utils.QCloudUtil;
 import com.sulongfei.jump.utils.StrUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import java.sql.Timestamp;
  * @Date 2019/5/29 16:53
  * @Version 1.0
  */
+@Slf4j
 @Service
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class LoginServiceImpl implements LoginService {
@@ -86,7 +88,10 @@ public class LoginServiceImpl implements LoginService {
             ticket = new Ticket(user.getId(), dto.getRemoteClubId(), 0);
             ticketMapper.insertSelective(ticket);
         }
-        taskExecutor.execute(() -> QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode));
+        taskExecutor.execute(() -> {
+            QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode);
+            log.info("发送验证码：{}", SmsCode);
+        });
         return new Response();
     }
 }
