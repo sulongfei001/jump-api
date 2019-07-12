@@ -4,14 +4,13 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ParameterBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
+import org.springframework.web.bind.annotation.RequestMethod;
+import springfox.documentation.builders.*;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.Parameter;
+import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -28,6 +27,7 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig {
     private static List<Parameter> parameters;
+    private static List<ResponseMessage> responseMessageList;
 
     static {
         parameters = new ArrayList<Parameter>() {
@@ -37,6 +37,20 @@ public class SwaggerConfig {
                 add(new ParameterBuilder().name("saleId").description("推广员ID").modelRef(new ModelRef("long")).parameterType("path").required(true).build());
                 add(new ParameterBuilder().name("saleType").description("推广员类型").modelRef(new ModelRef("int")).parameterType("path").required(true).build());
 
+            }
+        };
+        responseMessageList = new ArrayList<ResponseMessage>() {
+            {
+                add(new ResponseMessageBuilder().code(200).message("OK").build());
+                add(new ResponseMessageBuilder().code(201).message("Created").build());
+                add(new ResponseMessageBuilder().code(401).message("Unauthorized").build());
+                add(new ResponseMessageBuilder().code(403).message("Forbidden").build());
+                add(new ResponseMessageBuilder().code(404).message("Not Found").build());
+                add(new ResponseMessageBuilder().code(1000).message("通用错误码（自定义）").build());
+                add(new ResponseMessageBuilder().code(2000).message("权限错误码（自定义）").build());
+                add(new ResponseMessageBuilder().code(3000).message("非法参数码（自定义）").build());
+                add(new ResponseMessageBuilder().code(4000).message("其他异常码（自定义）").build());
+                add(new ResponseMessageBuilder().code(5000).message("账号异常码（自定义）").build());
             }
         };
     }
@@ -54,6 +68,10 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(parameters)
+                .globalResponseMessage(RequestMethod.GET,responseMessageList)
+                .globalResponseMessage(RequestMethod.POST,responseMessageList)
+                .globalResponseMessage(RequestMethod.PUT,responseMessageList)
+                .globalResponseMessage(RequestMethod.DELETE,responseMessageList)
                 .apiInfo(apiInfo());
     }
 

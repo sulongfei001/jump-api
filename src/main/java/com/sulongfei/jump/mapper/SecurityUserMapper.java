@@ -20,4 +20,6 @@ public interface SecurityUserMapper {
     int updateByPrimaryKey(SecurityUser record);
 
     SecurityUser selectByUsername(String userName);
+
+    Long nextKey();
 }

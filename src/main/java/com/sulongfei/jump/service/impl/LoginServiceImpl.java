@@ -60,7 +60,7 @@ public class LoginServiceImpl implements LoginService {
             user = new SecurityUser();
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setPassword(new BCryptPasswordEncoder().encode(SmsCode));
-            user.setNickname(dto.getPhoneNumber());
+            user.setNickname(securityUserMapper.nextKey() + dto.getRemoteClubId() + "");
             user.setGender((byte) 0);
             user.setAvatar(globalContext.getDefaultAvatar());
             user.setCreateTime(now);
@@ -81,9 +81,9 @@ public class LoginServiceImpl implements LoginService {
             securityUserMapper.updateByPrimaryKeySelective(user);
         }
         // 门票
-        Ticket ticket = ticketMapper.selectByClubId(user.getId(),dto.getRemoteClubId());
-        if (ticket == null){
-            ticket = new Ticket(user.getId(),dto.getRemoteClubId(),0);
+        Ticket ticket = ticketMapper.selectByClubId(user.getId(), dto.getRemoteClubId());
+        if (ticket == null) {
+            ticket = new Ticket(user.getId(), dto.getRemoteClubId(), 0);
             ticketMapper.insertSelective(ticket);
         }
         taskExecutor.execute(() -> QCloudUtil.sendSMS(dto.getPhoneNumber(), SmsCode));

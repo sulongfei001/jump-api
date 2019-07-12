@@ -35,6 +35,9 @@ public class UserInterceptor extends HandlerInterceptorAdapter {
         if (sysUser == null) {
             throw new JumpException(ResponseStatus.USER_PHONE_NOT_EXISTS);
         }
+        if (sysUser.getDeleteStatus()) {
+            throw new JumpException(ResponseStatus.Code.ACCOUNT_EXCEPTION, ResponseStatus.ACCOUNT_EXCEPTION);
+        }
         localUser.set(sysUser);
 
         return true;

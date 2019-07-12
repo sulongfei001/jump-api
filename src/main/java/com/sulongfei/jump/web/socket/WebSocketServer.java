@@ -11,6 +11,8 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -25,10 +27,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class WebSocketServer {
     private static int onlineCount = 0;
     private static final CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<>();
+    private SecurityUserMapper userMapper = SpringContext.getBean(SecurityUserMapper.class);
     private Session session;
     private Long remoteClubId;
-    private Long saleId;
-    private Integer saleType;
     private Long userId;
 
     @OnOpen
@@ -40,17 +41,14 @@ public class WebSocketServer {
             Session session) {
         this.session = session;
         this.remoteClubId = remoteClubId;
-        this.saleId = saleId;
-        this.saleType = saleType;
         this.userId = userId;
         webSocketSet.add(this);
         addOnlineCount();
+        SecurityUser user = userMapper.selectByPrimaryKey(this.userId);
+        user.setLastOperationTime(new Timestamp(new Date().getTime()));
+        user.setLastOperationClub(this.remoteClubId);
+        userMapper.updateByPrimaryKey(user);
         log.info("有新连接加入！当前在线人数为" + getOnlineCount());
-        try {
-            sendMessage("WebSocket 连接成功！");
-        } catch (IOException | EncodeException e) {
-            log.error("WebSocket IO 异常");
-        }
     }
 
     @OnClose
@@ -63,7 +61,6 @@ public class WebSocketServer {
     @OnMessage
     public void onMessage(String message) {
         log.info("来自客户端的消息：" + message);
-        SecurityUserMapper userMapper = SpringContext.getBean(SecurityUserMapper.class);
         SecurityUser user = userMapper.selectByPrimaryKey(this.userId);
         user.setConfirmPush(false);
         userMapper.updateByPrimaryKey(user);
@@ -71,8 +68,7 @@ public class WebSocketServer {
 
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("发生错误");
-        error.printStackTrace();
+        log.error("webSocket发生错误");
     }
 
     public void sendMessage(Object obj) throws IOException, EncodeException {

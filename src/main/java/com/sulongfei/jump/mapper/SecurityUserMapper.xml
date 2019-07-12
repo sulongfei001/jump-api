@@ -278,4 +278,12 @@
         from security_user
         where phone_number = #{username,jdbcType=VARCHAR}
     </select>
+    <select id="nextKey" resultType="java.lang.Long">
+        SELECT
+            auto_increment
+        FROM
+            INFORMATION_SCHEMA.TABLES
+        WHERE
+            TABLE_NAME = 'security_user'
+    </select>
 </mapper>

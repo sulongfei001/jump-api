@@ -14,4 +14,9 @@ public class JumpException extends RuntimeException {
     public JumpException(String message) {
         super(message);
     }
+
+    public JumpException(int code,String message){
+        super(message);
+        this.code = code;
+    }
 }

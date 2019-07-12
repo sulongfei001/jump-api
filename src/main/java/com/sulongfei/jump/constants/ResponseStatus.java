@@ -10,9 +10,9 @@ public interface ResponseStatus {
 
     // 响应码
     interface Code {
-
-
-        // 错误码
+        // 成功码
+        int SUCCESS = 200;
+        // 通用错误码
         int FAILURE = 1000;
         // 没有权限码
         int NO_PERMISSION = 2000;
@@ -20,8 +20,8 @@ public interface ResponseStatus {
         int ILLEGAL_ARGUMENT = 3000;
         // 其他异常码
         int OTHER_EXCEPTION = 4000;
-        // 成功码
-        int SUCCESS = 200;
+        // 账号异常
+        int ACCOUNT_EXCEPTION = 5000;
 
     }
 
@@ -30,6 +30,9 @@ public interface ResponseStatus {
     String NO_PERMISSION = "您没有权限访问";
 
     String OTHER_EXCEPTION = "网络出了点小问题";
+
+    String ACCOUNT_EXCEPTION = "您的账号异常";
+
 
     String REPEAT_SUBMIT = "请勿重复提交";
 
@@ -56,8 +59,6 @@ public interface ResponseStatus {
     String NO_ENOUGH_TICKET = "没有足够的门票";
 
     String NO_ENOUGH_GOODS = "剩余库存不足";
-
-    String GOT_TICKET = "今日已领取过门票";
 
     String ROOM_CLOSED = "房间已关闭";
 
