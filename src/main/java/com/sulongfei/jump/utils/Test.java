@@ -1,6 +1,8 @@
 package com.sulongfei.jump.utils;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -13,7 +15,7 @@ import java.util.Date;
 public class Test {
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
 //        BigDecimal price = BigDecimal.valueOf(35.22);
 //        BigDecimal premium = BigDecimal.valueOf(100).divide(BigDecimal.valueOf(3),10,BigDecimal.ROUND_HALF_UP);
 //        BigDecimal singlePrice = BigDecimal.valueOf(100);
@@ -24,6 +26,7 @@ public class Test {
 //        System.out.println(price.multiply(premium).divide(singlePrice,10,BigDecimal.ROUND_HALF_UP).intValue());
 
 //        ExcelUtil.integralConfig();
-        System.out.println(new Date(1562917096000L));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println(sdf.parse("2019-7-15 00:00:00").getTime());
     }
 }

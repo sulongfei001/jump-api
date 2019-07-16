@@ -33,7 +33,7 @@ public class ExcelUtil {
     public static List<RandomCellGem> gameConfig() throws IOException {
         final Integer HEADER_ROW_INDEX = 1;
         final Integer START_ROW_INDEX = 2;
-        ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(FileUtil.getResFileIS(CHARGE_FILE), 1);
+        ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(FileUtil.getResFileIS(GAME_CONFIG_FILE), 1);
         List<RandomCellGem> list = reader.read(HEADER_ROW_INDEX, START_ROW_INDEX, RandomCellGem.class);
         return list;
     }
